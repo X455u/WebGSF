@@ -40,7 +40,7 @@ THREEx.KeyboardState	= function(domElement)
 	// to store the current state
 	this.keyCodes	= {};
 	this.modifiers	= {};
-	
+
 	// create callback to bind/unbind keyboard events
 	var _this	= this;
 	this._onKeyDown	= function(event){ _this._onKeyChange(event)	}
@@ -161,4 +161,4 @@ THREEx.KeyboardState.prototype.eventMatches = function(event, keyDesc) {
 	return true;
 }
 
-
+module.exports = THREEx.KeyboardState

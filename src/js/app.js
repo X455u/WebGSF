@@ -1,3 +1,8 @@
+var THREE = require('three');
+var THREEx = {
+  KeyboardState: require('./threex.keyboardstate')
+};
+
 var scene = new THREE.Scene();
 var aspect = window.innerWidth / window.innerHeight;
 var camera = new THREE.PerspectiveCamera(75, aspect, 0.1, 1000);
