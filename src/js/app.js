@@ -1,6 +1,7 @@
 var THREE = require('three');
 var THREEx = {
-  KeyboardState: require('./threex.keyboardstate')
+  KeyboardState: require('./threex.keyboardstate'),
+  SpaceShips: require('./threex.spaceships')
 };
 
 var scene = new THREE.Scene();
@@ -15,10 +16,15 @@ var material = new THREE.MeshLambertMaterial();
 var ambientLight = new THREE.AmbientLight(0x222222, 0.1);
 var light = new THREE.DirectionalLight(0xffffff, 1);
 var cube = new THREE.Mesh( geometry, material );
+// THREEx.SpaceShips.loadSpaceFighter01(function(object3d){
+//     // object3d is the loaded spacefighter
+//     scene.add(object3d)
+// })
 var keyboard	= new THREEx.KeyboardState(renderer.domElement);
 renderer.domElement.setAttribute("tabIndex", "0");
 renderer.domElement.focus();
 cube.rotation.x += 0.4;
+cube.scale.set(2,2,2);
 scene.add(cube);
 scene.add(ambientLight);
 scene.add(light);
