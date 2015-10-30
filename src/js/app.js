@@ -26,8 +26,7 @@ scene.add(light);
 camera.position.z = 5;
 
 // prepare loader and load the model
-var oLoader = new THREEx.ObjectLoader();
-oLoader.load('media/SpaceFighter01/SpaceFighter01.obj',
+THREEx.ObjectLoader().load('media/SpaceFighter01/SpaceFighter01.obj',
   'media/SpaceFighter01/SpaceFighter01.mtl', function(object) {
 
   object.position.x = 0;
