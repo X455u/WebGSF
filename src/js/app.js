@@ -1,6 +1,7 @@
 var THREE = require('three');
 var THREEx = {
-  KeyboardState: require('./threex.keyboardstate')
+  KeyboardState: require('./threex.keyboardstate'),
+  ObjectLoader: require('./OBJMTLLoader')
 };
 
 var scene = new THREE.Scene();
@@ -23,6 +24,19 @@ scene.add(cube);
 scene.add(ambientLight);
 scene.add(light);
 camera.position.z = 5;
+
+// prepare loader and load the model
+var oLoader = new THREEx.ObjectLoader();
+oLoader.load('media/SpaceFighter01/SpaceFighter01.obj',
+  'media/SpaceFighter01/SpaceFighter01.mtl', function(object) {
+
+  object.position.x = 0;
+  object.position.y = 0;
+  object.position.z = 0;
+  object.scale.set(0.1, 0.1, 0.1);
+  scene.add(object);
+});
+
 
 var render = function () {
   requestAnimationFrame( render );
