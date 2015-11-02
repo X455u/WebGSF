@@ -11,41 +11,40 @@ var renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
-var geometry = new THREE.BoxGeometry(1, 1, 1);
-var material = new THREE.MeshLambertMaterial();
 var ambientLight = new THREE.AmbientLight(0x222222, 0.1);
 var light = new THREE.DirectionalLight(0xffffff, 1);
-var cube = new THREE.Mesh( geometry, material );
-// THREEx.SpaceShips.loadSpaceFighter01(function(object3d){
-//     // object3d is the loaded spacefighter
-//     scene.add(object3d)
-// })
 var keyboard	= new THREEx.KeyboardState(renderer.domElement);
 renderer.domElement.setAttribute("tabIndex", "0");
 renderer.domElement.focus();
-cube.rotation.x += 0.4;
-cube.scale.set(2,2,2);
-scene.add(cube);
+
 scene.add(ambientLight);
 scene.add(light);
 camera.position.z = 5;
+
+// prepare loader and load the model
+var loader = new THREE.ObjectLoader();
+var ship;
+loader.load( './media/star-wars-vader-tie-fighter.json', function ( object ) {
+  ship = object;
+  scene.add( ship );
+} );
 
 var render = function () {
   requestAnimationFrame( render );
   var delta = 0.2;
   if( keyboard.pressed('left') ){
-    cube.rotation.y -= 1 * delta;
-    cube.position.x -= 1 * delta;
+    ship.rotation.y -= 1 * delta;
+    ship.position.x -= 1 * delta;
   }else if( keyboard.pressed('right') ){
-    cube.rotation.y += 1 * delta;
-    cube.position.x += 1 * delta;
+    ship.rotation.y += 1 * delta;
+    ship.position.x += 1 * delta;
   }
   if( keyboard.pressed('down') ){
-    cube.rotation.x += 1 * delta;
-    cube.position.y -= 1 * delta;
+    ship.rotation.x += 1 * delta;
+    ship.position.y -= 1 * delta;
   }else if( keyboard.pressed('up') ){
-    cube.rotation.x -= 1 * delta;
-    cube.position.y += 1 * delta;
+    ship.rotation.x -= 1 * delta;
+    ship.position.y += 1 * delta;
   }
   renderer.render( scene, camera );
 };
