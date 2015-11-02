@@ -1,6 +1,7 @@
 var THREE = require('three');
 var THREEx = {
-  KeyboardState: require('./threex.keyboardstate')
+  KeyboardState: require('./threex.keyboardstate'),
+  SpaceShips: require('./threex.spaceships')
 };
 
 var scene = new THREE.Scene();
@@ -15,6 +16,7 @@ var light = new THREE.DirectionalLight(0xffffff, 1);
 var keyboard	= new THREEx.KeyboardState(renderer.domElement);
 renderer.domElement.setAttribute("tabIndex", "0");
 renderer.domElement.focus();
+
 scene.add(ambientLight);
 scene.add(light);
 camera.position.z = 5;
