@@ -29,6 +29,17 @@ loader.load( './media/star-wars-vader-tie-fighter.json', function ( object ) {
   scene.add( ship );
 } );
 
+// Format debugging text
+var text = document.createElement('div');
+text.style.position = 'absolute';
+text.style.width = 100;
+text.style.height = 100;
+text.style.color = "white";
+text.style.top = 10 + 'px';
+text.style.left = 10 + 'px';
+text.innerHTML = "Loading..."
+document.body.appendChild(text);
+
 var render = function () {
   requestAnimationFrame( render );
   var delta = 0.2;
@@ -47,6 +58,11 @@ var render = function () {
     ship.position.y += 1 * delta;
   }
   renderer.render( scene, camera );
+
+	//Update debugging text
+	text.innerHTML = "X: " + ship.position.x +
+		"<br/>" + "Y: " + ship.position.y +
+		"<br/>" + "Z: " + ship.position.z;
 };
 
 render();
