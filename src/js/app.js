@@ -40,6 +40,38 @@ text.style.left = 10 + 'px';
 text.innerHTML = "Loading..."
 document.body.appendChild(text);
 
+// Terrain testing
+var mapX = 25;
+var mapY = mapX; // Does not yet work with different x y dimensions
+var heightMap = new Array(mapX);
+for (i = 0; i < mapX; i++) {
+	heightMap[i] = new Array(mapY);
+}
+var map = new THREE.Geometry();
+
+for (x = 0; x < mapX; x++) {
+	for (y = 0; y < mapY; y++) {
+		heightMap[x][y] = Math.floor((Math.random() * 5));
+		map.vertices.push( new THREE.Vector3( x, y, heightMap[x][y] ) );
+	}
+}
+
+for (x = 0; x < mapX-1; x++) {
+	for (y = 0; y < mapY-1; y++) {
+		map.faces.push( new THREE.Face3( x*mapY + y+1, x*mapY + y, (x+1)*mapX + y ));
+		map.faces.push( new THREE.Face3( (x+1)*mapY + y+1, x*mapY + y+1, (x+1)*mapX + y ));
+	}
+}
+map.computeFaceNormals();
+
+var mapReady = new THREE.Mesh( map, new THREE.MeshNormalMaterial() );
+scene.add(mapReady);
+mapReady.rotation.x = -0.8
+mapReady.position.x = -10;
+mapReady.position.y = -10;
+mapReady.position.z = -10;
+
+
 var render = function () {
   requestAnimationFrame( render );
   var delta = 0.2;
@@ -51,11 +83,9 @@ var render = function () {
     ship.position.x += 1 * delta;
   }
   if( keyboard.pressed('down') ){
-    ship.rotation.x += 1 * delta;
-    ship.position.y -= 1 * delta;
+    ship.position.z += 1 * delta;
   }else if( keyboard.pressed('up') ){
-    ship.rotation.x -= 1 * delta;
-    ship.position.y += 1 * delta;
+    ship.position.z -= 1 * delta;
   }
   renderer.render( scene, camera );
 
