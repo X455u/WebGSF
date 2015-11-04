@@ -46,8 +46,7 @@
 
 	var THREE = __webpack_require__(1);
 	var THREEx = {
-	  KeyboardState: __webpack_require__(2),
-	  SpaceShips: __webpack_require__(3)
+	  KeyboardState: __webpack_require__(2)
 	};
 
 	var scene = new THREE.Scene();
@@ -86,6 +85,37 @@
 	text.innerHTML = "Loading..."
 	document.body.appendChild(text);
 
+	// Terrain testing
+	var mapX = 25;
+	var mapY = mapX; // Does not yet work with different x y dimensions
+	var heightMap = new Array(mapX);
+	for (i = 0; i < mapX; i++) {
+		heightMap[i] = new Array(mapY);
+	}
+	var map = new THREE.Geometry();
+
+	for (x = 0; x < mapX; x++) {
+		for (y = 0; y < mapY; y++) {
+			heightMap[x][y] = Math.floor((Math.random() * 5));
+			map.vertices.push( new THREE.Vector3( x, y, heightMap[x][y] ) );
+		}
+	}
+
+	for (x = 0; x < mapX-1; x++) {
+		for (y = 0; y < mapY-1; y++) {
+			map.faces.push( new THREE.Face3( x*mapY + y+1, x*mapY + y, (x+1)*mapX + y ));
+			map.faces.push( new THREE.Face3( (x+1)*mapY + y+1, x*mapY + y+1, (x+1)*mapX + y ));
+		}
+	}
+	map.computeFaceNormals();
+
+	var mapReady = new THREE.Mesh( map, new THREE.MeshNormalMaterial() );
+	scene.add(mapReady);
+	mapReady.rotation.x = -0.8
+	mapReady.position.x = -10;
+	mapReady.position.y = -10;
+	mapReady.position.z = -10;
+
 	var render = function () {
 	  requestAnimationFrame( render );
 	  var delta = 0.2;
@@ -97,11 +127,9 @@
 	    ship.position.x += 1 * delta;
 	  }
 	  if( keyboard.pressed('down') ){
-	    ship.rotation.x += 1 * delta;
-	    ship.position.y -= 1 * delta;
+	    ship.position.z += 1 * delta;
 	  }else if( keyboard.pressed('up') ){
-	    ship.rotation.x -= 1 * delta;
-	    ship.position.y += 1 * delta;
+	    ship.position.z -= 1 * delta;
 	  }
 	  renderer.render( scene, camera );
 
@@ -3858,7 +3886,11 @@
 			};
 
 		}(),
+<<<<<<< HEAD
 
+=======
+
+>>>>>>> gh-pages
 		clone: function () {
 
 			return new this.constructor().copy( this );
@@ -13882,20 +13914,34 @@
 	};
 
 	THREE.OrthographicCamera.prototype.copy = function ( source ) {
+<<<<<<< HEAD
 
 		THREE.Camera.prototype.copy.call( this, source );
 
+=======
+
+		THREE.Camera.prototype.copy.call( this, source );
+
+>>>>>>> gh-pages
 		this.left = source.left;
 		this.right = source.right;
 		this.top = source.top;
 		this.bottom = source.bottom;
 		this.near = source.near;
 		this.far = source.far;
+<<<<<<< HEAD
 
 		this.zoom = source.zoom;
 
 		return this;
 
+=======
+
+		this.zoom = source.zoom;
+
+		return this;
+
+>>>>>>> gh-pages
 	};
 
 	THREE.OrthographicCamera.prototype.toJSON = function ( meta ) {
@@ -14041,18 +14087,32 @@
 	};
 
 	THREE.PerspectiveCamera.prototype.copy = function ( source ) {
+<<<<<<< HEAD
 
 		THREE.Camera.prototype.copy.call( this, source );
 
+=======
+
+		THREE.Camera.prototype.copy.call( this, source );
+
+>>>>>>> gh-pages
 		this.fov = source.fov;
 		this.aspect = source.aspect;
 		this.near = source.near;
 		this.far = source.far;
+<<<<<<< HEAD
 
 		this.zoom = source.zoom;
 
 		return this;
 
+=======
+
+		this.zoom = source.zoom;
+
+		return this;
+
+>>>>>>> gh-pages
 	};
 
 	THREE.PerspectiveCamera.prototype.toJSON = function ( meta ) {
@@ -17165,7 +17225,11 @@
 		THREE.Material.prototype.copy.call( this, source );
 
 		this.color.copy( source.color );
+<<<<<<< HEAD
 
+=======
+
+>>>>>>> gh-pages
 		this.linewidth = source.linewidth;
 
 		this.scale = source.scale;
@@ -17264,7 +17328,11 @@
 	THREE.MeshBasicMaterial.prototype.constructor = THREE.MeshBasicMaterial;
 
 	THREE.MeshBasicMaterial.prototype.copy = function ( source ) {
+<<<<<<< HEAD
 
+=======
+
+>>>>>>> gh-pages
 		THREE.Material.prototype.copy.call( this, source );
 
 		this.color.copy( source.color );
@@ -17296,7 +17364,11 @@
 
 		this.skinning = source.skinning;
 		this.morphTargets = source.morphTargets;
+<<<<<<< HEAD
 
+=======
+
+>>>>>>> gh-pages
 		return this;
 
 	};
@@ -18376,9 +18448,15 @@
 	THREE.CubeTexture.prototype.copy = function ( source ) {
 
 		THREE.Texture.prototype.copy.call( this, source );
+<<<<<<< HEAD
 
 		this.images = source.images;
 
+=======
+
+		this.images = source.images;
+
+>>>>>>> gh-pages
 		return this;
 
 	};
@@ -18424,7 +18502,11 @@
 
 		this.magFilter = magFilter !== undefined ? magFilter : THREE.NearestFilter;
 		this.minFilter = minFilter !== undefined ? minFilter : THREE.NearestFilter;
+<<<<<<< HEAD
 
+=======
+
+>>>>>>> gh-pages
 		this.flipY = false;
 		this.generateMipmaps  = false;
 
@@ -19191,11 +19273,19 @@
 	THREE.Bone.prototype.constructor = THREE.Bone;
 
 	THREE.Bone.prototype.copy = function ( source ) {
+<<<<<<< HEAD
 
 		THREE.Object3D.prototype.copy.call( this, source );
 
 		this.skin = source.skin;
 
+=======
+
+		THREE.Object3D.prototype.copy.call( this, source );
+
+		this.skin = source.skin;
+
+>>>>>>> gh-pages
 		return this;
 
 	};
@@ -19232,7 +19322,11 @@
 			//       32x32 pixel texture max  256 bones * 4 pixels = (32 * 32)
 			//       64x64 pixel texture max 1024 bones * 4 pixels = (64 * 64)
 
+<<<<<<< HEAD
 
+=======
+
+>>>>>>> gh-pages
 			var size = Math.sqrt( this.bones.length * 4 ); // 4 pixels needed for 1 matrix
 			size = THREE.Math.nextPowerOfTwo( Math.ceil( size ) );
 			size = Math.max( size, 4 );
@@ -19458,7 +19552,11 @@
 		if ( bindMatrix === undefined ) {
 
 			this.updateMatrixWorld( true );
+<<<<<<< HEAD
 
+=======
+
+>>>>>>> gh-pages
 			this.skeleton.calculateInverses();
 
 			bindMatrix = this.matrixWorld;
@@ -31061,7 +31159,11 @@
 
 		var b3 = THREE.ShapeUtils.b3;
 
+<<<<<<< HEAD
 		return new THREE.Vector2(
+=======
+		return new THREE.Vector2(
+>>>>>>> gh-pages
 			b3( t, this.v0.x, this.v1.x, this.v2.x, this.v3.x ),
 			b3( t, this.v0.y, this.v1.y, this.v2.y, this.v3.y )
 		);
@@ -31072,7 +31174,11 @@
 
 		var tangentCubicBezier = THREE.CurveUtils.tangentCubicBezier;
 
+<<<<<<< HEAD
 		return new THREE.Vector2(
+=======
+		return new THREE.Vector2(
+>>>>>>> gh-pages
 			tangentCubicBezier( t, this.v0.x, this.v1.x, this.v2.x, this.v3.x ),
 			tangentCubicBezier( t, this.v0.y, this.v1.y, this.v2.y, this.v3.y )
 		).normalize();
@@ -31134,7 +31240,11 @@
 		this.aEndAngle = aEndAngle;
 
 		this.aClockwise = aClockwise;
+<<<<<<< HEAD
 
+=======
+
+>>>>>>> gh-pages
 		this.aRotation = aRotation || 0;
 
 	};
@@ -31160,7 +31270,11 @@
 			angle = this.aStartAngle + t * deltaAngle;
 
 		}
+<<<<<<< HEAD
 
+=======
+
+>>>>>>> gh-pages
 		var x = this.aX + this.xRadius * Math.cos( angle );
 		var y = this.aY + this.yRadius * Math.sin( angle );
 
@@ -31243,7 +31357,11 @@
 
 		function ( t ) {
 
+<<<<<<< HEAD
 			var b2 = THREE.ShapeUtils.b2;
+=======
+			var b2 = THREE.ShapeUtils.b2;
+>>>>>>> gh-pages
 
 			return new THREE.Vector3(
 				b2( t, this.v0.x, this.v1.x, this.v2.x ),
@@ -32957,7 +33075,11 @@
 	 * @author bhouston / http://clara.io
 	 */
 
+<<<<<<< HEAD
 	// points - to create a closed torus, one must use a set of points
+=======
+	// points - to create a closed torus, one must use a set of points
+>>>>>>> gh-pages
 	//    like so: [ a, b, c, d, a ], see first is the same as last.
 	// segments - the number of circumference segments to create
 	// phiStart - the starting radian
@@ -34836,7 +34958,11 @@
 			if ( headWidth === undefined ) headWidth = 0.2 * headLength;
 
 			this.position.copy( origin );
+<<<<<<< HEAD
 
+=======
+
+>>>>>>> gh-pages
 			if ( headLength < length ) {
 				this.line = new THREE.Line( lineGeometry, new THREE.LineBasicMaterial( { color: color } ) );
 				this.line.matrixAutoUpdate = false;
@@ -36477,6 +36603,10 @@
 	module.exports = THREEx.KeyboardState
 
 
+<<<<<<< HEAD
+/***/ }
+/******/ ]);
+=======
 /***/ },
 /* 3 */
 /***/ function(module, exports) {
@@ -36662,3 +36792,4 @@
 
 /***/ }
 /******/ ]);
+>>>>>>> gh-pages
