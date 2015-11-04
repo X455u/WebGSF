@@ -1,7 +1,6 @@
 var THREE = require('three');
 var THREEx = {
-  KeyboardState: require('./threex.keyboardstate'),
-  SpaceShips: require('./threex.spaceships')
+  KeyboardState: require('./threex.keyboardstate')
 };
 
 var scene = new THREE.Scene();
