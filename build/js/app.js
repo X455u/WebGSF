@@ -116,7 +116,6 @@
 	mapReady.position.y = -10;
 	mapReady.position.z = -10;
 
-
 	var render = function () {
 	  requestAnimationFrame( render );
 	  var delta = 0.2;
@@ -3887,7 +3886,11 @@
 			};
 
 		}(),
-		
+<<<<<<< HEAD
+
+=======
+
+>>>>>>> gh-pages
 		clone: function () {
 
 			return new this.constructor().copy( this );
@@ -13911,20 +13914,34 @@
 	};
 
 	THREE.OrthographicCamera.prototype.copy = function ( source ) {
-		
+<<<<<<< HEAD
+
 		THREE.Camera.prototype.copy.call( this, source );
-		
+
+=======
+
+		THREE.Camera.prototype.copy.call( this, source );
+
+>>>>>>> gh-pages
 		this.left = source.left;
 		this.right = source.right;
 		this.top = source.top;
 		this.bottom = source.bottom;
 		this.near = source.near;
 		this.far = source.far;
-		
+<<<<<<< HEAD
+
 		this.zoom = source.zoom;
-		
+
 		return this;
-			
+
+=======
+
+		this.zoom = source.zoom;
+
+		return this;
+
+>>>>>>> gh-pages
 	};
 
 	THREE.OrthographicCamera.prototype.toJSON = function ( meta ) {
@@ -14070,18 +14087,32 @@
 	};
 
 	THREE.PerspectiveCamera.prototype.copy = function ( source ) {
-		
+<<<<<<< HEAD
+
 		THREE.Camera.prototype.copy.call( this, source );
-		
+
+=======
+
+		THREE.Camera.prototype.copy.call( this, source );
+
+>>>>>>> gh-pages
 		this.fov = source.fov;
 		this.aspect = source.aspect;
 		this.near = source.near;
 		this.far = source.far;
-		
+<<<<<<< HEAD
+
 		this.zoom = source.zoom;
-		
+
 		return this;
-			
+
+=======
+
+		this.zoom = source.zoom;
+
+		return this;
+
+>>>>>>> gh-pages
 	};
 
 	THREE.PerspectiveCamera.prototype.toJSON = function ( meta ) {
@@ -17194,7 +17225,11 @@
 		THREE.Material.prototype.copy.call( this, source );
 
 		this.color.copy( source.color );
-		
+<<<<<<< HEAD
+
+=======
+
+>>>>>>> gh-pages
 		this.linewidth = source.linewidth;
 
 		this.scale = source.scale;
@@ -17293,7 +17328,11 @@
 	THREE.MeshBasicMaterial.prototype.constructor = THREE.MeshBasicMaterial;
 
 	THREE.MeshBasicMaterial.prototype.copy = function ( source ) {
-		
+<<<<<<< HEAD
+
+=======
+
+>>>>>>> gh-pages
 		THREE.Material.prototype.copy.call( this, source );
 
 		this.color.copy( source.color );
@@ -17325,7 +17364,11 @@
 
 		this.skinning = source.skinning;
 		this.morphTargets = source.morphTargets;
-		
+<<<<<<< HEAD
+
+=======
+
+>>>>>>> gh-pages
 		return this;
 
 	};
@@ -18405,9 +18448,15 @@
 	THREE.CubeTexture.prototype.copy = function ( source ) {
 
 		THREE.Texture.prototype.copy.call( this, source );
-		
+<<<<<<< HEAD
+
 		this.images = source.images;
-		
+
+=======
+
+		this.images = source.images;
+
+>>>>>>> gh-pages
 		return this;
 
 	};
@@ -18453,7 +18502,11 @@
 
 		this.magFilter = magFilter !== undefined ? magFilter : THREE.NearestFilter;
 		this.minFilter = minFilter !== undefined ? minFilter : THREE.NearestFilter;
-		
+<<<<<<< HEAD
+
+=======
+
+>>>>>>> gh-pages
 		this.flipY = false;
 		this.generateMipmaps  = false;
 
@@ -19220,11 +19273,19 @@
 	THREE.Bone.prototype.constructor = THREE.Bone;
 
 	THREE.Bone.prototype.copy = function ( source ) {
-		
+<<<<<<< HEAD
+
 		THREE.Object3D.prototype.copy.call( this, source );
-		
+
 		this.skin = source.skin;
-		
+
+=======
+
+		THREE.Object3D.prototype.copy.call( this, source );
+
+		this.skin = source.skin;
+
+>>>>>>> gh-pages
 		return this;
 
 	};
@@ -19261,7 +19322,11 @@
 			//       32x32 pixel texture max  256 bones * 4 pixels = (32 * 32)
 			//       64x64 pixel texture max 1024 bones * 4 pixels = (64 * 64)
 
-			
+<<<<<<< HEAD
+
+=======
+
+>>>>>>> gh-pages
 			var size = Math.sqrt( this.bones.length * 4 ); // 4 pixels needed for 1 matrix
 			size = THREE.Math.nextPowerOfTwo( Math.ceil( size ) );
 			size = Math.max( size, 4 );
@@ -19487,7 +19552,11 @@
 		if ( bindMatrix === undefined ) {
 
 			this.updateMatrixWorld( true );
-			
+<<<<<<< HEAD
+
+=======
+
+>>>>>>> gh-pages
 			this.skeleton.calculateInverses();
 
 			bindMatrix = this.matrixWorld;
@@ -31090,7 +31159,11 @@
 
 		var b3 = THREE.ShapeUtils.b3;
 
-		return new THREE.Vector2( 
+<<<<<<< HEAD
+		return new THREE.Vector2(
+=======
+		return new THREE.Vector2(
+>>>>>>> gh-pages
 			b3( t, this.v0.x, this.v1.x, this.v2.x, this.v3.x ),
 			b3( t, this.v0.y, this.v1.y, this.v2.y, this.v3.y )
 		);
@@ -31101,7 +31174,11 @@
 
 		var tangentCubicBezier = THREE.CurveUtils.tangentCubicBezier;
 
-		return new THREE.Vector2( 
+<<<<<<< HEAD
+		return new THREE.Vector2(
+=======
+		return new THREE.Vector2(
+>>>>>>> gh-pages
 			tangentCubicBezier( t, this.v0.x, this.v1.x, this.v2.x, this.v3.x ),
 			tangentCubicBezier( t, this.v0.y, this.v1.y, this.v2.y, this.v3.y )
 		).normalize();
@@ -31163,7 +31240,11 @@
 		this.aEndAngle = aEndAngle;
 
 		this.aClockwise = aClockwise;
-		
+<<<<<<< HEAD
+
+=======
+
+>>>>>>> gh-pages
 		this.aRotation = aRotation || 0;
 
 	};
@@ -31189,7 +31270,11 @@
 			angle = this.aStartAngle + t * deltaAngle;
 
 		}
-		
+<<<<<<< HEAD
+
+=======
+
+>>>>>>> gh-pages
 		var x = this.aX + this.xRadius * Math.cos( angle );
 		var y = this.aY + this.yRadius * Math.sin( angle );
 
@@ -31272,7 +31357,11 @@
 
 		function ( t ) {
 
-			var b2 = THREE.ShapeUtils.b2;		
+<<<<<<< HEAD
+			var b2 = THREE.ShapeUtils.b2;
+=======
+			var b2 = THREE.ShapeUtils.b2;
+>>>>>>> gh-pages
 
 			return new THREE.Vector3(
 				b2( t, this.v0.x, this.v1.x, this.v2.x ),
@@ -32986,7 +33075,11 @@
 	 * @author bhouston / http://clara.io
 	 */
 
-	// points - to create a closed torus, one must use a set of points 
+<<<<<<< HEAD
+	// points - to create a closed torus, one must use a set of points
+=======
+	// points - to create a closed torus, one must use a set of points
+>>>>>>> gh-pages
 	//    like so: [ a, b, c, d, a ], see first is the same as last.
 	// segments - the number of circumference segments to create
 	// phiStart - the starting radian
@@ -34865,7 +34958,11 @@
 			if ( headWidth === undefined ) headWidth = 0.2 * headLength;
 
 			this.position.copy( origin );
-			
+<<<<<<< HEAD
+
+=======
+
+>>>>>>> gh-pages
 			if ( headLength < length ) {
 				this.line = new THREE.Line( lineGeometry, new THREE.LineBasicMaterial( { color: color } ) );
 				this.line.matrixAutoUpdate = false;
@@ -36506,5 +36603,193 @@
 	module.exports = THREEx.KeyboardState
 
 
+<<<<<<< HEAD
 /***/ }
 /******/ ]);
+=======
+/***/ },
+/* 3 */
+/***/ function(module, exports) {
+
+	var THREEx	= THREEx	|| {}
+
+	THREEx.SpaceShips		= {}
+
+	THREEx.SpaceShips.baseUrl	= '../'
+
+	THREEx.SpaceShips.loadSpaceFighter01	= function(onLoad){
+		var loader	= new THREE.OBJMTLLoader();
+		var baseUrl	= THREEx.SpaceShips.baseUrl
+		var objUrl	= baseUrl + 'models/SpaceFighter01/SpaceFighter01.obj';
+		var mtlUrl	= baseUrl + 'models/SpaceFighter01/SpaceFighter01.mtl';
+		loader.load(objUrl, mtlUrl, function( object3d ){
+			object3d.scale.multiplyScalar(1/300)
+			// change emissive color of all object3d material - they are too dark
+			object3d.traverse(function(object3d){
+				if( object3d.material ){
+					object3d.material.emissive.set('white')
+				}
+			})
+			// notify the callback
+			onLoad	&& onLoad(object3d)
+		});
+	}
+
+	THREEx.SpaceShips.loadSpaceFighter02	= function(onLoad){
+		var loader	= new THREE.OBJMTLLoader();
+		var baseUrl	= THREEx.SpaceShips.baseUrl
+		var objUrl	= baseUrl + 'models/SpaceFighter02/SpaceFighter02.obj';
+		var mtlUrl	= baseUrl + 'models/SpaceFighter02/SpaceFighter02.mtl';
+		loader.load(objUrl, mtlUrl, function( object3d ){
+			object3d.scale.multiplyScalar(1/200)
+			// change emissive color of all object3d material - they are too dark
+			object3d.traverse(function(object3d){
+				if( object3d.material ){
+					object3d.material.emissive.set('white')
+				}
+			})
+			// notify the callback
+			onLoad	&& onLoad(object3d)
+		});
+	}
+
+	THREEx.SpaceShips.loadSpaceFighter03	= function(onLoad){
+		var loader	= new THREE.OBJMTLLoader();
+		var baseUrl	= THREEx.SpaceShips.baseUrl
+		var objUrl	= baseUrl + 'models/SpaceFighter03/SpaceFighter03.obj';
+		var mtlUrl	= baseUrl + 'models/SpaceFighter03/SpaceFighter03.mtl';
+		loader.load(objUrl, mtlUrl, function( object3d ){
+			object3d.scale.multiplyScalar(1/10)
+			// change emissive color of all object3d material - they are too dark
+			object3d.traverse(function(object3d){
+				if( object3d.material ){
+					object3d.material.emissive.set('white')
+				}
+			})
+			// notify the callback
+			onLoad	&& onLoad(object3d)
+		});
+	}
+
+	THREEx.SpaceShips.loadShuttle01	= function(onLoad){
+		var loader	= new THREE.OBJMTLLoader();
+		var baseUrl	= THREEx.SpaceShips.baseUrl
+		var objUrl	= baseUrl + 'models/Shuttle01/Shuttle01.obj';
+		var mtlUrl	= baseUrl + 'models/Shuttle01/Shuttle01.mtl';
+		loader.load(objUrl, mtlUrl, function( object3d ){
+			object3d.scale.multiplyScalar(1/400)
+			// change emissive color of all object3d material - they are too dark
+			object3d.traverse(function(object3d){
+				if( object3d.material ){
+					object3d.material.emissive.set('white')
+				}
+			})
+			// notify the callback
+			onLoad	&& onLoad(object3d)
+		});
+	}
+
+	THREEx.SpaceShips.loadShuttle02	= function(onLoad){
+		var loader	= new THREE.OBJMTLLoader();
+		var baseUrl	= THREEx.SpaceShips.baseUrl
+		var objUrl	= baseUrl + 'models/Shuttle02/Shuttle02.obj';
+		var mtlUrl	= baseUrl + 'models/Shuttle02/Shuttle02.mtl';
+		loader.load(objUrl, mtlUrl, function( object3d ){
+			object3d.scale.multiplyScalar(1/400)
+			// change emissive color of all object3d material - they are too dark
+			object3d.traverse(function(object3d){
+				if( object3d.material ){
+					object3d.material.emissive.set('white')
+				}
+			})
+			// notify the callback
+			onLoad	&& onLoad(object3d)
+		});
+	}
+
+
+	//////////////////////////////////////////////////////////////////////////////////
+	//		comment								//
+	//////////////////////////////////////////////////////////////////////////////////
+
+	THREEx.SpaceShips.Shoot	= function(){
+		// your code goes here
+		var canvas	= generateShootCanvas();
+		var texture	= new THREE.Texture( canvas );
+		texture.needsUpdate = true;
+
+		// do the material
+		var material	= new THREE.MeshBasicMaterial({
+			color		: 0xffaacc,
+			map		: texture,
+			side		: THREE.DoubleSide,
+			blending	: THREE.AdditiveBlending,
+			depthWrite	: false,
+			transparent	: true
+		})
+
+		var container	= new THREE.Object3D
+		container.rotateY(Math.PI/2)
+		container.scale.multiplyScalar(1/2)
+		var nPlanes	= 4;
+		for(var i = 0; i < nPlanes; i++){
+			var geometry	= new THREE.PlaneGeometry(1,1)
+			var mesh	= new THREE.Mesh(geometry, material)
+			mesh.material	= material
+			mesh.rotateX(i*Math.PI/nPlanes)
+			container.add(mesh)
+		}
+
+		return container
+
+		function generateShootCanvas(){
+			// init canvas
+			var canvas	= document.createElement( 'canvas' );
+			var context	= canvas.getContext( '2d' );
+			canvas.width	= 16;
+			canvas.height	= 64;
+			// set gradient
+			var gradient	= context.createRadialGradient(
+				canvas.width/2, canvas.height /2, 0,
+				canvas.width/2, canvas.height /2, canvas.width /2
+			);
+			gradient.addColorStop( 0  , 'rgba(255,255,255,1)' );
+			gradient.addColorStop( 0.5, 'rgba(192,192,192,1)' );
+			gradient.addColorStop( 0.8, 'rgba(128,128,128,0.7)' );
+			gradient.addColorStop( 1  , 'rgba(0,0,0,0)' );
+
+			// fill the rectangle
+			context.fillStyle	= gradient;
+			context.fillRect(0,0, canvas.width, canvas.height);
+			// return the just built canvas
+			return canvas;
+		};
+	}
+
+	/**
+	 * create a detonation effect.
+	 */
+	THREEx.SpaceShips.Detonation	= function(){
+		var baseUrl	= THREEx.SpaceShips.baseUrl
+		var url		= baseUrl + 'images/lensflare0_alpha.png';
+		var texture	= THREE.ImageUtils.loadTexture(url);
+		// do the material
+		var geometry	= new THREE.PlaneGeometry(1,1)
+		var material	= new THREE.MeshBasicMaterial({
+			color		: 0x00ffff,
+			map		: texture,
+			side		: THREE.DoubleSide,
+			blending	: THREE.AdditiveBlending,
+			opacity		: 2,
+			depthWrite	: false,
+			transparent	: true
+		})
+		var mesh	= new THREE.Mesh(geometry, material)
+		mesh.scale.multiplyScalar(0.75)
+		return mesh;
+	}
+
+
+/***/ }
+/******/ ]);
+>>>>>>> gh-pages
