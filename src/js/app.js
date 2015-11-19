@@ -78,6 +78,13 @@ var m = new THREE.Matrix4();
 var m1 = new THREE.Matrix4();
 var m2 = new THREE.Matrix4();
 var m3 = new THREE.Matrix4();
+var shipThrust = false;
+keyboard.domElement.addEventListener('keydown', function(event){
+  if (event.repeat) {return;}
+  if ( keyboard.eventMatches(event, 'space') ){
+    shipThrust = !shipThrust;
+  }
+});
 
 var render = function () {
   requestAnimationFrame( render );
@@ -93,26 +100,27 @@ var render = function () {
     pitch -= 1 * delta;
   }
   m1.set(
-    Math.cos(roll), Math.sin(roll), 0, 0,
-    -Math.sin(roll), Math.cos(roll), 0, 0,
+    Math.cos( roll ), Math.sin( roll ), 0, 0,
+    -Math.sin( roll ), Math.cos( roll ), 0, 0,
     0, 0, 1, 0,
     0, 0, 0, 0
   );
   m2.set(
-    Math.cos(yaw), 0, -Math.sin(yaw), 0,
+    Math.cos( yaw ), 0, -Math.sin( yaw ), 0,
     0, 1, 0, 0,
-    Math.sin(yaw), 0, Math.cos(yaw), 0,
+    Math.sin( yaw ), 0, Math.cos( yaw ), 0,
     0, 0, 0, 0
   );
   m3.set(
     1, 0, 0, 0,
-    0, Math.cos(pitch), Math.sin(pitch), 0,
-    0, -Math.sin(pitch), Math.cos(pitch), 0,
+    0, Math.cos( pitch ), Math.sin( pitch ), 0,
+    0, -Math.sin( pitch ), Math.cos( pitch ), 0,
     0, 0, 0, 0
   );
   m.multiplyMatrices( m1, m2 );
   m.multiply( m3 );
   ship.quaternion.setFromRotationMatrix(m);
+  if (shipThrust) {ship.translateZ( -0.2 )};
 
   renderer.render( scene, camera );
 
