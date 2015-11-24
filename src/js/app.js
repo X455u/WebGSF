@@ -70,14 +70,7 @@ mapReady.position.x = -10;
 mapReady.position.y = -10;
 mapReady.position.z = -10;
 
-// Ship steering
-var yaw = 0;
-var pitch = 0;
-var roll = 0;
-var m = new THREE.Matrix4();
-var m1 = new THREE.Matrix4();
-var m2 = new THREE.Matrix4();
-var m3 = new THREE.Matrix4();
+// Ship thrust
 var shipThrust = false;
 keyboard.domElement.addEventListener('keydown', function(event){
   if (event.repeat) {return;}
@@ -85,42 +78,24 @@ keyboard.domElement.addEventListener('keydown', function(event){
     shipThrust = !shipThrust;
   }
 });
+var vector = new THREE.Vector3();
 
 var render = function () {
   requestAnimationFrame( render );
-  var delta = 0.2;
+  var delta = 0.1;
+
+  // Ship steering
   if( keyboard.pressed('left') ){
-    roll -= 1 * delta;
+    ship.rotateOnAxis(new THREE.Vector3( 0, 0, 1 ), 0.2);
   }else if( keyboard.pressed('right') ){
-    roll += 1 * delta;
+    ship.rotateOnAxis(new THREE.Vector3( 0, 0, 1 ), -0.2);
   }
   if( keyboard.pressed('down') ){
-    pitch += 1 * delta;
+    ship.rotateOnAxis(new THREE.Vector3( 1, 0, 0 ), 0.2);
   }else if( keyboard.pressed('up') ){
-    pitch -= 1 * delta;
+    ship.rotateOnAxis(new THREE.Vector3( 1, 0, 0 ), -0.2);
   }
-  m1.set(
-    Math.cos( roll ), Math.sin( roll ), 0, 0,
-    -Math.sin( roll ), Math.cos( roll ), 0, 0,
-    0, 0, 1, 0,
-    0, 0, 0, 0
-  );
-  m2.set(
-    Math.cos( yaw ), 0, -Math.sin( yaw ), 0,
-    0, 1, 0, 0,
-    Math.sin( yaw ), 0, Math.cos( yaw ), 0,
-    0, 0, 0, 0
-  );
-  m3.set(
-    1, 0, 0, 0,
-    0, Math.cos( pitch ), Math.sin( pitch ), 0,
-    0, -Math.sin( pitch ), Math.cos( pitch ), 0,
-    0, 0, 0, 0
-  );
-  m.multiplyMatrices( m1, m2 );
-  m.multiply( m3 );
-  ship.quaternion.setFromRotationMatrix(m);
-  if (shipThrust) {ship.translateZ( -0.2 )};
+  if (shipThrust) {ship.translateZ( -2 * delta )};
 
   renderer.render( scene, camera );
 
