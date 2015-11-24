@@ -51,7 +51,7 @@
 
 	var scene = new THREE.Scene();
 	var aspect = window.innerWidth / window.innerHeight;
-	var camera = new THREE.PerspectiveCamera(75, aspect, 0.1, 1000);
+	var camera = new THREE.PerspectiveCamera(75, aspect, 0.1, 50);
 	var renderer = new THREE.WebGLRenderer();
 	renderer.setSize(window.innerWidth, window.innerHeight);
 	document.body.appendChild(renderer.domElement);
@@ -86,7 +86,7 @@
 	document.body.appendChild(text);
 
 	// Terrain testing
-	var mapX = 25;
+	var mapX = 200;
 	var mapY = mapX; // Does not yet work with different x y dimensions
 	var heightMap = new Array(mapX);
 	for (i = 0; i < mapX; i++) {
@@ -96,7 +96,7 @@
 
 	for (x = 0; x < mapX; x++) {
 		for (y = 0; y < mapY; y++) {
-			heightMap[x][y] = Math.floor((Math.random() * 5));
+			heightMap[x][y] = Math.floor((Math.random() * 8));
 			map.vertices.push( new THREE.Vector3( x, y, heightMap[x][y] ) );
 		}
 	}
@@ -116,14 +116,7 @@
 	mapReady.position.y = -10;
 	mapReady.position.z = -10;
 
-	// Ship steering
-	var yaw = 0;
-	var pitch = 0;
-	var roll = 0;
-	var m = new THREE.Matrix4();
-	var m1 = new THREE.Matrix4();
-	var m2 = new THREE.Matrix4();
-	var m3 = new THREE.Matrix4();
+	// Ship thrust
 	var shipThrust = false;
 	keyboard.domElement.addEventListener('keydown', function(event){
 	  if (event.repeat) {return;}
@@ -131,42 +124,32 @@
 	    shipThrust = !shipThrust;
 	  }
 	});
+	var vector = new THREE.Vector3();
 
 	var render = function () {
 	  requestAnimationFrame( render );
-	  var delta = 0.2;
+	  var delta = 0.1;
+
+	  // Ship steering
 	  if( keyboard.pressed('left') ){
-	    roll -= 1 * delta;
+	    ship.rotateOnAxis(new THREE.Vector3( 0, 0, 1 ), delta);
 	  }else if( keyboard.pressed('right') ){
-	    roll += 1 * delta;
+	    ship.rotateOnAxis(new THREE.Vector3( 0, 0, 1 ), -delta);
 	  }
 	  if( keyboard.pressed('down') ){
-	    pitch += 1 * delta;
+	    ship.rotateOnAxis(new THREE.Vector3( 1, 0, 0 ), delta);
 	  }else if( keyboard.pressed('up') ){
-	    pitch -= 1 * delta;
+	    ship.rotateOnAxis(new THREE.Vector3( 1, 0, 0 ), -delta);
 	  }
-	  m1.set(
-	    Math.cos( roll ), Math.sin( roll ), 0, 0,
-	    -Math.sin( roll ), Math.cos( roll ), 0, 0,
-	    0, 0, 1, 0,
-	    0, 0, 0, 0
-	  );
-	  m2.set(
-	    Math.cos( yaw ), 0, -Math.sin( yaw ), 0,
-	    0, 1, 0, 0,
-	    Math.sin( yaw ), 0, Math.cos( yaw ), 0,
-	    0, 0, 0, 0
-	  );
-	  m3.set(
-	    1, 0, 0, 0,
-	    0, Math.cos( pitch ), Math.sin( pitch ), 0,
-	    0, -Math.sin( pitch ), Math.cos( pitch ), 0,
-	    0, 0, 0, 0
-	  );
-	  m.multiplyMatrices( m1, m2 );
-	  m.multiply( m3 );
-	  ship.quaternion.setFromRotationMatrix(m);
-	  if (shipThrust) {ship.translateZ( -0.1 )};
+	  if (shipThrust) {ship.translateZ( -2 * delta )};
+
+	  // Camera follow
+	  var fakeCam = new THREE.Object3D();
+	  fakeCam.position.set(ship.position.x, ship.position.y, ship.position.z);
+	  fakeCam.rotation.set(ship.rotation.x, ship.rotation.y, ship.rotation.z);
+	  fakeCam.translateZ(4);
+	  camera.position.set(fakeCam.position.x, fakeCam.position.y, fakeCam.position.z);
+	  camera.rotation.set(ship.rotation.x, ship.rotation.y, ship.rotation.z);
 
 	  renderer.render( scene, camera );
 
