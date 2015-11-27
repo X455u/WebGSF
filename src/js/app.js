@@ -23,9 +23,15 @@ camera.position.z = 5;
 // prepare loader and load the model
 var loader = new THREE.ObjectLoader();
 var ship;
+var fakeShip = new THREE.Object3D();
 loader.load( './media/star-wars-vader-tie-fighter.json', function ( object ) {
   ship = object;
   scene.add( ship );
+  // Steer smoothing helpers
+  fakeShip.rotation.set(ship.rotation.x, ship.rotation.y, ship.rotation.z);
+  ship.velocity = 0;
+  ship.maxVelocity = 4;
+  ship.acceleration = 2;
 } );
 
 // Format debugging text
@@ -78,27 +84,39 @@ keyboard.domElement.addEventListener('keydown', function(event){
     shipThrust = !shipThrust;
   }
 });
-var vector = new THREE.Vector3();
 
+// Camera follow helper
+var fakeCam = new THREE.Object3D();
+
+// Game Loop
 var render = function () {
   requestAnimationFrame( render );
   var delta = 0.1;
 
   // Ship steering
   if( keyboard.pressed('left') ){
-    ship.rotateOnAxis(new THREE.Vector3( 0, 0, 1 ), delta);
+    fakeShip.rotateOnAxis(new THREE.Vector3( 0, 0, 1 ), delta);
   }else if( keyboard.pressed('right') ){
-    ship.rotateOnAxis(new THREE.Vector3( 0, 0, 1 ), -delta);
+    fakeShip.rotateOnAxis(new THREE.Vector3( 0, 0, 1 ), -delta);
   }
   if( keyboard.pressed('down') ){
-    ship.rotateOnAxis(new THREE.Vector3( 1, 0, 0 ), delta);
+    fakeShip.rotateOnAxis(new THREE.Vector3( 1, 0, 0 ), delta);
   }else if( keyboard.pressed('up') ){
-    ship.rotateOnAxis(new THREE.Vector3( 1, 0, 0 ), -delta);
+    fakeShip.rotateOnAxis(new THREE.Vector3( 1, 0, 0 ), -delta);
   }
-  if (shipThrust) {ship.translateZ( -2 * delta )};
+  ship.quaternion.slerp( fakeShip.quaternion, 0.1 );
+
+  // Ship move
+  if (shipThrust) {
+    ship.velocity = Math.min( ship.maxVelocity,
+      ship.velocity + ship.acceleration * delta );
+  } else {
+    ship.velocity = Math.max( 0,
+      ship.velocity - ship.acceleration * delta )
+  };
+  ship.translateZ( -ship.velocity * delta );
 
   // Camera follow
-  var fakeCam = new THREE.Object3D();
   fakeCam.position.set(ship.position.x, ship.position.y, ship.position.z);
   fakeCam.rotation.set(ship.rotation.x, ship.rotation.y, ship.rotation.z);
   fakeCam.translateZ(4);
