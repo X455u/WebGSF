@@ -29,6 +29,9 @@ loader.load( './media/star-wars-vader-tie-fighter.json', function ( object ) {
   scene.add( ship );
   // Steer smoothing helpers
   fakeShip.rotation.set(ship.rotation.x, ship.rotation.y, ship.rotation.z);
+  ship.velocity = 0;
+  ship.maxVelocity = 4;
+  ship.acceleration = 2;
 } );
 
 // Format debugging text
@@ -82,6 +85,9 @@ keyboard.domElement.addEventListener('keydown', function(event){
   }
 });
 
+// Camera follow helper
+var fakeCam = new THREE.Object3D();
+
 // Game Loop
 var render = function () {
   requestAnimationFrame( render );
@@ -101,10 +107,16 @@ var render = function () {
   ship.quaternion.slerp( fakeShip.quaternion, 0.1 );
 
   // Ship move
-  if (shipThrust) {ship.translateZ( -2 * delta )};
+  if (shipThrust) {
+    ship.velocity = Math.min( ship.maxVelocity,
+      ship.velocity + ship.acceleration * delta );
+  } else {
+    ship.velocity = Math.max( 0,
+      ship.velocity - ship.acceleration * delta )
+  };
+  ship.translateZ( -ship.velocity * delta );
 
   // Camera follow
-  var fakeCam = new THREE.Object3D();
   fakeCam.position.set(ship.position.x, ship.position.y, ship.position.z);
   fakeCam.rotation.set(ship.rotation.x, ship.rotation.y, ship.rotation.z);
   fakeCam.translateZ(4);
