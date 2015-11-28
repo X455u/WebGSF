@@ -166,8 +166,8 @@
 	  fakeCam.position.set(ship.position.x, ship.position.y, ship.position.z);
 	  fakeCam.rotation.set(ship.rotation.x, ship.rotation.y, ship.rotation.z);
 	  fakeCam.translateZ(4);
-	  camera.position.set(fakeCam.position.x, fakeCam.position.y, fakeCam.position.z);
-	  camera.rotation.set(ship.rotation.x, ship.rotation.y, ship.rotation.z);
+	  camera.position.lerp(fakeCam.position, 0.1);
+	  camera.quaternion.slerp(ship.quaternion, 0.1);
 
 	  renderer.render( scene, camera );
 
