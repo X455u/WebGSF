@@ -1,18 +1,16 @@
-var THREE = require('three');
-var THREEx = {
-  KeyboardState: require('./threex.keyboardstate')
-};
+import THREE from 'three';
+import KeyboardState from './threex.keyboardstate';
 
-var scene = new THREE.Scene();
-var aspect = window.innerWidth / window.innerHeight;
-var camera = new THREE.PerspectiveCamera(75, aspect, 0.1, 50);
-var renderer = new THREE.WebGLRenderer();
+let scene = new THREE.Scene();
+let aspect = window.innerWidth / window.innerHeight;
+let camera = new THREE.PerspectiveCamera(75, aspect, 0.1, 50);
+let renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
-var ambientLight = new THREE.AmbientLight(0x222222, 0.1);
-var light = new THREE.DirectionalLight(0xffffff, 1);
-var keyboard = new THREEx.KeyboardState(renderer.domElement);
+let ambientLight = new THREE.AmbientLight(0x222222, 0.1);
+let light = new THREE.DirectionalLight(0xffffff, 1);
+let keyboard = new KeyboardState(renderer.domElement);
 renderer.domElement.setAttribute('tabIndex', '0');
 renderer.domElement.focus();
 
@@ -21,9 +19,9 @@ scene.add(light);
 camera.position.z = 5;
 
 // prepare loader and load the model
-var loader = new THREE.ObjectLoader();
-var ship;
-var fakeShip = new THREE.Object3D();
+let loader = new THREE.ObjectLoader();
+let ship;
+let fakeShip = new THREE.Object3D();
 loader.load('./media/star-wars-vader-tie-fighter.json', function(object) {
   ship = object;
   scene.add(ship);
@@ -35,7 +33,7 @@ loader.load('./media/star-wars-vader-tie-fighter.json', function(object) {
 });
 
 // Format debugging text
-var text = document.createElement('div');
+let text = document.createElement('div');
 text.style.position = 'absolute';
 text.style.width = 100;
 text.style.height = 100;
@@ -46,30 +44,30 @@ text.innerHTML = 'Loading...';
 document.body.appendChild(text);
 
 // Terrain testing
-var mapX = 200;
-var mapY = mapX; // Does not yet work with different x y dimensions
-var heightMap = new Array(mapX);
-for (var i = 0; i < mapX; i++) {
+let mapX = 200;
+let mapY = mapX; // Does not yet work with different x y dimensions
+let heightMap = new Array(mapX);
+for (let i = 0; i < mapX; i++) {
   heightMap[i] = new Array(mapY);
 }
-var map = new THREE.Geometry();
+let map = new THREE.Geometry();
 
-for (var x = 0; x < mapX; x++) {
-  for (var y = 0; y < mapY; y++) {
+for (let x = 0; x < mapX; x++) {
+  for (let y = 0; y < mapY; y++) {
     heightMap[x][y] = Math.floor((Math.random() * 8));
     map.vertices.push(new THREE.Vector3(x, y, heightMap[x][y]));
   }
 }
 
-for (x = 0; x < mapX - 1; x++) {
-  for (y = 0; y < mapY - 1; y++) {
+for (let x = 0; x < mapX - 1; x++) {
+  for (let y = 0; y < mapY - 1; y++) {
     map.faces.push(new THREE.Face3(x * mapY + y + 1, x * mapY + y, (x + 1) * mapX + y));
     map.faces.push(new THREE.Face3((x + 1) * mapY + y + 1, x * mapY + y + 1, (x + 1) * mapX + y));
   }
 }
 map.computeFaceNormals();
 
-var mapReady = new THREE.Mesh(map, new THREE.MeshNormalMaterial());
+let mapReady = new THREE.Mesh(map, new THREE.MeshNormalMaterial());
 scene.add(mapReady);
 mapReady.rotation.x = -0.8;
 mapReady.position.x = -10;
@@ -77,7 +75,7 @@ mapReady.position.y = -10;
 mapReady.position.z = -10;
 
 // Ship thrust
-var shipThrust = false;
+let shipThrust = false;
 keyboard.domElement.addEventListener('keydown', function(event) {
   if (event.repeat) {return;}
   if (keyboard.eventMatches(event, 'space')) {
@@ -86,12 +84,12 @@ keyboard.domElement.addEventListener('keydown', function(event) {
 });
 
 // Camera follow helper
-var fakeCam = new THREE.Object3D();
+let fakeCam = new THREE.Object3D();
 
 // Game Loop
-var render = function() {
+let render = function() {
   requestAnimationFrame(render);
-  var delta = 0.1;
+  let delta = 0.1;
 
   // Ship steering
   if (keyboard.pressed('left')) {
