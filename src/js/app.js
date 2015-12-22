@@ -1,5 +1,5 @@
 import THREE from 'three';
-import KeyboardState from './threex.keyboardstate';
+import Ship from './Ship';
 
 let scene = new THREE.Scene();
 let aspect = window.innerWidth / window.innerHeight;
@@ -10,7 +10,6 @@ document.body.appendChild(renderer.domElement);
 
 let ambientLight = new THREE.AmbientLight(0x222222, 0.1);
 let light = new THREE.DirectionalLight(0xffffff, 1);
-let keyboard = new KeyboardState(renderer.domElement);
 renderer.domElement.setAttribute('tabIndex', '0');
 renderer.domElement.focus();
 
@@ -21,15 +20,9 @@ camera.position.z = 5;
 // prepare loader and load the model
 let loader = new THREE.ObjectLoader();
 let ship;
-let fakeShip = new THREE.Object3D();
 loader.load('./media/star-wars-vader-tie-fighter.json', function(object) {
-  ship = object;
+  ship = new Ship(object);
   scene.add(ship);
-  // Steer smoothing helpers
-  fakeShip.rotation.set(ship.rotation.x, ship.rotation.y, ship.rotation.z);
-  ship.velocity = 0;
-  ship.maxVelocity = 4;
-  ship.acceleration = 2;
 });
 
 // Format debugging text
@@ -74,14 +67,6 @@ mapReady.position.x = -10;
 mapReady.position.y = -10;
 mapReady.position.z = -10;
 
-// Ship thrust
-let shipThrust = false;
-keyboard.domElement.addEventListener('keydown', function(event) {
-  if (event.repeat) {return;}
-  if (keyboard.eventMatches(event, 'space')) {
-    shipThrust = !shipThrust;
-  }
-});
 
 // Camera follow helper
 let fakeCam = new THREE.Object3D();
@@ -91,27 +76,7 @@ let render = function() {
   requestAnimationFrame(render);
   let delta = 0.1;
 
-  // Ship steering
-  if (keyboard.pressed('left')) {
-    fakeShip.rotateOnAxis(new THREE.Vector3(0, 0, 1), delta);
-  } else if (keyboard.pressed('right')) {
-    fakeShip.rotateOnAxis(new THREE.Vector3(0, 0, 1), -delta);
-  }
-  if (keyboard.pressed('down')) {
-    fakeShip.rotateOnAxis(new THREE.Vector3(1, 0, 0), delta);
-  } else if (keyboard.pressed('up')) {
-    fakeShip.rotateOnAxis(new THREE.Vector3(1, 0, 0), -delta);
-  }
-  ship.quaternion.slerp(fakeShip.quaternion, 0.1);
-
-  // Ship move
-  if (shipThrust) {
-    ship.velocity = Math.min(ship.maxVelocity,
-      ship.velocity + ship.acceleration * delta);
-  } else {
-    ship.velocity = Math.max(0, ship.velocity - ship.acceleration * delta);
-  }
-  ship.translateZ(-ship.velocity * delta);
+  ship.update(delta);
 
   // Camera follow
   fakeCam.position.set(ship.position.x, ship.position.y, ship.position.z);
