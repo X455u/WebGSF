@@ -49,7 +49,7 @@ document.body.appendChild(text);
 var mapX = 200;
 var mapY = mapX; // Does not yet work with different x y dimensions
 var heightMap = new Array(mapX);
-for (i = 0; i < mapX; i++) {
+for (var i = 0; i < mapX; i++) {
 	heightMap[i] = new Array(mapY);
 }
 var map = new THREE.Geometry();
@@ -61,8 +61,8 @@ for (x = 0; x < mapX; x++) {
 	}
 }
 
-for (x = 0; x < mapX-1; x++) {
-	for (y = 0; y < mapY-1; y++) {
+for (var x = 0; x < mapX-1; x++) {
+	for (var y = 0; y < mapY-1; y++) {
 		map.faces.push( new THREE.Face3( x*mapY + y+1, x*mapY + y, (x+1)*mapX + y ));
 		map.faces.push( new THREE.Face3( (x+1)*mapY + y+1, x*mapY + y+1, (x+1)*mapX + y ));
 	}
