@@ -11,35 +11,26 @@ let camera = new THREE.PerspectiveCamera(75, aspect, 0.1, 50);
 let renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
+renderer.domElement.setAttribute('tabIndex', '0');
+renderer.domElement.focus();
 
 let ambientLight = new THREE.AmbientLight(0x222222, 0.1);
 let light = new THREE.DirectionalLight(0xffffff, 1);
 light.position.set(0.2, 0.2, 0.8);
-renderer.domElement.setAttribute('tabIndex', '0');
-renderer.domElement.focus();
-
 scene.add(ambientLight);
 scene.add(light);
-camera.position.z = 5;
+camera.position.z = CAMERA_DISTANCE;
 
 // prepare loader and load the model
 let loader = new THREE.ObjectLoader();
 let ship;
-loader.load('./media/star-wars-vader-tie-fighter.json', function(object) {
-  ship = new Ship(object);
-  scene.add(ship);
+let loadPromise = new Promise(done => {
+  loader.load('./media/star-wars-vader-tie-fighter.json', function(object) {
+    ship = new Ship(object);
+    scene.add(ship);
+    done();
+  });
 });
-
-// Format debugging text
-let text = document.createElement('div');
-text.style.position = 'absolute';
-text.style.width = 100;
-text.style.height = 100;
-text.style.color = 'white';
-text.style.top = 10 + 'px';
-text.style.left = 10 + 'px';
-text.innerHTML = 'Loading...';
-document.body.appendChild(text);
 
 // Terrain testing
 let map = new Terrain();
@@ -49,8 +40,14 @@ map.position.y = -10;
 map.position.z = -10;
 scene.add(map);
 
+// Format debugging text
+let text = document.createElement('div');
+text.className = 'debug';
+text.innerHTML = 'Loading...';
+document.body.appendChild(text);
+
 // Game Loop
-let render = function() {
+function render() {
   requestAnimationFrame(render);
   let delta = 0.1;
 
@@ -71,4 +68,4 @@ let render = function() {
     '<br/>Z: ' + ship.position.z;
 };
 
-render();
+loadPromise.then(render);
