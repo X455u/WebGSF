@@ -1,6 +1,8 @@
 import THREE from 'three';
 import Ship from './Ship';
 
+const CAMERA_DISTANCE = 4;
+
 let scene = new THREE.Scene();
 let aspect = window.innerWidth / window.innerHeight;
 let camera = new THREE.PerspectiveCamera(75, aspect, 0.1, 50);
@@ -67,10 +69,6 @@ mapReady.position.x = -10;
 mapReady.position.y = -10;
 mapReady.position.z = -10;
 
-
-// Camera follow helper
-let fakeCam = new THREE.Object3D();
-
 // Game Loop
 let render = function() {
   requestAnimationFrame(render);
@@ -79,11 +77,11 @@ let render = function() {
   ship.update(delta);
 
   // Camera follow
-  fakeCam.position.set(ship.position.x, ship.position.y, ship.position.z);
-  fakeCam.rotation.set(ship.rotation.x, ship.rotation.y, ship.rotation.z);
-  fakeCam.translateZ(4);
-  camera.position.lerp(fakeCam.position, 0.1);
-  camera.quaternion.slerp(ship.quaternion, 0.1);
+  let direction = new THREE.Vector3(0, 0, 1);
+  direction.applyQuaternion(ship.quaternion).setLength(CAMERA_DISTANCE);
+  let cameraTargetPosition = ship.position.clone().add(direction);
+  camera.position.lerp(cameraTargetPosition, delta);
+  camera.quaternion.slerp(ship.quaternion, delta);
 
   renderer.render(scene, camera);
 
