@@ -1,28 +1,25 @@
 import THREE from 'three';
+import _ from 'lodash';
+
+const WIDTH = 200;
+const HEIGHT = 200;
+const DEPTH = 3;
+const SIN_DEPTH = 8;
 
 class Terrain extends THREE.Mesh {
   constructor() {
-    let mapX = 200;
-    let mapY = mapX; // Does not yet work with different x y dimensions
-    let heightMap = new Array(mapX);
-    for (let i = 0; i < mapX; i++) {
-      heightMap[i] = new Array(mapY);
-    }
     let map = new THREE.Geometry();
+    let idx = (x, y) => x * HEIGHT + y;
 
-    for (let x = 0; x < mapX; x++) {
-      for (let y = 0; y < mapY; y++) {
-        heightMap[x][y] = Math.floor((Math.random() * 8));
-        map.vertices.push(new THREE.Vector3(x, y, heightMap[x][y]));
+    _.range(WIDTH).forEach(x => _.range(HEIGHT).forEach(y => {
+      let height = Math.sin(x / 6) * SIN_DEPTH + Math.sin(y / 6) * SIN_DEPTH + Math.random() * DEPTH;
+      map.vertices.push(new THREE.Vector3(x, y, height));
+      if (x > 0 && y > 0) {
+        map.faces.push(new THREE.Face3(idx(x, y - 1), idx(x, y), idx(x - 1, y)));
+        map.faces.push(new THREE.Face3(idx(x - 1, y - 1), idx(x, y - 1), idx(x - 1, y)));
       }
-    }
+    }));
 
-    for (let x = 0; x < mapX - 1; x++) {
-      for (let y = 0; y < mapY - 1; y++) {
-        map.faces.push(new THREE.Face3(x * mapY + y + 1, x * mapY + y, (x + 1) * mapX + y));
-        map.faces.push(new THREE.Face3((x + 1) * mapY + y + 1, x * mapY + y + 1, (x + 1) * mapX + y));
-      }
-    }
     map.computeFaceNormals();
 
     super(map, new THREE.MeshPhongMaterial({
