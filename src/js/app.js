@@ -1,5 +1,7 @@
 import THREE from 'three';
+
 import Ship from './Ship';
+import Terrain from './Terrain';
 
 const CAMERA_DISTANCE = 4;
 
@@ -12,6 +14,7 @@ document.body.appendChild(renderer.domElement);
 
 let ambientLight = new THREE.AmbientLight(0x222222, 0.1);
 let light = new THREE.DirectionalLight(0xffffff, 1);
+light.position.set(0.2, 0.2, 0.8);
 renderer.domElement.setAttribute('tabIndex', '0');
 renderer.domElement.focus();
 
@@ -39,35 +42,12 @@ text.innerHTML = 'Loading...';
 document.body.appendChild(text);
 
 // Terrain testing
-let mapX = 200;
-let mapY = mapX; // Does not yet work with different x y dimensions
-let heightMap = new Array(mapX);
-for (let i = 0; i < mapX; i++) {
-  heightMap[i] = new Array(mapY);
-}
-let map = new THREE.Geometry();
-
-for (let x = 0; x < mapX; x++) {
-  for (let y = 0; y < mapY; y++) {
-    heightMap[x][y] = Math.floor((Math.random() * 8));
-    map.vertices.push(new THREE.Vector3(x, y, heightMap[x][y]));
-  }
-}
-
-for (let x = 0; x < mapX - 1; x++) {
-  for (let y = 0; y < mapY - 1; y++) {
-    map.faces.push(new THREE.Face3(x * mapY + y + 1, x * mapY + y, (x + 1) * mapX + y));
-    map.faces.push(new THREE.Face3((x + 1) * mapY + y + 1, x * mapY + y + 1, (x + 1) * mapX + y));
-  }
-}
-map.computeFaceNormals();
-
-let mapReady = new THREE.Mesh(map, new THREE.MeshNormalMaterial());
-scene.add(mapReady);
-mapReady.rotation.x = -0.8;
-mapReady.position.x = -10;
-mapReady.position.y = -10;
-mapReady.position.z = -10;
+let map = new Terrain();
+map.rotation.x = -0.8;
+map.position.x = -10;
+map.position.y = -10;
+map.position.z = -10;
+scene.add(map);
 
 // Game Loop
 let render = function() {
