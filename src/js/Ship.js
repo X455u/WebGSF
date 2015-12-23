@@ -29,10 +29,10 @@ class Ship extends THREE.Object3D {
     this.turnParameters = {
       x: 0,
       y: 0
-    }
+    };
     this.motionControlled = false;
     if (isMobile()) {
-      this._setMobileEventListeners();
+      this.setMobileEventListeners();
     }
   }
 
@@ -46,11 +46,11 @@ class Ship extends THREE.Object3D {
       ).object().value();
       // Ship acceleration
       this.acceleration = ACCELERATION * (this.keyboard.pressed('space') ? 1 : -1);
-      }
+    }
     let turnQuaternion = new THREE.Quaternion();
-    turnQuaternion.setFromAxisAngle(Z_AXIS, delta * TURN_SPEED * this.turnParameters['z']);
+    turnQuaternion.setFromAxisAngle(Z_AXIS, delta * TURN_SPEED * this.turnParameters.z);
     this.targetQuaternion.multiply(turnQuaternion).normalize();
-    turnQuaternion.setFromAxisAngle(X_AXIS, delta * TURN_SPEED * this.turnParameters['x']);
+    turnQuaternion.setFromAxisAngle(X_AXIS, delta * TURN_SPEED * this.turnParameters.x);
     this.targetQuaternion.multiply(turnQuaternion).normalize();
 
     this.velocity = Math.max(0, Math.min(MAX_VELOCITY, this.velocity + this.acceleration * delta));
@@ -58,20 +58,20 @@ class Ship extends THREE.Object3D {
     this.translateZ(-this.velocity * delta);
   }
 
-  _setMobileEventListeners() {
+  setMobileEventListeners() {
     this.motionControlled = true;
     // Accelerometer
     window.ondevicemotion = (event) => {
       this.turnParameters = {
         x: event.accelerationIncludingGravity.z / 6,
-        z: -event.accelerationIncludingGravity.x / 6,
-      }
-    }
+        z: -event.accelerationIncludingGravity.x / 6
+      };
+    };
     // Touch events
-    document.body.addEventListener('touchstart', event => {
+    document.body.addEventListener('touchstart', () => {
       this.acceleration = ACCELERATION;
     }, false);
-    document.body.addEventListener('touchend', event => {
+    document.body.addEventListener('touchend', () => {
       this.acceleration = -ACCELERATION;
     }, false);
   }
