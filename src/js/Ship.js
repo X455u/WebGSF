@@ -6,6 +6,13 @@ const TURN_SPEED = 2 * Math.PI / 10;
 const MAX_VELOCITY = 4;
 const ACCELERATION = 0.5;
 
+const Z_AXIS = new THREE.Vector3(0, 0, 1);
+const X_AXIS = new THREE.Vector3(1, 0, 0);
+
+function isMobile() {
+  return window.DeviceMotionEvent !== undefined && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+}
+
 class Ship extends THREE.Object3D {
   constructor(ship) {
     super();
@@ -19,46 +26,54 @@ class Ship extends THREE.Object3D {
     this.keyboard = new KeyboardState();
     this.acceleration = 0;
     this.velocity = 0;
+    this.turnParameters = {
+      x: 0,
+      y: 0
+    }
     this.motionControlled = false;
-    if (window.DeviceMotionEvent !== undefined && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-      this.motionControlled = true;
-      // Accelerometer
-      let defaultDirection = new THREE.Vector3(0, 0, 1);
-      window.ondevicemotion = (event) => {
-        let directionArray = ['x', 'y', 'z'].map(x => event.accelerationIncludingGravity[x]);
-        let direction = new THREE.Vector3();
-        direction.fromArray(directionArray).normalize();
-        this.targetQuaternion.setFromUnitVectors(defaultDirection, direction);
-      }
-      // Touch events
-      document.body.addEventListener('touchstart', event => {
-        this.acceleration = ACCELERATION;
-      }, false);
-      document.body.addEventListener('touchend', event => {
-        this.acceleration = -ACCELERATION;
-      }, false);
+    if (isMobile()) {
+      this._setMobileEventListeners();
     }
   }
 
   update(delta) {
     if (!this.motionControlled) {
       // Ship steering
-      let axisArray = [['down', 'up'], [], ['left', 'right']].map(
-        keys => _(keys).map(
+      this.turnParameters = _({x: ['down', 'up'], z: ['left', 'right']}).map(
+        (keys, k) => [k, _(keys).map(
           (key, index) => (this.keyboard.pressed(key) ? 1 : 0) * (index === 0 ? 1 : -1)
-        ).sum()
-      );
-      let axis = new THREE.Vector3();
-      axis.fromArray(axisArray);
-      let turnDelta = new THREE.Quaternion();
-      turnDelta.setFromAxisAngle(axis, delta * TURN_SPEED);
-      this.targetQuaternion.multiply(turnDelta).normalize();
+        ).sum()]
+      ).object().value();
       // Ship acceleration
       this.acceleration = ACCELERATION * (this.keyboard.pressed('space') ? 1 : -1);
       }
+    let turnQuaternion = new THREE.Quaternion();
+    turnQuaternion.setFromAxisAngle(Z_AXIS, delta * TURN_SPEED * this.turnParameters['z']);
+    this.targetQuaternion.multiply(turnQuaternion).normalize();
+    turnQuaternion.setFromAxisAngle(X_AXIS, delta * TURN_SPEED * this.turnParameters['x']);
+    this.targetQuaternion.multiply(turnQuaternion).normalize();
+
     this.velocity = Math.max(0, Math.min(MAX_VELOCITY, this.velocity + this.acceleration * delta));
     this.quaternion.slerp(this.targetQuaternion, delta * 10);
     this.translateZ(-this.velocity * delta);
+  }
+
+  _setMobileEventListeners() {
+    this.motionControlled = true;
+    // Accelerometer
+    window.ondevicemotion = (event) => {
+      this.turnParameters = {
+        x: event.accelerationIncludingGravity.z / 6,
+        z: -event.accelerationIncludingGravity.x / 6,
+      }
+    }
+    // Touch events
+    document.body.addEventListener('touchstart', event => {
+      this.acceleration = ACCELERATION;
+    }, false);
+    document.body.addEventListener('touchend', event => {
+      this.acceleration = -ACCELERATION;
+    }, false);
   }
 }
 
