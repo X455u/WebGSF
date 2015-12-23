@@ -42824,9 +42824,9 @@
 	  value: true
 	});
 
-	var _assign = __webpack_require__(249);
+	var _keys = __webpack_require__(280);
 
-	var _assign2 = _interopRequireDefault(_assign);
+	var _keys2 = _interopRequireDefault(_keys);
 
 	var _getPrototypeOf = __webpack_require__(254);
 
@@ -42874,10 +42874,39 @@
 
 	    var _this = (0, _possibleConstructorReturn3.default)(this, (0, _getPrototypeOf2.default)(Ship).call(this));
 
-	    (0, _assign2.default)(_this, ship);
+	    var skip = ['position', 'rotation', 'quaternion', 'scale'];
+	    (0, _keys2.default)(ship).forEach(function (key) {
+	      if (ship.hasOwnProperty(key) && skip.indexOf(key) === -1) {
+	        _this[key] = ship[key];
+	      }
+	    });
 	    _this.targetQuaternion = _this.quaternion.clone();
 	    _this.keyboard = new _threex2.default();
+	    _this.acceleration = 0;
 	    _this.velocity = 0;
+	    _this.motionControlled = false;
+	    if (window.DeviceMotionEvent !== undefined && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+	      (function () {
+	        _this.motionControlled = true;
+	        // Accelerometer
+	        var defaultDirection = new _three2.default.Vector3(0, 0, 1);
+	        window.ondevicemotion = function (event) {
+	          var directionArray = ['x', 'y', 'z'].map(function (x) {
+	            return event.accelerationIncludingGravity[x];
+	          });
+	          var direction = new _three2.default.Vector3();
+	          direction.fromArray(directionArray).normalize();
+	          _this.targetQuaternion.setFromUnitVectors(defaultDirection, direction);
+	        };
+	        // Touch events
+	        document.body.addEventListener('touchstart', function (event) {
+	          _this.acceleration = ACCELERATION;
+	        }, false);
+	        document.body.addEventListener('touchend', function (event) {
+	          _this.acceleration = -ACCELERATION;
+	        }, false);
+	      })();
+	    }
 	    return _this;
 	  }
 
@@ -42886,25 +42915,23 @@
 	    value: function update(delta) {
 	      var _this2 = this;
 
-	      // Ship steering
-	      var axisArray = [['down', 'up'], [], ['left', 'right']].map(function (keys) {
-	        return (0, _lodash2.default)(keys).map(function (key, index) {
-	          return (_this2.keyboard.pressed(key) ? 1 : 0) * (index === 0 ? 1 : -1);
-	        }).sum();
-	      });
-	      var axis = new _three2.default.Vector3();
-	      axis.fromArray(axisArray);
-	      var turnDelta = new _three2.default.Quaternion();
-	      turnDelta.setFromAxisAngle(axis, delta * TURN_SPEED);
-	      this.targetQuaternion.multiply(turnDelta).normalize();
-	      this.quaternion.slerp(this.targetQuaternion, delta * 10);
-
-	      // Ship acceleration
-	      if (this.keyboard.pressed('space')) {
-	        this.velocity = Math.min(MAX_VELOCITY, this.velocity + ACCELERATION * delta);
-	      } else {
-	        this.velocity = Math.max(0, this.velocity - ACCELERATION * delta);
+	      if (!this.motionControlled) {
+	        // Ship steering
+	        var axisArray = [['down', 'up'], [], ['left', 'right']].map(function (keys) {
+	          return (0, _lodash2.default)(keys).map(function (key, index) {
+	            return (_this2.keyboard.pressed(key) ? 1 : 0) * (index === 0 ? 1 : -1);
+	          }).sum();
+	        });
+	        var axis = new _three2.default.Vector3();
+	        axis.fromArray(axisArray);
+	        var turnDelta = new _three2.default.Quaternion();
+	        turnDelta.setFromAxisAngle(axis, delta * TURN_SPEED);
+	        this.targetQuaternion.multiply(turnDelta).normalize();
+	        // Ship acceleration
+	        this.acceleration = ACCELERATION * (this.keyboard.pressed('space') ? 1 : -1);
 	      }
+	      this.velocity = Math.max(0, Math.min(MAX_VELOCITY, this.velocity + this.acceleration * delta));
+	      this.quaternion.slerp(this.targetQuaternion, delta * 10);
 	      this.translateZ(-this.velocity * delta);
 	    }
 	  }]);
@@ -42914,66 +42941,10 @@
 	exports.default = Ship;
 
 /***/ },
-/* 249 */
-/***/ function(module, exports, __webpack_require__) {
-
-	module.exports = { "default": __webpack_require__(250), __esModule: true };
-
-/***/ },
-/* 250 */
-/***/ function(module, exports, __webpack_require__) {
-
-	__webpack_require__(251);
-	module.exports = __webpack_require__(203).Object.assign;
-
-/***/ },
-/* 251 */
-/***/ function(module, exports, __webpack_require__) {
-
-	// 19.1.3.1 Object.assign(target, source)
-	var $export = __webpack_require__(201);
-
-	$export($export.S + $export.F, 'Object', {assign: __webpack_require__(252)});
-
-/***/ },
-/* 252 */
-/***/ function(module, exports, __webpack_require__) {
-
-	// 19.1.2.1 Object.assign(target, source, ...)
-	var $        = __webpack_require__(208)
-	  , toObject = __webpack_require__(253)
-	  , IObject  = __webpack_require__(224);
-
-	// should work with symbols and should have deterministic property order (V8 bug)
-	module.exports = __webpack_require__(211)(function(){
-	  var a = Object.assign
-	    , A = {}
-	    , B = {}
-	    , S = Symbol()
-	    , K = 'abcdefghijklmnopqrst';
-	  A[S] = 7;
-	  K.split('').forEach(function(k){ B[k] = k; });
-	  return a({}, A)[S] != 7 || Object.keys(a({}, B)).join('') != K;
-	}) ? function assign(target, source){ // eslint-disable-line no-unused-vars
-	  var T     = toObject(target)
-	    , $$    = arguments
-	    , $$len = $$.length
-	    , index = 1
-	    , getKeys    = $.getKeys
-	    , getSymbols = $.getSymbols
-	    , isEnum     = $.isEnum;
-	  while($$len > index){
-	    var S      = IObject($$[index++])
-	      , keys   = getSymbols ? getKeys(S).concat(getSymbols(S)) : getKeys(S)
-	      , length = keys.length
-	      , j      = 0
-	      , key;
-	    while(length > j)if(isEnum.call(S, key = keys[j++]))T[key] = S[key];
-	  }
-	  return T;
-	} : Object.assign;
-
-/***/ },
+/* 249 */,
+/* 250 */,
+/* 251 */,
+/* 252 */,
 /* 253 */
 /***/ function(module, exports, __webpack_require__) {
 
