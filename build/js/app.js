@@ -42866,6 +42866,13 @@
 	var MAX_VELOCITY = 4;
 	var ACCELERATION = 0.5;
 
+	var Z_AXIS = new _three2.default.Vector3(0, 0, 1);
+	var X_AXIS = new _three2.default.Vector3(1, 0, 0);
+
+	function isMobile() {
+	  return window.DeviceMotionEvent !== undefined && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+	}
+
 	var Ship = (function (_THREE$Object3D) {
 	  (0, _inherits3.default)(Ship, _THREE$Object3D);
 
@@ -42884,28 +42891,13 @@
 	    _this.keyboard = new _threex2.default();
 	    _this.acceleration = 0;
 	    _this.velocity = 0;
+	    _this.turnParameters = {
+	      x: 0,
+	      y: 0
+	    };
 	    _this.motionControlled = false;
-	    if (window.DeviceMotionEvent !== undefined && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-	      (function () {
-	        _this.motionControlled = true;
-	        // Accelerometer
-	        var defaultDirection = new _three2.default.Vector3(0, 0, 1);
-	        window.ondevicemotion = function (event) {
-	          var directionArray = ['x', 'y', 'z'].map(function (x) {
-	            return event.accelerationIncludingGravity[x];
-	          });
-	          var direction = new _three2.default.Vector3();
-	          direction.fromArray(directionArray).normalize();
-	          _this.targetQuaternion.setFromUnitVectors(defaultDirection, direction);
-	        };
-	        // Touch events
-	        document.body.addEventListener('touchstart', function (event) {
-	          _this.acceleration = ACCELERATION;
-	        }, false);
-	        document.body.addEventListener('touchend', function (event) {
-	          _this.acceleration = -ACCELERATION;
-	        }, false);
-	      })();
+	    if (isMobile()) {
+	      _this._setMobileEventListeners();
 	    }
 	    return _this;
 	  }
@@ -42917,22 +42909,44 @@
 
 	      if (!this.motionControlled) {
 	        // Ship steering
-	        var axisArray = [['down', 'up'], [], ['left', 'right']].map(function (keys) {
-	          return (0, _lodash2.default)(keys).map(function (key, index) {
+	        this.turnParameters = (0, _lodash2.default)({ x: ['down', 'up'], z: ['left', 'right'] }).map(function (keys, k) {
+	          return [k, (0, _lodash2.default)(keys).map(function (key, index) {
 	            return (_this2.keyboard.pressed(key) ? 1 : 0) * (index === 0 ? 1 : -1);
-	          }).sum();
-	        });
-	        var axis = new _three2.default.Vector3();
-	        axis.fromArray(axisArray);
-	        var turnDelta = new _three2.default.Quaternion();
-	        turnDelta.setFromAxisAngle(axis, delta * TURN_SPEED);
-	        this.targetQuaternion.multiply(turnDelta).normalize();
+	          }).sum()];
+	        }).object().value();
 	        // Ship acceleration
 	        this.acceleration = ACCELERATION * (this.keyboard.pressed('space') ? 1 : -1);
 	      }
+	      var turnQuaternion = new _three2.default.Quaternion();
+	      turnQuaternion.setFromAxisAngle(Z_AXIS, delta * TURN_SPEED * this.turnParameters['z']);
+	      this.targetQuaternion.multiply(turnQuaternion).normalize();
+	      turnQuaternion.setFromAxisAngle(X_AXIS, delta * TURN_SPEED * this.turnParameters['x']);
+	      this.targetQuaternion.multiply(turnQuaternion).normalize();
+
 	      this.velocity = Math.max(0, Math.min(MAX_VELOCITY, this.velocity + this.acceleration * delta));
 	      this.quaternion.slerp(this.targetQuaternion, delta * 10);
 	      this.translateZ(-this.velocity * delta);
+	    }
+	  }, {
+	    key: '_setMobileEventListeners',
+	    value: function _setMobileEventListeners() {
+	      var _this3 = this;
+
+	      this.motionControlled = true;
+	      // Accelerometer
+	      window.ondevicemotion = function (event) {
+	        _this3.turnParameters = {
+	          x: event.accelerationIncludingGravity.z / 6,
+	          z: -event.accelerationIncludingGravity.x / 6
+	        };
+	      };
+	      // Touch events
+	      document.body.addEventListener('touchstart', function (event) {
+	        _this3.acceleration = ACCELERATION;
+	      }, false);
+	      document.body.addEventListener('touchend', function (event) {
+	        _this3.acceleration = -ACCELERATION;
+	      }, false);
 	    }
 	  }]);
 	  return Ship;
