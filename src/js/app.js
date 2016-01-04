@@ -66,6 +66,6 @@ function render() {
   text.innerHTML = 'X: ' + ship.position.x +
     '<br/>Y: ' + ship.position.y +
     '<br/>Z: ' + ship.position.z;
-};
+}
 
 loadPromise.then(render);
