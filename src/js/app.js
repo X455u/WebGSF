@@ -7,7 +7,7 @@ const CAMERA_DISTANCE = 4;
 
 let scene = new THREE.Scene();
 let aspect = window.innerWidth / window.innerHeight;
-let camera = new THREE.PerspectiveCamera(75, aspect, 0.1, 50);
+let camera = new THREE.PerspectiveCamera(75, aspect, 0.1, 1000);
 let renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
