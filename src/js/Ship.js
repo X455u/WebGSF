@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import THREE from 'three';
-import KeyboardState from './threex.keyboardstate';
+import keymaster from 'keymaster';
 
 const TURN_SPEED = 2 * Math.PI / 10;
 const MAX_VELOCITY = 4;
@@ -23,7 +23,6 @@ class Ship extends THREE.Object3D {
       }
     });
     this.targetQuaternion = this.quaternion.clone();
-    this.keyboard = new KeyboardState();
     this.acceleration = 0;
     this.velocity = 0;
     this.turnParameters = {
@@ -41,11 +40,11 @@ class Ship extends THREE.Object3D {
       // Ship steering
       this.turnParameters = _({x: ['down', 'up'], z: ['left', 'right']}).map(
         (keys, k) => [k, _(keys).map(
-          (key, index) => (this.keyboard.pressed(key) ? 1 : 0) * (index === 0 ? 1 : -1)
+          (key, index) => (keymaster.isPressed(key) ? 1 : 0) * (index === 0 ? 1 : -1)
         ).sum()]
       ).object().value();
       // Ship acceleration
-      this.acceleration = ACCELERATION * (this.keyboard.pressed('space') ? 1 : -1);
+      this.acceleration = ACCELERATION * (keymaster.isPressed('space') ? 1 : -1);
     }
     let turnQuaternion = new THREE.Quaternion();
     turnQuaternion.setFromAxisAngle(Z_AXIS, delta * TURN_SPEED * this.turnParameters.z);
