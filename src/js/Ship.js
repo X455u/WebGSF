@@ -2,9 +2,9 @@ import _ from 'lodash';
 import THREE from 'three';
 import keymaster from 'keymaster';
 
-const TURN_SPEED = 2 * Math.PI / 10;
-const MAX_VELOCITY = 4;
-const ACCELERATION = 0.5;
+const TURN_SPEED = Math.PI; // rad/s
+const MAX_VELOCITY = 20; // units/s
+const ACCELERATION = 12.5; // units/s^2
 
 const Z_AXIS = new THREE.Vector3(0, 0, 1);
 const X_AXIS = new THREE.Vector3(1, 0, 0);

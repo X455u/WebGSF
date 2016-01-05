@@ -4,6 +4,9 @@ import Ship from './Ship';
 import Terrain from './Terrain';
 
 const CAMERA_DISTANCE = 4;
+const CAMERA_VELOCITY = 5;
+
+const MAX_DELTA = 0.1; // s
 
 let scene = new THREE.Scene();
 let aspect = window.innerWidth / window.innerHeight;
@@ -47,9 +50,11 @@ text.innerHTML = 'Loading...';
 document.body.appendChild(text);
 
 // Game Loop
+let previousTime;
 function render() {
-  requestAnimationFrame(render);
-  let delta = 0.1;
+  let time = new Date().getTime();
+  let delta = Math.min(MAX_DELTA, (time - previousTime) / 1000);
+  previousTime = time;
 
   ship.update(delta);
 
@@ -57,8 +62,8 @@ function render() {
   let direction = new THREE.Vector3(0, 0, 1);
   direction.applyQuaternion(ship.quaternion).setLength(CAMERA_DISTANCE);
   let cameraTargetPosition = ship.position.clone().add(direction);
-  camera.position.lerp(cameraTargetPosition, delta);
-  camera.quaternion.slerp(ship.quaternion, delta);
+  camera.position.lerp(cameraTargetPosition, CAMERA_VELOCITY * delta);
+  camera.quaternion.slerp(ship.quaternion, CAMERA_VELOCITY * delta);
 
   renderer.render(scene, camera);
 
@@ -66,6 +71,10 @@ function render() {
   text.innerHTML = 'X: ' + ship.position.x +
     '<br/>Y: ' + ship.position.y +
     '<br/>Z: ' + ship.position.z;
+  requestAnimationFrame(render);
 }
 
-loadPromise.then(render);
+loadPromise.then(() => {
+  previousTime = new Date().getTime();
+  render();
+});
