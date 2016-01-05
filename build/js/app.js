@@ -5329,7 +5329,7 @@
 
 	var _Ship2 = _interopRequireDefault(_Ship);
 
-	var _Terrain = __webpack_require__(283);
+	var _Terrain = __webpack_require__(279);
 
 	var _Terrain2 = _interopRequireDefault(_Terrain);
 
@@ -5339,7 +5339,7 @@
 
 	var scene = new _three2.default.Scene();
 	var aspect = window.innerWidth / window.innerHeight;
-	var camera = new _three2.default.PerspectiveCamera(75, aspect, 0.1, 50);
+	var camera = new _three2.default.PerspectiveCamera(75, aspect, 0.1, 1000);
 	var renderer = new _three2.default.WebGLRenderer();
 	renderer.setSize(window.innerWidth, window.innerHeight);
 	document.body.appendChild(renderer.domElement);
@@ -5396,7 +5396,7 @@
 
 	  //Update debugging text
 	  text.innerHTML = 'X: ' + ship.position.x + '<br/>Y: ' + ship.position.y + '<br/>Z: ' + ship.position.z;
-	};
+	}
 
 	loadPromise.then(render);
 
@@ -42824,7 +42824,7 @@
 	  value: true
 	});
 
-	var _keys = __webpack_require__(280);
+	var _keys = __webpack_require__(249);
 
 	var _keys2 = _interopRequireDefault(_keys);
 
@@ -42832,23 +42832,23 @@
 
 	var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
 
-	var _classCallCheck2 = __webpack_require__(258);
+	var _classCallCheck2 = __webpack_require__(257);
 
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 
-	var _createClass2 = __webpack_require__(259);
+	var _createClass2 = __webpack_require__(258);
 
 	var _createClass3 = _interopRequireDefault(_createClass2);
 
-	var _possibleConstructorReturn2 = __webpack_require__(262);
+	var _possibleConstructorReturn2 = __webpack_require__(261);
 
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 
-	var _inherits2 = __webpack_require__(271);
+	var _inherits2 = __webpack_require__(270);
 
 	var _inherits3 = _interopRequireDefault(_inherits2);
 
-	var _lodash = __webpack_require__(277);
+	var _lodash = __webpack_require__(276);
 
 	var _lodash2 = _interopRequireDefault(_lodash);
 
@@ -42856,9 +42856,9 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _threex = __webpack_require__(279);
+	var _keymaster = __webpack_require__(280);
 
-	var _threex2 = _interopRequireDefault(_threex);
+	var _keymaster2 = _interopRequireDefault(_keymaster);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -42888,16 +42888,15 @@
 	      }
 	    });
 	    _this.targetQuaternion = _this.quaternion.clone();
-	    _this.keyboard = new _threex2.default();
 	    _this.acceleration = 0;
 	    _this.velocity = 0;
 	    _this.turnParameters = {
 	      x: 0,
-	      y: 0
+	      z: 0
 	    };
 	    _this.motionControlled = false;
 	    if (isMobile()) {
-	      _this._setMobileEventListeners();
+	      _this.setMobileEventListeners();
 	    }
 	    return _this;
 	  }
@@ -42905,22 +42904,20 @@
 	  (0, _createClass3.default)(Ship, [{
 	    key: 'update',
 	    value: function update(delta) {
-	      var _this2 = this;
-
 	      if (!this.motionControlled) {
 	        // Ship steering
 	        this.turnParameters = (0, _lodash2.default)({ x: ['down', 'up'], z: ['left', 'right'] }).map(function (keys, k) {
 	          return [k, (0, _lodash2.default)(keys).map(function (key, index) {
-	            return (_this2.keyboard.pressed(key) ? 1 : 0) * (index === 0 ? 1 : -1);
+	            return (_keymaster2.default.isPressed(key) ? 1 : 0) * (index === 0 ? 1 : -1);
 	          }).sum()];
 	        }).object().value();
 	        // Ship acceleration
-	        this.acceleration = ACCELERATION * (this.keyboard.pressed('space') ? 1 : -1);
+	        this.acceleration = ACCELERATION * (_keymaster2.default.isPressed('space') ? 1 : -1);
 	      }
 	      var turnQuaternion = new _three2.default.Quaternion();
-	      turnQuaternion.setFromAxisAngle(Z_AXIS, delta * TURN_SPEED * this.turnParameters['z']);
+	      turnQuaternion.setFromAxisAngle(Z_AXIS, delta * TURN_SPEED * this.turnParameters.z);
 	      this.targetQuaternion.multiply(turnQuaternion).normalize();
-	      turnQuaternion.setFromAxisAngle(X_AXIS, delta * TURN_SPEED * this.turnParameters['x']);
+	      turnQuaternion.setFromAxisAngle(X_AXIS, delta * TURN_SPEED * this.turnParameters.x);
 	      this.targetQuaternion.multiply(turnQuaternion).normalize();
 
 	      this.velocity = Math.max(0, Math.min(MAX_VELOCITY, this.velocity + this.acceleration * delta));
@@ -42928,24 +42925,24 @@
 	      this.translateZ(-this.velocity * delta);
 	    }
 	  }, {
-	    key: '_setMobileEventListeners',
-	    value: function _setMobileEventListeners() {
-	      var _this3 = this;
+	    key: 'setMobileEventListeners',
+	    value: function setMobileEventListeners() {
+	      var _this2 = this;
 
 	      this.motionControlled = true;
 	      // Accelerometer
 	      window.ondevicemotion = function (event) {
-	        _this3.turnParameters = {
+	        _this2.turnParameters = {
 	          x: event.accelerationIncludingGravity.z / 6,
 	          z: -event.accelerationIncludingGravity.x / 6
 	        };
 	      };
 	      // Touch events
-	      document.body.addEventListener('touchstart', function (event) {
-	        _this3.acceleration = ACCELERATION;
+	      document.body.addEventListener('touchstart', function () {
+	        _this2.acceleration = ACCELERATION;
 	      }, false);
-	      document.body.addEventListener('touchend', function (event) {
-	        _this3.acceleration = -ACCELERATION;
+	      document.body.addEventListener('touchend', function () {
+	        _this2.acceleration = -ACCELERATION;
 	      }, false);
 	    }
 	  }]);
@@ -42955,17 +42952,54 @@
 	exports.default = Ship;
 
 /***/ },
-/* 249 */,
-/* 250 */,
-/* 251 */,
-/* 252 */,
-/* 253 */
+/* 249 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = { "default": __webpack_require__(250), __esModule: true };
+
+/***/ },
+/* 250 */
+/***/ function(module, exports, __webpack_require__) {
+
+	__webpack_require__(251);
+	module.exports = __webpack_require__(203).Object.keys;
+
+/***/ },
+/* 251 */
+/***/ function(module, exports, __webpack_require__) {
+
+	// 19.1.2.14 Object.keys(O)
+	var toObject = __webpack_require__(252);
+
+	__webpack_require__(253)('keys', function($keys){
+	  return function keys(it){
+	    return $keys(toObject(it));
+	  };
+	});
+
+/***/ },
+/* 252 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// 7.1.13 ToObject(argument)
 	var defined = __webpack_require__(198);
 	module.exports = function(it){
 	  return Object(defined(it));
+	};
+
+/***/ },
+/* 253 */
+/***/ function(module, exports, __webpack_require__) {
+
+	// most Object methods by ES6 should accept primitives
+	var $export = __webpack_require__(201)
+	  , core    = __webpack_require__(203)
+	  , fails   = __webpack_require__(211);
+	module.exports = function(KEY, exec){
+	  var fn  = (core.Object || {})[KEY] || Object[KEY]
+	    , exp = {};
+	  exp[KEY] = exec(fn);
+	  $export($export.S + $export.F * fails(function(){ fn(1); }), 'Object', exp);
 	};
 
 /***/ },
@@ -42986,9 +43020,9 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	// 19.1.2.9 Object.getPrototypeOf(O)
-	var toObject = __webpack_require__(253);
+	var toObject = __webpack_require__(252);
 
-	__webpack_require__(257)('getPrototypeOf', function($getPrototypeOf){
+	__webpack_require__(253)('getPrototypeOf', function($getPrototypeOf){
 	  return function getPrototypeOf(it){
 	    return $getPrototypeOf(toObject(it));
 	  };
@@ -42996,21 +43030,6 @@
 
 /***/ },
 /* 257 */
-/***/ function(module, exports, __webpack_require__) {
-
-	// most Object methods by ES6 should accept primitives
-	var $export = __webpack_require__(201)
-	  , core    = __webpack_require__(203)
-	  , fails   = __webpack_require__(211);
-	module.exports = function(KEY, exec){
-	  var fn  = (core.Object || {})[KEY] || Object[KEY]
-	    , exp = {};
-	  exp[KEY] = exec(fn);
-	  $export($export.S + $export.F * fails(function(){ fn(1); }), 'Object', exp);
-	};
-
-/***/ },
-/* 258 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -43024,14 +43043,14 @@
 	};
 
 /***/ },
-/* 259 */
+/* 258 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 
 	exports.__esModule = true;
 
-	var _defineProperty = __webpack_require__(260);
+	var _defineProperty = __webpack_require__(259);
 
 	var _defineProperty2 = _interopRequireDefault(_defineProperty);
 
@@ -43056,13 +43075,13 @@
 	})();
 
 /***/ },
-/* 260 */
+/* 259 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = { "default": __webpack_require__(261), __esModule: true };
+	module.exports = { "default": __webpack_require__(260), __esModule: true };
 
 /***/ },
-/* 261 */
+/* 260 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var $ = __webpack_require__(208);
@@ -43071,14 +43090,14 @@
 	};
 
 /***/ },
-/* 262 */
+/* 261 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 
 	exports.__esModule = true;
 
-	var _typeof2 = __webpack_require__(263);
+	var _typeof2 = __webpack_require__(262);
 
 	var _typeof3 = _interopRequireDefault(_typeof2);
 
@@ -43093,14 +43112,14 @@
 	};
 
 /***/ },
-/* 263 */
+/* 262 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 
 	exports.__esModule = true;
 
-	var _symbol = __webpack_require__(264);
+	var _symbol = __webpack_require__(263);
 
 	var _symbol2 = _interopRequireDefault(_symbol);
 
@@ -43113,21 +43132,21 @@
 	};
 
 /***/ },
+/* 263 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = { "default": __webpack_require__(264), __esModule: true };
+
+/***/ },
 /* 264 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = { "default": __webpack_require__(265), __esModule: true };
-
-/***/ },
-/* 265 */
-/***/ function(module, exports, __webpack_require__) {
-
-	__webpack_require__(266);
+	__webpack_require__(265);
 	__webpack_require__(194);
 	module.exports = __webpack_require__(203).Symbol;
 
 /***/ },
-/* 266 */
+/* 265 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -43143,10 +43162,10 @@
 	  , setToStringTag = __webpack_require__(215)
 	  , uid            = __webpack_require__(218)
 	  , wks            = __webpack_require__(216)
-	  , keyOf          = __webpack_require__(267)
-	  , $names         = __webpack_require__(268)
-	  , enumKeys       = __webpack_require__(269)
-	  , isArray        = __webpack_require__(270)
+	  , keyOf          = __webpack_require__(266)
+	  , $names         = __webpack_require__(267)
+	  , enumKeys       = __webpack_require__(268)
+	  , isArray        = __webpack_require__(269)
 	  , anObject       = __webpack_require__(229)
 	  , toIObject      = __webpack_require__(223)
 	  , createDesc     = __webpack_require__(209)
@@ -43359,7 +43378,7 @@
 	setToStringTag(global.JSON, 'JSON', true);
 
 /***/ },
-/* 267 */
+/* 266 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var $         = __webpack_require__(208)
@@ -43374,7 +43393,7 @@
 	};
 
 /***/ },
-/* 268 */
+/* 267 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// fallback for IE11 buggy Object.getOwnPropertyNames with iframe and window
@@ -43399,7 +43418,7 @@
 	};
 
 /***/ },
-/* 269 */
+/* 268 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// all enumerable object keys, includes symbols
@@ -43418,7 +43437,7 @@
 	};
 
 /***/ },
-/* 270 */
+/* 269 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// 7.2.2 IsArray(argument)
@@ -43428,22 +43447,22 @@
 	};
 
 /***/ },
-/* 271 */
+/* 270 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 
 	exports.__esModule = true;
 
-	var _setPrototypeOf = __webpack_require__(272);
+	var _setPrototypeOf = __webpack_require__(271);
 
 	var _setPrototypeOf2 = _interopRequireDefault(_setPrototypeOf);
 
-	var _create = __webpack_require__(275);
+	var _create = __webpack_require__(274);
 
 	var _create2 = _interopRequireDefault(_create);
 
-	var _typeof2 = __webpack_require__(263);
+	var _typeof2 = __webpack_require__(262);
 
 	var _typeof3 = _interopRequireDefault(_typeof2);
 
@@ -43466,20 +43485,20 @@
 	};
 
 /***/ },
+/* 271 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = { "default": __webpack_require__(272), __esModule: true };
+
+/***/ },
 /* 272 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = { "default": __webpack_require__(273), __esModule: true };
-
-/***/ },
-/* 273 */
-/***/ function(module, exports, __webpack_require__) {
-
-	__webpack_require__(274);
+	__webpack_require__(273);
 	module.exports = __webpack_require__(203).Object.setPrototypeOf;
 
 /***/ },
-/* 274 */
+/* 273 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// 19.1.3.19 Object.setPrototypeOf(O, proto)
@@ -43487,13 +43506,13 @@
 	$export($export.S, 'Object', {setPrototypeOf: __webpack_require__(236).set});
 
 /***/ },
-/* 275 */
+/* 274 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = { "default": __webpack_require__(276), __esModule: true };
+	module.exports = { "default": __webpack_require__(275), __esModule: true };
 
 /***/ },
-/* 276 */
+/* 275 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var $ = __webpack_require__(208);
@@ -43502,7 +43521,7 @@
 	};
 
 /***/ },
-/* 277 */
+/* 276 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(module, global) {/**
@@ -55857,10 +55876,10 @@
 	  }
 	}.call(this));
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(278)(module), (function() { return this; }())))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(277)(module), (function() { return this; }())))
 
 /***/ },
-/* 278 */
+/* 277 */
 /***/ function(module, exports) {
 
 	module.exports = function(module) {
@@ -55876,214 +55895,8 @@
 
 
 /***/ },
+/* 278 */,
 /* 279 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-
-	var _keys = __webpack_require__(280);
-
-	var _keys2 = _interopRequireDefault(_keys);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	// THREEx.KeyboardState.js keep the current state of the keyboard.
-	// It is possible to query it at any time. No need of an event.
-	// This is particularly convenient in loop driven case, like in
-	// 3D demos or games.
-	//
-	// # Usage
-	//
-	// **Step 1**: Create the object
-	//
-	// ```var keyboard	= new THREEx.KeyboardState();```
-	//
-	// **Step 2**: Query the keyboard state
-	//
-	// This will return true if shift and A are pressed, false otherwise
-	//
-	// ```keyboard.pressed("shift+A")```
-	//
-	// **Step 3**: Stop listening to the keyboard
-	//
-	// ```keyboard.destroy()```
-	//
-	// NOTE: this library may be nice as standaline. independant from three.js
-	// - rename it keyboardForGame
-	//
-	// # Code
-	//
-
-	/** @namespace */
-	var THREEx = THREEx || {};
-
-	/**
-	 * - NOTE: it would be quite easy to push event-driven too
-	 *   - microevent.js for events handling
-	 *   - in this._onkeyChange, generate a string from the DOM event
-	 *   - use this as event name
-	*/
-	THREEx.KeyboardState = function (domElement) {
-		this.domElement = domElement || document;
-		// to store the current state
-		this.keyCodes = {};
-		this.modifiers = {};
-
-		// create callback to bind/unbind keyboard events
-		var _this = this;
-		this._onKeyDown = function (event) {
-			_this._onKeyChange(event);
-		};
-		this._onKeyUp = function (event) {
-			_this._onKeyChange(event);
-		};
-
-		// bind keyEvents
-		this.domElement.addEventListener("keydown", this._onKeyDown, false);
-		this.domElement.addEventListener("keyup", this._onKeyUp, false);
-
-		// create callback to bind/unbind window blur event
-		this._onBlur = function () {
-			for (var prop in _this.keyCodes) {
-				_this.keyCodes[prop] = false;
-			}for (var prop in _this.modifiers) {
-				_this.modifiers[prop] = false;
-			}
-		};
-
-		// bind window blur
-		window.addEventListener("blur", this._onBlur, false);
-	};
-
-	/**
-	 * To stop listening of the keyboard events
-	*/
-	THREEx.KeyboardState.prototype.destroy = function () {
-		// unbind keyEvents
-		this.domElement.removeEventListener("keydown", this._onKeyDown, false);
-		this.domElement.removeEventListener("keyup", this._onKeyUp, false);
-
-		// unbind window blur event
-		window.removeEventListener("blur", this._onBlur, false);
-	};
-
-	THREEx.KeyboardState.MODIFIERS = ['shift', 'ctrl', 'alt', 'meta'];
-	THREEx.KeyboardState.ALIAS = {
-		'left': 37,
-		'up': 38,
-		'right': 39,
-		'down': 40,
-		'space': 32,
-		'pageup': 33,
-		'pagedown': 34,
-		'tab': 9,
-		'escape': 27
-	};
-
-	/**
-	 * to process the keyboard dom event
-	*/
-	THREEx.KeyboardState.prototype._onKeyChange = function (event) {
-		// log to debug
-		//console.log("onKeyChange", event, event.keyCode, event.shiftKey, event.ctrlKey, event.altKey, event.metaKey)
-
-		// update this.keyCodes
-		var keyCode = event.keyCode;
-		var pressed = event.type === 'keydown' ? true : false;
-		this.keyCodes[keyCode] = pressed;
-		// update this.modifiers
-		this.modifiers['shift'] = event.shiftKey;
-		this.modifiers['ctrl'] = event.ctrlKey;
-		this.modifiers['alt'] = event.altKey;
-		this.modifiers['meta'] = event.metaKey;
-	};
-
-	/**
-	 * query keyboard state to know if a key is pressed of not
-	 *
-	 * @param {String} keyDesc the description of the key. format : modifiers+key e.g shift+A
-	 * @returns {Boolean} true if the key is pressed, false otherwise
-	*/
-	THREEx.KeyboardState.prototype.pressed = function (keyDesc) {
-		var keys = keyDesc.split("+");
-		for (var i = 0; i < keys.length; i++) {
-			var key = keys[i];
-			var pressed = false;
-			if (THREEx.KeyboardState.MODIFIERS.indexOf(key) !== -1) {
-				pressed = this.modifiers[key];
-			} else if ((0, _keys2.default)(THREEx.KeyboardState.ALIAS).indexOf(key) != -1) {
-				pressed = this.keyCodes[THREEx.KeyboardState.ALIAS[key]];
-			} else {
-				pressed = this.keyCodes[key.toUpperCase().charCodeAt(0)];
-			}
-			if (!pressed) return false;
-		};
-		return true;
-	};
-
-	/**
-	 * return true if an event match a keyDesc
-	 * @param  {KeyboardEvent} event   keyboard event
-	 * @param  {String} keyDesc string description of the key
-	 * @return {Boolean}         true if the event match keyDesc, false otherwise
-	 */
-	THREEx.KeyboardState.prototype.eventMatches = function (event, keyDesc) {
-		var aliases = THREEx.KeyboardState.ALIAS;
-		var aliasKeys = (0, _keys2.default)(aliases);
-		var keys = keyDesc.split("+");
-		// log to debug
-		// console.log("eventMatches", event, event.keyCode, event.shiftKey, event.ctrlKey, event.altKey, event.metaKey)
-		for (var i = 0; i < keys.length; i++) {
-			var key = keys[i];
-			var pressed = false;
-			if (key === 'shift') {
-				pressed = event.shiftKey ? true : false;
-			} else if (key === 'ctrl') {
-				pressed = event.ctrlKey ? true : false;
-			} else if (key === 'alt') {
-				pressed = event.altKey ? true : false;
-			} else if (key === 'meta') {
-				pressed = event.metaKey ? true : false;
-			} else if (aliasKeys.indexOf(key) !== -1) {
-				pressed = event.keyCode === aliases[key] ? true : false;
-			} else if (event.keyCode === key.toUpperCase().charCodeAt(0)) {
-				pressed = true;
-			}
-			if (!pressed) return false;
-		}
-		return true;
-	};
-
-	module.exports = THREEx.KeyboardState;
-
-/***/ },
-/* 280 */
-/***/ function(module, exports, __webpack_require__) {
-
-	module.exports = { "default": __webpack_require__(281), __esModule: true };
-
-/***/ },
-/* 281 */
-/***/ function(module, exports, __webpack_require__) {
-
-	__webpack_require__(282);
-	module.exports = __webpack_require__(203).Object.keys;
-
-/***/ },
-/* 282 */
-/***/ function(module, exports, __webpack_require__) {
-
-	// 19.1.2.14 Object.keys(O)
-	var toObject = __webpack_require__(253);
-
-	__webpack_require__(257)('keys', function($keys){
-	  return function keys(it){
-	    return $keys(toObject(it));
-	  };
-	});
-
-/***/ },
-/* 283 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -56096,15 +55909,15 @@
 
 	var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
 
-	var _classCallCheck2 = __webpack_require__(258);
+	var _classCallCheck2 = __webpack_require__(257);
 
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 
-	var _possibleConstructorReturn2 = __webpack_require__(262);
+	var _possibleConstructorReturn2 = __webpack_require__(261);
 
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 
-	var _inherits2 = __webpack_require__(271);
+	var _inherits2 = __webpack_require__(270);
 
 	var _inherits3 = _interopRequireDefault(_inherits2);
 
@@ -56112,7 +55925,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _lodash = __webpack_require__(277);
+	var _lodash = __webpack_require__(276);
 
 	var _lodash2 = _interopRequireDefault(_lodash);
 
@@ -56156,6 +55969,308 @@
 	})(_three2.default.Mesh);
 
 	exports.default = Terrain;
+
+/***/ },
+/* 280 */
+/***/ function(module, exports, __webpack_require__) {
+
+	//     keymaster.js
+	//     (c) 2011-2013 Thomas Fuchs
+	//     keymaster.js may be freely distributed under the MIT license.
+
+	;(function(global){
+	  var k,
+	    _handlers = {},
+	    _mods = { 16: false, 18: false, 17: false, 91: false },
+	    _scope = 'all',
+	    // modifier keys
+	    _MODIFIERS = {
+	      '⇧': 16, shift: 16,
+	      '⌥': 18, alt: 18, option: 18,
+	      '⌃': 17, ctrl: 17, control: 17,
+	      '⌘': 91, command: 91
+	    },
+	    // special keys
+	    _MAP = {
+	      backspace: 8, tab: 9, clear: 12,
+	      enter: 13, 'return': 13,
+	      esc: 27, escape: 27, space: 32,
+	      left: 37, up: 38,
+	      right: 39, down: 40,
+	      del: 46, 'delete': 46,
+	      home: 36, end: 35,
+	      pageup: 33, pagedown: 34,
+	      ',': 188, '.': 190, '/': 191,
+	      '`': 192, '-': 189, '=': 187,
+	      ';': 186, '\'': 222,
+	      '[': 219, ']': 221, '\\': 220
+	    },
+	    code = function(x){
+	      return _MAP[x] || x.toUpperCase().charCodeAt(0);
+	    },
+	    _downKeys = [];
+
+	  for(k=1;k<20;k++) _MAP['f'+k] = 111+k;
+
+	  // IE doesn't support Array#indexOf, so have a simple replacement
+	  function index(array, item){
+	    var i = array.length;
+	    while(i--) if(array[i]===item) return i;
+	    return -1;
+	  }
+
+	  // for comparing mods before unassignment
+	  function compareArray(a1, a2) {
+	    if (a1.length != a2.length) return false;
+	    for (var i = 0; i < a1.length; i++) {
+	        if (a1[i] !== a2[i]) return false;
+	    }
+	    return true;
+	  }
+
+	  var modifierMap = {
+	      16:'shiftKey',
+	      18:'altKey',
+	      17:'ctrlKey',
+	      91:'metaKey'
+	  };
+	  function updateModifierKey(event) {
+	      for(k in _mods) _mods[k] = event[modifierMap[k]];
+	  };
+
+	  // handle keydown event
+	  function dispatch(event) {
+	    var key, handler, k, i, modifiersMatch, scope;
+	    key = event.keyCode;
+
+	    if (index(_downKeys, key) == -1) {
+	        _downKeys.push(key);
+	    }
+
+	    // if a modifier key, set the key.<modifierkeyname> property to true and return
+	    if(key == 93 || key == 224) key = 91; // right command on webkit, command on Gecko
+	    if(key in _mods) {
+	      _mods[key] = true;
+	      // 'assignKey' from inside this closure is exported to window.key
+	      for(k in _MODIFIERS) if(_MODIFIERS[k] == key) assignKey[k] = true;
+	      return;
+	    }
+	    updateModifierKey(event);
+
+	    // see if we need to ignore the keypress (filter() can can be overridden)
+	    // by default ignore key presses if a select, textarea, or input is focused
+	    if(!assignKey.filter.call(this, event)) return;
+
+	    // abort if no potentially matching shortcuts found
+	    if (!(key in _handlers)) return;
+
+	    scope = getScope();
+
+	    // for each potential shortcut
+	    for (i = 0; i < _handlers[key].length; i++) {
+	      handler = _handlers[key][i];
+
+	      // see if it's in the current scope
+	      if(handler.scope == scope || handler.scope == 'all'){
+	        // check if modifiers match if any
+	        modifiersMatch = handler.mods.length > 0;
+	        for(k in _mods)
+	          if((!_mods[k] && index(handler.mods, +k) > -1) ||
+	            (_mods[k] && index(handler.mods, +k) == -1)) modifiersMatch = false;
+	        // call the handler and stop the event if neccessary
+	        if((handler.mods.length == 0 && !_mods[16] && !_mods[18] && !_mods[17] && !_mods[91]) || modifiersMatch){
+	          if(handler.method(event, handler)===false){
+	            if(event.preventDefault) event.preventDefault();
+	              else event.returnValue = false;
+	            if(event.stopPropagation) event.stopPropagation();
+	            if(event.cancelBubble) event.cancelBubble = true;
+	          }
+	        }
+	      }
+	    }
+	  };
+
+	  // unset modifier keys on keyup
+	  function clearModifier(event){
+	    var key = event.keyCode, k,
+	        i = index(_downKeys, key);
+
+	    // remove key from _downKeys
+	    if (i >= 0) {
+	        _downKeys.splice(i, 1);
+	    }
+
+	    if(key == 93 || key == 224) key = 91;
+	    if(key in _mods) {
+	      _mods[key] = false;
+	      for(k in _MODIFIERS) if(_MODIFIERS[k] == key) assignKey[k] = false;
+	    }
+	  };
+
+	  function resetModifiers() {
+	    for(k in _mods) _mods[k] = false;
+	    for(k in _MODIFIERS) assignKey[k] = false;
+	  };
+
+	  // parse and assign shortcut
+	  function assignKey(key, scope, method){
+	    var keys, mods;
+	    keys = getKeys(key);
+	    if (method === undefined) {
+	      method = scope;
+	      scope = 'all';
+	    }
+
+	    // for each shortcut
+	    for (var i = 0; i < keys.length; i++) {
+	      // set modifier keys if any
+	      mods = [];
+	      key = keys[i].split('+');
+	      if (key.length > 1){
+	        mods = getMods(key);
+	        key = [key[key.length-1]];
+	      }
+	      // convert to keycode and...
+	      key = key[0]
+	      key = code(key);
+	      // ...store handler
+	      if (!(key in _handlers)) _handlers[key] = [];
+	      _handlers[key].push({ shortcut: keys[i], scope: scope, method: method, key: keys[i], mods: mods });
+	    }
+	  };
+
+	  // unbind all handlers for given key in current scope
+	  function unbindKey(key, scope) {
+	    var multipleKeys, keys,
+	      mods = [],
+	      i, j, obj;
+
+	    multipleKeys = getKeys(key);
+
+	    for (j = 0; j < multipleKeys.length; j++) {
+	      keys = multipleKeys[j].split('+');
+
+	      if (keys.length > 1) {
+	        mods = getMods(keys);
+	        key = keys[keys.length - 1];
+	      }
+
+	      key = code(key);
+
+	      if (scope === undefined) {
+	        scope = getScope();
+	      }
+	      if (!_handlers[key]) {
+	        return;
+	      }
+	      for (i = 0; i < _handlers[key].length; i++) {
+	        obj = _handlers[key][i];
+	        // only clear handlers if correct scope and mods match
+	        if (obj.scope === scope && compareArray(obj.mods, mods)) {
+	          _handlers[key][i] = {};
+	        }
+	      }
+	    }
+	  };
+
+	  // Returns true if the key with code 'keyCode' is currently down
+	  // Converts strings into key codes.
+	  function isPressed(keyCode) {
+	      if (typeof(keyCode)=='string') {
+	        keyCode = code(keyCode);
+	      }
+	      return index(_downKeys, keyCode) != -1;
+	  }
+
+	  function getPressedKeyCodes() {
+	      return _downKeys.slice(0);
+	  }
+
+	  function filter(event){
+	    var tagName = (event.target || event.srcElement).tagName;
+	    // ignore keypressed in any elements that support keyboard data input
+	    return !(tagName == 'INPUT' || tagName == 'SELECT' || tagName == 'TEXTAREA');
+	  }
+
+	  // initialize key.<modifier> to false
+	  for(k in _MODIFIERS) assignKey[k] = false;
+
+	  // set current scope (default 'all')
+	  function setScope(scope){ _scope = scope || 'all' };
+	  function getScope(){ return _scope || 'all' };
+
+	  // delete all handlers for a given scope
+	  function deleteScope(scope){
+	    var key, handlers, i;
+
+	    for (key in _handlers) {
+	      handlers = _handlers[key];
+	      for (i = 0; i < handlers.length; ) {
+	        if (handlers[i].scope === scope) handlers.splice(i, 1);
+	        else i++;
+	      }
+	    }
+	  };
+
+	  // abstract key logic for assign and unassign
+	  function getKeys(key) {
+	    var keys;
+	    key = key.replace(/\s/g, '');
+	    keys = key.split(',');
+	    if ((keys[keys.length - 1]) == '') {
+	      keys[keys.length - 2] += ',';
+	    }
+	    return keys;
+	  }
+
+	  // abstract mods logic for assign and unassign
+	  function getMods(key) {
+	    var mods = key.slice(0, key.length - 1);
+	    for (var mi = 0; mi < mods.length; mi++)
+	    mods[mi] = _MODIFIERS[mods[mi]];
+	    return mods;
+	  }
+
+	  // cross-browser events
+	  function addEvent(object, event, method) {
+	    if (object.addEventListener)
+	      object.addEventListener(event, method, false);
+	    else if(object.attachEvent)
+	      object.attachEvent('on'+event, function(){ method(window.event) });
+	  };
+
+	  // set the handlers globally on document
+	  addEvent(document, 'keydown', function(event) { dispatch(event) }); // Passing _scope to a callback to ensure it remains the same by execution. Fixes #48
+	  addEvent(document, 'keyup', clearModifier);
+
+	  // reset modifiers to false whenever the window is (re)focused.
+	  addEvent(window, 'focus', resetModifiers);
+
+	  // store previously defined key
+	  var previousKey = global.key;
+
+	  // restore previously defined key and return reference to our key object
+	  function noConflict() {
+	    var k = global.key;
+	    global.key = previousKey;
+	    return k;
+	  }
+
+	  // set window.key and window.key.set/get/deleteScope, and the default filter
+	  global.key = assignKey;
+	  global.key.setScope = setScope;
+	  global.key.getScope = getScope;
+	  global.key.deleteScope = deleteScope;
+	  global.key.filter = filter;
+	  global.key.isPressed = isPressed;
+	  global.key.getPressedKeyCodes = getPressedKeyCodes;
+	  global.key.noConflict = noConflict;
+	  global.key.unbind = unbindKey;
+
+	  if(true) module.exports = assignKey;
+
+	})(this);
+
 
 /***/ }
 /******/ ]);
