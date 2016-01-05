@@ -13,6 +13,11 @@ function isMobile() {
   return window.DeviceMotionEvent !== undefined && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 }
 
+function isAndroid() {
+  return /Android/i.test(navigator.userAgent);
+}
+
+
 class Ship extends THREE.Object3D {
   constructor(ship) {
     super();
@@ -59,11 +64,15 @@ class Ship extends THREE.Object3D {
 
   setMobileEventListeners() {
     this.motionControlled = true;
+    let invertCoefficient = -1;
+    if (isAndroid()) {
+      invertCoefficient = 1;
+    }
     // Accelerometer
     window.ondevicemotion = (event) => {
       this.turnParameters = {
         x: event.accelerationIncludingGravity.z / 6,
-        z: -event.accelerationIncludingGravity.x / 6
+        z: invertCoefficient * event.accelerationIncludingGravity.x / 6
       };
     };
     // Touch events
