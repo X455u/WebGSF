@@ -27,7 +27,7 @@ class Ship extends THREE.Object3D {
     this.velocity = 0;
     this.turnParameters = {
       x: 0,
-      y: 0
+      z: 0
     };
     this.motionControlled = false;
     if (isMobile()) {
