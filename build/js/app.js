@@ -5336,6 +5336,9 @@
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	var CAMERA_DISTANCE = 4;
+	var CAMERA_VELOCITY = 5;
+
+	var MAX_DELTA = 0.1; // s
 
 	var scene = new _three2.default.Scene();
 	var aspect = window.innerWidth / window.innerHeight;
@@ -5379,9 +5382,11 @@
 	document.body.appendChild(text);
 
 	// Game Loop
+	var previousTime = undefined;
 	function render() {
-	  requestAnimationFrame(render);
-	  var delta = 0.1;
+	  var time = new Date().getTime();
+	  var delta = Math.min(MAX_DELTA, (time - previousTime) / 1000);
+	  previousTime = time;
 
 	  ship.update(delta);
 
@@ -5389,16 +5394,20 @@
 	  var direction = new _three2.default.Vector3(0, 0, 1);
 	  direction.applyQuaternion(ship.quaternion).setLength(CAMERA_DISTANCE);
 	  var cameraTargetPosition = ship.position.clone().add(direction);
-	  camera.position.lerp(cameraTargetPosition, delta);
-	  camera.quaternion.slerp(ship.quaternion, delta);
+	  camera.position.lerp(cameraTargetPosition, CAMERA_VELOCITY * delta);
+	  camera.quaternion.slerp(ship.quaternion, CAMERA_VELOCITY * delta);
 
 	  renderer.render(scene, camera);
 
 	  //Update debugging text
 	  text.innerHTML = 'X: ' + ship.position.x + '<br/>Y: ' + ship.position.y + '<br/>Z: ' + ship.position.z;
+	  requestAnimationFrame(render);
 	}
 
-	loadPromise.then(render);
+	loadPromise.then(function () {
+	  previousTime = new Date().getTime();
+	  render();
+	});
 
 /***/ },
 /* 192 */
@@ -42862,15 +42871,20 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	var TURN_SPEED = 2 * Math.PI / 10;
-	var MAX_VELOCITY = 4;
-	var ACCELERATION = 0.5;
+	var TURN_SPEED = Math.PI; // rad/s
+	var MAX_VELOCITY = 20; // units/s
+	var ACCELERATION = 12.5; // units/s^2
 
 	var Z_AXIS = new _three2.default.Vector3(0, 0, 1);
 	var X_AXIS = new _three2.default.Vector3(1, 0, 0);
 
 	function isMobile() {
 	  return window.DeviceMotionEvent !== undefined && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+	}
+
+	function isAndroid() {
+	  return (/Android/i.test(navigator.userAgent)
+	  );
 	}
 
 	var Ship = (function (_THREE$Object3D) {
@@ -42930,11 +42944,15 @@
 	      var _this2 = this;
 
 	      this.motionControlled = true;
+	      var invertCoefficient = -1;
+	      if (isAndroid()) {
+	        invertCoefficient = 1;
+	      }
 	      // Accelerometer
 	      window.ondevicemotion = function (event) {
 	        _this2.turnParameters = {
 	          x: event.accelerationIncludingGravity.z / 6,
-	          z: -event.accelerationIncludingGravity.x / 6
+	          z: invertCoefficient * event.accelerationIncludingGravity.x / 6
 	        };
 	      };
 	      // Touch events
