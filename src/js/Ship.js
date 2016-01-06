@@ -6,6 +6,8 @@ const TURN_SPEED = Math.PI; // rad/s
 const MAX_VELOCITY = 20; // units/s
 const ACCELERATION = 12.5; // units/s^2
 
+const RELOAD_TIME = 0.25 // seconds
+
 const Z_AXIS = new THREE.Vector3(0, 0, 1);
 const X_AXIS = new THREE.Vector3(1, 0, 0);
 
@@ -19,7 +21,8 @@ function isAndroid() {
 
 
 class Ship extends THREE.Object3D {
-  constructor(ship) {
+
+  constructor(ship, shotController) {
     super();
     let skip = ['position', 'rotation', 'quaternion', 'scale'];
     Object.keys(ship).forEach(key => {
@@ -38,6 +41,8 @@ class Ship extends THREE.Object3D {
     if (isMobile()) {
       this.setMobileEventListeners();
     }
+    this.shotController = shotController;
+    this.reload = 0.0;
   }
 
   update(delta) {
@@ -60,6 +65,14 @@ class Ship extends THREE.Object3D {
     this.velocity = Math.max(0, Math.min(MAX_VELOCITY, this.velocity + this.acceleration * delta));
     this.quaternion.slerp(this.targetQuaternion, delta * 10);
     this.translateZ(-this.velocity * delta);
+
+    // Ship reloading and shooting
+    this.reload = Math.max(0.0, this.reload - delta);
+    if (keymaster.isPressed('x') && this.reload == 0.0) {
+      this.reload = RELOAD_TIME;
+      this.shotController.shootLaserShot(this);
+    }
+    this.shotController.update(delta);
   }
 
   setMobileEventListeners() {

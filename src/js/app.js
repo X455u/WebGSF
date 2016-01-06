@@ -2,6 +2,7 @@ import THREE from 'three';
 
 import Ship from './Ship';
 import Terrain from './Terrain';
+import ShotController from './ShotController'
 
 const CAMERA_DISTANCE = 4;
 const CAMERA_VELOCITY = 5;
@@ -27,9 +28,10 @@ camera.position.z = CAMERA_DISTANCE;
 // prepare loader and load the model
 let loader = new THREE.ObjectLoader();
 let ship;
+let shotController = new ShotController(scene);
 let loadPromise = new Promise(done => {
   loader.load('./media/star-wars-vader-tie-fighter.json', function(object) {
-    ship = new Ship(object);
+    ship = new Ship(object, shotController);
     scene.add(ship);
     done();
   });
