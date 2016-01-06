@@ -2,7 +2,7 @@ import THREE from 'three';
 
 import Ship from './Ship';
 import Terrain from './Terrain';
-import ShotController from './ShotController'
+import ShotController from './ShotController';
 
 const CAMERA_DISTANCE = 4;
 const CAMERA_VELOCITY = 5;

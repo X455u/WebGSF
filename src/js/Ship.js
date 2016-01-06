@@ -6,7 +6,7 @@ const TURN_SPEED = Math.PI; // rad/s
 const MAX_VELOCITY = 20; // units/s
 const ACCELERATION = 12.5; // units/s^2
 
-const RELOAD_TIME = 0.25 // seconds
+const RELOAD_TIME = 0.25; // seconds
 
 const Z_AXIS = new THREE.Vector3(0, 0, 1);
 const X_AXIS = new THREE.Vector3(1, 0, 0);
@@ -68,7 +68,7 @@ class Ship extends THREE.Object3D {
 
     // Ship reloading and shooting
     this.reload = Math.max(0.0, this.reload - delta);
-    if (keymaster.isPressed('x') && this.reload == 0.0) {
+    if (keymaster.isPressed('x') && this.reload === 0.0) {
       this.reload = RELOAD_TIME;
       this.shotController.shootLaserShot(this);
     }
