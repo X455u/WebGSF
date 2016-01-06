@@ -61,7 +61,8 @@ function render() {
   ship.update(delta);
 
   // Camera follow
-  let direction = new THREE.Vector3(0, 0, 1);
+  let direction = new THREE.Vector3(0, 0.5, 1);
+  direction.normalize();
   direction.applyQuaternion(ship.quaternion).setLength(CAMERA_DISTANCE);
   let cameraTargetPosition = ship.position.clone().add(direction);
   camera.position.lerp(cameraTargetPosition, CAMERA_VELOCITY * delta);
