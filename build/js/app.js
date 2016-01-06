@@ -5333,6 +5333,10 @@
 
 	var _Terrain2 = _interopRequireDefault(_Terrain);
 
+	var _ShotController = __webpack_require__(280);
+
+	var _ShotController2 = _interopRequireDefault(_ShotController);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	var CAMERA_DISTANCE = 4;
@@ -5359,9 +5363,10 @@
 	// prepare loader and load the model
 	var loader = new _three2.default.ObjectLoader();
 	var ship = undefined;
+	var shotController = new _ShotController2.default(scene);
 	var loadPromise = new _promise2.default(function (done) {
 	  loader.load('./media/star-wars-vader-tie-fighter.json', function (object) {
-	    ship = new _Ship2.default(object);
+	    ship = new _Ship2.default(object, shotController);
 	    scene.add(ship);
 	    done();
 	  });
@@ -5391,7 +5396,8 @@
 	  ship.update(delta);
 
 	  // Camera follow
-	  var direction = new _three2.default.Vector3(0, 0, 1);
+	  var direction = new _three2.default.Vector3(0, 0.5, 1);
+	  direction.normalize();
 	  direction.applyQuaternion(ship.quaternion).setLength(CAMERA_DISTANCE);
 	  var cameraTargetPosition = ship.position.clone().add(direction);
 	  camera.position.lerp(cameraTargetPosition, CAMERA_VELOCITY * delta);
@@ -42865,7 +42871,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _keymaster = __webpack_require__(280);
+	var _keymaster = __webpack_require__(278);
 
 	var _keymaster2 = _interopRequireDefault(_keymaster);
 
@@ -42874,6 +42880,8 @@
 	var TURN_SPEED = Math.PI; // rad/s
 	var MAX_VELOCITY = 20; // units/s
 	var ACCELERATION = 12.5; // units/s^2
+
+	var RELOAD_TIME = 0.25; // seconds
 
 	var Z_AXIS = new _three2.default.Vector3(0, 0, 1);
 	var X_AXIS = new _three2.default.Vector3(1, 0, 0);
@@ -42890,7 +42898,7 @@
 	var Ship = (function (_THREE$Object3D) {
 	  (0, _inherits3.default)(Ship, _THREE$Object3D);
 
-	  function Ship(ship) {
+	  function Ship(ship, shotController) {
 	    (0, _classCallCheck3.default)(this, Ship);
 
 	    var _this = (0, _possibleConstructorReturn3.default)(this, (0, _getPrototypeOf2.default)(Ship).call(this));
@@ -42912,6 +42920,8 @@
 	    if (isMobile()) {
 	      _this.setMobileEventListeners();
 	    }
+	    _this.shotController = shotController;
+	    _this.reload = 0.0;
 	    return _this;
 	  }
 
@@ -42937,6 +42947,14 @@
 	      this.velocity = Math.max(0, Math.min(MAX_VELOCITY, this.velocity + this.acceleration * delta));
 	      this.quaternion.slerp(this.targetQuaternion, delta * 10);
 	      this.translateZ(-this.velocity * delta);
+
+	      // Ship reloading and shooting
+	      this.reload = Math.max(0.0, this.reload - delta);
+	      if (_keymaster2.default.isPressed('x') && this.reload == 0.0) {
+	        this.reload = RELOAD_TIME;
+	        this.shotController.shootLaserShot(this);
+	      }
+	      this.shotController.update(delta);
 	    }
 	  }, {
 	    key: 'setMobileEventListeners',
@@ -55913,83 +55931,7 @@
 
 
 /***/ },
-/* 278 */,
-/* 279 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _getPrototypeOf = __webpack_require__(254);
-
-	var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
-
-	var _classCallCheck2 = __webpack_require__(257);
-
-	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
-
-	var _possibleConstructorReturn2 = __webpack_require__(261);
-
-	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
-
-	var _inherits2 = __webpack_require__(270);
-
-	var _inherits3 = _interopRequireDefault(_inherits2);
-
-	var _three = __webpack_require__(247);
-
-	var _three2 = _interopRequireDefault(_three);
-
-	var _lodash = __webpack_require__(276);
-
-	var _lodash2 = _interopRequireDefault(_lodash);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	var WIDTH = 200;
-	var HEIGHT = 200;
-	var DEPTH = 3;
-	var SIN_DEPTH = 8;
-
-	var Terrain = (function (_THREE$Mesh) {
-	  (0, _inherits3.default)(Terrain, _THREE$Mesh);
-
-	  function Terrain() {
-	    (0, _classCallCheck3.default)(this, Terrain);
-
-	    var map = new _three2.default.Geometry();
-	    var idx = function idx(x, y) {
-	      return x * HEIGHT + y;
-	    };
-
-	    _lodash2.default.range(WIDTH).forEach(function (x) {
-	      return _lodash2.default.range(HEIGHT).forEach(function (y) {
-	        var height = Math.sin(x / 6) * SIN_DEPTH + Math.sin(y / 6) * SIN_DEPTH + Math.random() * DEPTH;
-	        map.vertices.push(new _three2.default.Vector3(x, y, height));
-	        if (x > 0 && y > 0) {
-	          map.faces.push(new _three2.default.Face3(idx(x, y - 1), idx(x, y), idx(x - 1, y)));
-	          map.faces.push(new _three2.default.Face3(idx(x - 1, y - 1), idx(x, y - 1), idx(x - 1, y)));
-	        }
-	      });
-	    });
-
-	    map.computeFaceNormals();
-
-	    return (0, _possibleConstructorReturn3.default)(this, (0, _getPrototypeOf2.default)(Terrain).call(this, map, new _three2.default.MeshPhongMaterial({
-	      color: 0x5555aa
-	    })));
-	  }
-
-	  return Terrain;
-	})(_three2.default.Mesh);
-
-	exports.default = Terrain;
-
-/***/ },
-/* 280 */
+/* 278 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//     keymaster.js
@@ -56289,6 +56231,231 @@
 
 	})(this);
 
+
+/***/ },
+/* 279 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _getPrototypeOf = __webpack_require__(254);
+
+	var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
+
+	var _classCallCheck2 = __webpack_require__(257);
+
+	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+	var _possibleConstructorReturn2 = __webpack_require__(261);
+
+	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+	var _inherits2 = __webpack_require__(270);
+
+	var _inherits3 = _interopRequireDefault(_inherits2);
+
+	var _three = __webpack_require__(247);
+
+	var _three2 = _interopRequireDefault(_three);
+
+	var _lodash = __webpack_require__(276);
+
+	var _lodash2 = _interopRequireDefault(_lodash);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var WIDTH = 200;
+	var HEIGHT = 200;
+	var DEPTH = 3;
+	var SIN_DEPTH = 8;
+
+	var Terrain = (function (_THREE$Mesh) {
+	  (0, _inherits3.default)(Terrain, _THREE$Mesh);
+
+	  function Terrain() {
+	    (0, _classCallCheck3.default)(this, Terrain);
+
+	    var map = new _three2.default.Geometry();
+	    var idx = function idx(x, y) {
+	      return x * HEIGHT + y;
+	    };
+
+	    _lodash2.default.range(WIDTH).forEach(function (x) {
+	      return _lodash2.default.range(HEIGHT).forEach(function (y) {
+	        var height = Math.sin(x / 6) * SIN_DEPTH + Math.sin(y / 6) * SIN_DEPTH + Math.random() * DEPTH;
+	        map.vertices.push(new _three2.default.Vector3(x, y, height));
+	        if (x > 0 && y > 0) {
+	          map.faces.push(new _three2.default.Face3(idx(x, y - 1), idx(x, y), idx(x - 1, y)));
+	          map.faces.push(new _three2.default.Face3(idx(x - 1, y - 1), idx(x, y - 1), idx(x - 1, y)));
+	        }
+	      });
+	    });
+
+	    map.computeFaceNormals();
+
+	    return (0, _possibleConstructorReturn3.default)(this, (0, _getPrototypeOf2.default)(Terrain).call(this, map, new _three2.default.MeshPhongMaterial({
+	      color: 0x5555aa
+	    })));
+	  }
+
+	  return Terrain;
+	})(_three2.default.Mesh);
+
+	exports.default = Terrain;
+
+/***/ },
+/* 280 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _classCallCheck2 = __webpack_require__(257);
+
+	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+	var _createClass2 = __webpack_require__(258);
+
+	var _createClass3 = _interopRequireDefault(_createClass2);
+
+	var _lodash = __webpack_require__(276);
+
+	var _lodash2 = _interopRequireDefault(_lodash);
+
+	var _three = __webpack_require__(247);
+
+	var _three2 = _interopRequireDefault(_three);
+
+	var _LaserShot = __webpack_require__(281);
+
+	var _LaserShot2 = _interopRequireDefault(_LaserShot);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var ShotController = (function () {
+	  function ShotController(scene) {
+	    (0, _classCallCheck3.default)(this, ShotController);
+
+	    this.shots = [];
+	    this.scene = scene;
+	  }
+
+	  (0, _createClass3.default)(ShotController, [{
+	    key: 'update',
+	    value: function update(delta) {
+	      var _this = this;
+
+	      this.shots.forEach(function (shot) {
+	        shot.update(delta);
+	        if (shot.lifetimeLeft <= 0.0) {
+	          _this.scene.remove(shot);
+	          _this.shots.splice(_this.shots.indexOf(shot), 1);
+	        }
+	      });
+	    }
+	  }, {
+	    key: 'shootLaserShot',
+	    value: function shootLaserShot(ship) {
+	      var shot = new _LaserShot2.default();
+	      shot.position.copy(ship.position);
+	      shot.quaternion.copy(ship.quaternion);
+	      this.shots.push(shot);
+	      this.scene.add(shot);
+	    }
+	  }]);
+	  return ShotController;
+	})();
+
+	exports.default = ShotController;
+
+/***/ },
+/* 281 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _getPrototypeOf = __webpack_require__(254);
+
+	var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
+
+	var _classCallCheck2 = __webpack_require__(257);
+
+	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+	var _createClass2 = __webpack_require__(258);
+
+	var _createClass3 = _interopRequireDefault(_createClass2);
+
+	var _possibleConstructorReturn2 = __webpack_require__(261);
+
+	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+	var _inherits2 = __webpack_require__(270);
+
+	var _inherits3 = _interopRequireDefault(_inherits2);
+
+	var _lodash = __webpack_require__(276);
+
+	var _lodash2 = _interopRequireDefault(_lodash);
+
+	var _three = __webpack_require__(247);
+
+	var _three2 = _interopRequireDefault(_three);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var VELOCITY = 100; // units/s
+	var LIFETIME = 5.0; // seconds
+
+	var LaserShot = (function (_THREE$Object3D) {
+	  (0, _inherits3.default)(LaserShot, _THREE$Object3D);
+
+	  function LaserShot() {
+	    (0, _classCallCheck3.default)(this, LaserShot);
+
+	    var _this = (0, _possibleConstructorReturn3.default)(this, (0, _getPrototypeOf2.default)(LaserShot).call(this));
+
+	    var shotGeometry = new _three2.default.CylinderGeometry(1, 1, 10, 8, 1);
+	    shotGeometry.scale(0.05, 0.05, 0.05);
+	    shotGeometry.rotateX(Math.PI / 2);
+	    var shotMaterial = new _three2.default.MeshPhongMaterial({
+	      color: 0x000000,
+	      specular: 0x666666,
+	      emissive: 0xff0000,
+	      shininess: 10,
+	      shading: _three2.default.SmoothShading,
+	      opacity: 0.9,
+	      transparent: true
+	    });
+	    var shotMesh = new _three2.default.Mesh(shotGeometry, shotMaterial);
+
+	    _this.add(shotMesh);
+	    _this.lifetimeLeft = LIFETIME;
+	    return _this;
+	  }
+
+	  (0, _createClass3.default)(LaserShot, [{
+	    key: 'update',
+	    value: function update(delta) {
+	      this.lifetimeLeft -= delta;
+	      this.translateZ(-VELOCITY * delta);
+	    }
+	  }]);
+	  return LaserShot;
+	})(_three2.default.Object3D);
+
+	exports.default = LaserShot;
 
 /***/ }
 /******/ ]);
