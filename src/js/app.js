@@ -1,6 +1,7 @@
 import THREE from 'three';
 
 import Ship from './Ship';
+import Planet from './Planet';
 import Terrain from './Terrain';
 import ShotController from './ShotController';
 
@@ -32,6 +33,9 @@ let shotController = new ShotController(scene);
 let loadPromise = new Promise(done => {
   loader.load('./media/star-wars-vader-tie-fighter.json', function(object) {
     ship = new Ship(object, shotController);
+    ship.position.x = -400;
+    ship.position.y = -300;
+    ship.position.z = 50;
     scene.add(ship);
     done();
   });
@@ -44,6 +48,13 @@ map.position.x = -10;
 map.position.y = -10;
 map.position.z = -10;
 scene.add(map);
+
+// Planet testing
+let planet = new Planet(500);
+planet.position.x = 500;
+planet.position.y = 300;
+planet.position.z = 300;
+scene.add(planet);
 
 // Format debugging text
 let text = document.createElement('div');
