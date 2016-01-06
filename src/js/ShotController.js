@@ -1,6 +1,4 @@
-import _ from 'lodash';
-import THREE from 'three';
-import LaserShot from './LaserShot'
+import LaserShot from './LaserShot';
 
 class ShotController {
 
@@ -16,7 +14,7 @@ class ShotController {
         this.scene.remove(shot);
         this.shots.splice(this.shots.indexOf(shot), 1);
       }
-    })
+    });
   }
 
   shootLaserShot(ship) {
