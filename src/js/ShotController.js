@@ -10,12 +10,13 @@ class ShotController {
   }
 
   update(delta) {
-    // this.shots.forEach(function(shot, delta) {
-    //   shot.update(delta);
-    // })
-    for(var i=0; i<this.shots.length; i++) {
-      this.shots[i].update(delta);
-    }
+    this.shots.forEach(shot => {
+      shot.update(delta);
+      if (shot.lifetimeLeft <= 0.0) {
+        this.scene.remove(shot);
+        this.shots.splice(this.shots.indexOf(shot), 1);
+      }
+    })
   }
 
   shootLaserShot(ship) {
