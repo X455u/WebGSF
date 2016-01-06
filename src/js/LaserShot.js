@@ -4,9 +4,10 @@ import THREE from 'three';
 const VELOCITY = 50; // units/s
 const LIFETIME = 5.0; // seconds
 
-class LaserShot extends THREE.Mesh {
+class LaserShot extends THREE.Object3D {
 
   constructor() {
+    super();
     let shotGeometry = new THREE.CylinderGeometry( 1, 1, 10, 8, 1 );
     shotGeometry.scale(0.05,0.05,0.05);
     shotGeometry.rotateX(Math.PI / 2);
@@ -19,9 +20,9 @@ class LaserShot extends THREE.Mesh {
       opacity: 0.9,
       transparent: true
     } );
-    // let shotMesh = THREE.Mesh( shotGeometry, material );
-    // shotLight = new THREE.PointLight( 0xff0040, 2, 50 );
-    super(shotGeometry, shotMaterial);
+    let shotMesh = new THREE.Mesh(shotGeometry, shotMaterial);
+
+    this.add(shotMesh);
     this.lifetimeLeft = LIFETIME;
   }
 
