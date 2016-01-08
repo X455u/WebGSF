@@ -3,8 +3,8 @@ import THREE from 'three';
 import keymaster from 'keymaster';
 
 const TURN_SPEED = Math.PI; // rad/s
-const MAX_VELOCITY = 20; // units/s
-const ACCELERATION = 12.5; // units/s^2
+const MAX_VELOCITY = 50; // units/s
+const ACCELERATION = 25; // units/s^2
 
 const RELOAD_TIME = 0.25; // seconds
 
