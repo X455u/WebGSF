@@ -5329,9 +5329,9 @@
 
 	var _Ship2 = _interopRequireDefault(_Ship);
 
-	var _Terrain = __webpack_require__(279);
+	var _Planet = __webpack_require__(282);
 
-	var _Terrain2 = _interopRequireDefault(_Terrain);
+	var _Planet2 = _interopRequireDefault(_Planet);
 
 	var _ShotController = __webpack_require__(280);
 
@@ -5346,14 +5346,14 @@
 
 	var scene = new _three2.default.Scene();
 	var aspect = window.innerWidth / window.innerHeight;
-	var camera = new _three2.default.PerspectiveCamera(75, aspect, 0.1, 1000);
+	var camera = new _three2.default.PerspectiveCamera(75, aspect, 0.1, 10000);
 	var renderer = new _three2.default.WebGLRenderer();
 	renderer.setSize(window.innerWidth, window.innerHeight);
 	document.body.appendChild(renderer.domElement);
 	renderer.domElement.setAttribute('tabIndex', '0');
 	renderer.domElement.focus();
 
-	var ambientLight = new _three2.default.AmbientLight(0x222222, 0.1);
+	var ambientLight = new _three2.default.AmbientLight(0x444444, 0.1);
 	var light = new _three2.default.DirectionalLight(0xffffff, 1);
 	light.position.set(0.2, 0.2, 0.8);
 	scene.add(ambientLight);
@@ -5372,13 +5372,10 @@
 	  });
 	});
 
-	// Terrain testing
-	var map = new _Terrain2.default();
-	map.rotation.x = -0.8;
-	map.position.x = -10;
-	map.position.y = -10;
-	map.position.z = -10;
-	scene.add(map);
+	// Planet testing
+	var planet = new _Planet2.default(500);
+	planet.position.y = -550;
+	scene.add(planet);
 
 	// Format debugging text
 	var text = document.createElement('div');
@@ -42950,7 +42947,7 @@
 
 	      // Ship reloading and shooting
 	      this.reload = Math.max(0.0, this.reload - delta);
-	      if (_keymaster2.default.isPressed('x') && this.reload == 0.0) {
+	      if (_keymaster2.default.isPressed('x') && this.reload === 0.0) {
 	        this.reload = RELOAD_TIME;
 	        this.shotController.shootLaserShot(this);
 	      }
@@ -56233,81 +56230,7 @@
 
 
 /***/ },
-/* 279 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _getPrototypeOf = __webpack_require__(254);
-
-	var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
-
-	var _classCallCheck2 = __webpack_require__(257);
-
-	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
-
-	var _possibleConstructorReturn2 = __webpack_require__(261);
-
-	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
-
-	var _inherits2 = __webpack_require__(270);
-
-	var _inherits3 = _interopRequireDefault(_inherits2);
-
-	var _three = __webpack_require__(247);
-
-	var _three2 = _interopRequireDefault(_three);
-
-	var _lodash = __webpack_require__(276);
-
-	var _lodash2 = _interopRequireDefault(_lodash);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	var WIDTH = 200;
-	var HEIGHT = 200;
-	var DEPTH = 3;
-	var SIN_DEPTH = 8;
-
-	var Terrain = (function (_THREE$Mesh) {
-	  (0, _inherits3.default)(Terrain, _THREE$Mesh);
-
-	  function Terrain() {
-	    (0, _classCallCheck3.default)(this, Terrain);
-
-	    var map = new _three2.default.Geometry();
-	    var idx = function idx(x, y) {
-	      return x * HEIGHT + y;
-	    };
-
-	    _lodash2.default.range(WIDTH).forEach(function (x) {
-	      return _lodash2.default.range(HEIGHT).forEach(function (y) {
-	        var height = Math.sin(x / 6) * SIN_DEPTH + Math.sin(y / 6) * SIN_DEPTH + Math.random() * DEPTH;
-	        map.vertices.push(new _three2.default.Vector3(x, y, height));
-	        if (x > 0 && y > 0) {
-	          map.faces.push(new _three2.default.Face3(idx(x, y - 1), idx(x, y), idx(x - 1, y)));
-	          map.faces.push(new _three2.default.Face3(idx(x - 1, y - 1), idx(x, y - 1), idx(x - 1, y)));
-	        }
-	      });
-	    });
-
-	    map.computeFaceNormals();
-
-	    return (0, _possibleConstructorReturn3.default)(this, (0, _getPrototypeOf2.default)(Terrain).call(this, map, new _three2.default.MeshPhongMaterial({
-	      color: 0x5555aa
-	    })));
-	  }
-
-	  return Terrain;
-	})(_three2.default.Mesh);
-
-	exports.default = Terrain;
-
-/***/ },
+/* 279 */,
 /* 280 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -56324,14 +56247,6 @@
 	var _createClass2 = __webpack_require__(258);
 
 	var _createClass3 = _interopRequireDefault(_createClass2);
-
-	var _lodash = __webpack_require__(276);
-
-	var _lodash2 = _interopRequireDefault(_lodash);
-
-	var _three = __webpack_require__(247);
-
-	var _three2 = _interopRequireDefault(_three);
 
 	var _LaserShot = __webpack_require__(281);
 
@@ -56405,10 +56320,6 @@
 
 	var _inherits3 = _interopRequireDefault(_inherits2);
 
-	var _lodash = __webpack_require__(276);
-
-	var _lodash2 = _interopRequireDefault(_lodash);
-
 	var _three = __webpack_require__(247);
 
 	var _three2 = _interopRequireDefault(_three);
@@ -56418,6 +56329,20 @@
 	var VELOCITY = 100; // units/s
 	var LIFETIME = 5.0; // seconds
 
+	var shotGeometry = new _three2.default.CylinderGeometry(0.075, 0.075, 0.75, 8, 1);
+	shotGeometry.rotateX(Math.PI / 2);
+	// TODO: Subdivision on shotGeometry.
+	var shotMaterial = new _three2.default.MeshPhongMaterial({
+	  color: 0x000000,
+	  specular: 0x666666,
+	  emissive: 0xff0000,
+	  shininess: 10,
+	  shading: _three2.default.SmoothShading,
+	  opacity: 0.9,
+	  transparent: true
+	});
+	var shotMesh = new _three2.default.Mesh(shotGeometry, shotMaterial);
+
 	var LaserShot = (function (_THREE$Object3D) {
 	  (0, _inherits3.default)(LaserShot, _THREE$Object3D);
 
@@ -56426,21 +56351,7 @@
 
 	    var _this = (0, _possibleConstructorReturn3.default)(this, (0, _getPrototypeOf2.default)(LaserShot).call(this));
 
-	    var shotGeometry = new _three2.default.CylinderGeometry(1, 1, 10, 8, 1);
-	    shotGeometry.scale(0.05, 0.05, 0.05);
-	    shotGeometry.rotateX(Math.PI / 2);
-	    var shotMaterial = new _three2.default.MeshPhongMaterial({
-	      color: 0x000000,
-	      specular: 0x666666,
-	      emissive: 0xff0000,
-	      shininess: 10,
-	      shading: _three2.default.SmoothShading,
-	      opacity: 0.9,
-	      transparent: true
-	    });
-	    var shotMesh = new _three2.default.Mesh(shotGeometry, shotMaterial);
-
-	    _this.add(shotMesh);
+	    _this.add(shotMesh.clone());
 	    _this.lifetimeLeft = LIFETIME;
 	    return _this;
 	  }
@@ -56456,6 +56367,372 @@
 	})(_three2.default.Object3D);
 
 	exports.default = LaserShot;
+
+/***/ },
+/* 282 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _getPrototypeOf = __webpack_require__(254);
+
+	var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
+
+	var _classCallCheck2 = __webpack_require__(257);
+
+	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+	var _possibleConstructorReturn2 = __webpack_require__(261);
+
+	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+	var _inherits2 = __webpack_require__(270);
+
+	var _inherits3 = _interopRequireDefault(_inherits2);
+
+	var _lodash = __webpack_require__(276);
+
+	var _lodash2 = _interopRequireDefault(_lodash);
+
+	var _three = __webpack_require__(247);
+
+	var _three2 = _interopRequireDefault(_three);
+
+	var _SubdivisionModifier = __webpack_require__(283);
+
+	var _SubdivisionModifier2 = _interopRequireDefault(_SubdivisionModifier);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var DETAIL = 4;
+	var NOISE = 0.16;
+	var SMOOTHNESS = 2.3;
+
+	var Planet = (function (_THREE$Mesh) {
+	  (0, _inherits3.default)(Planet, _THREE$Mesh);
+
+	  function Planet(radius) {
+	    (0, _classCallCheck3.default)(this, Planet);
+
+	    var geometry = new _three2.default.IcosahedronGeometry(radius, 1);
+	    var modifier = new _SubdivisionModifier2.default(1);
+
+	    _lodash2.default.range(DETAIL).forEach(function (i) {
+	      modifier.modify(geometry);
+	      geometry.vertices.forEach(function (v) {
+	        var noiseFactor = NOISE / Math.pow(SMOOTHNESS, i);
+	        var s = 1 + (2 * Math.random() - 1) * noiseFactor;
+	        v.multiplyScalar(s);
+	      });
+	    });
+
+	    geometry.faceVertexUvs = [];
+	    geometry.uvsNeedUpdate = true;
+
+	    var material = new _three2.default.MeshPhongMaterial({
+	      color: 0x903d3d,
+	      shininess: 10
+	    });
+
+	    return (0, _possibleConstructorReturn3.default)(this, (0, _getPrototypeOf2.default)(Planet).call(this, geometry, material));
+	  }
+
+	  return Planet;
+	})(_three2.default.Mesh);
+
+	exports.default = Planet;
+
+/***/ },
+/* 283 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _classCallCheck2 = __webpack_require__(257);
+
+	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+	var _createClass2 = __webpack_require__(258);
+
+	var _createClass3 = _interopRequireDefault(_createClass2);
+
+	var _three = __webpack_require__(247);
+
+	var _three2 = _interopRequireDefault(_three);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var WARNINGS = !true; // Set to true for development
+	/* eslint no-console: 0 */
+	/*
+	 * THREE.js SUBDIVISION MODIFIER EXAMPLE BY
+	 *    zz85 / http://twitter.com/blurspline / http://www.lab4games.net/zz85/blog
+	 *
+	 * SOURCE: https://github.com/mrdoob/three.js/blob/master/examples/js/modifiers/SubdivisionModifier.js
+	 *
+	 * REWRITTEN WITH ES6 SYNTAX
+	 *
+	 */
+
+	var ABC = ['a', 'b', 'c'];
+
+	function getEdge(a, b, map) {
+	  var vertexIndexA = Math.min(a, b);
+	  var vertexIndexB = Math.max(a, b);
+	  var key = vertexIndexA + '_' + vertexIndexB;
+	  return map[key];
+	}
+
+	function processEdge(a, b, vertices, map, face, metaVertices) {
+	  var vertexIndexA = Math.min(a, b);
+	  var vertexIndexB = Math.max(a, b);
+	  var key = vertexIndexA + '_' + vertexIndexB;
+	  var edge = undefined;
+
+	  if (key in map) {
+	    edge = map[key];
+	  } else {
+	    var vertexA = vertices[vertexIndexA];
+	    var vertexB = vertices[vertexIndexB];
+	    edge = {
+	      a: vertexA, // pointer reference
+	      b: vertexB,
+	      newEdge: null,
+	      // aIndex: a, // numbered reference
+	      // bIndex: b,
+	      faces: [] // pointers to face
+	    };
+	    map[key] = edge;
+	  }
+
+	  edge.faces.push(face);
+
+	  metaVertices[a].edges.push(edge);
+	  metaVertices[b].edges.push(edge);
+	}
+
+	function generateLookups(vertices, faces, metaVertices, edges) {
+
+	  var i = undefined,
+	      il = undefined,
+	      face = undefined;
+
+	  for (i = 0, il = vertices.length; i < il; i++) {
+	    metaVertices[i] = { edges: [] };
+	  }
+
+	  for (i = 0, il = faces.length; i < il; i++) {
+	    face = faces[i];
+	    processEdge(face.a, face.b, vertices, edges, face, metaVertices);
+	    processEdge(face.b, face.c, vertices, edges, face, metaVertices);
+	    processEdge(face.c, face.a, vertices, edges, face, metaVertices);
+	  }
+	}
+
+	function newFace(newFaces, a, b, c) {
+	  newFaces.push(new _three2.default.Face3(a, b, c));
+	}
+
+	var SubdivisionModifier = (function () {
+	  function SubdivisionModifier(subdivisions) {
+	    (0, _classCallCheck3.default)(this, SubdivisionModifier);
+
+	    this.subdivisions = subdivisions === undefined ? 1 : subdivisions;
+	  }
+
+	  (0, _createClass3.default)(SubdivisionModifier, [{
+	    key: 'modify',
+	    value: function modify(geometry) {
+	      var repeats = this.subdivisions;
+	      while (repeats-- > 0) {
+	        this.smooth(geometry);
+	      }
+	      geometry.computeFaceNormals();
+	      geometry.computeVertexNormals();
+	    }
+	  }, {
+	    key: 'smooth',
+	    value: function smooth(geometry) {
+	      var tmp = new _three2.default.Vector3();
+	      var oldVertices = undefined,
+	          oldFaces = undefined;
+	      var newVertices = undefined,
+	          newFaces = undefined;
+	      var n = undefined,
+	          i = undefined,
+	          il = undefined,
+	          j = undefined,
+	          k = undefined;
+	      var metaVertices = undefined,
+	          sourceEdges = undefined;
+	      var newEdgeVertices = undefined,
+	          newSourceVertices = undefined;
+
+	      oldVertices = geometry.vertices; // { x, y, z}
+	      oldFaces = geometry.faces; // { a: oldVertex1, b: oldVertex2, c: oldVertex3 }
+
+	      // Step 0: Preprocess Geometry to Generate edges Lookup
+
+	      metaVertices = new Array(oldVertices.length);
+	      sourceEdges = {}; // Edge => { oldVertex1, oldVertex2, faces[]  }
+	      generateLookups(oldVertices, oldFaces, metaVertices, sourceEdges);
+
+	      // Step 1: For each edge, create a new Edge Vertex, then position it.
+
+	      newEdgeVertices = [];
+	      var other = undefined,
+	          currentEdge = undefined,
+	          newEdge = undefined,
+	          face = undefined;
+	      var edgeVertexWeight = undefined,
+	          adjacentVertexWeight = undefined,
+	          connectedFaces = undefined;
+
+	      for (i in sourceEdges) {
+	        currentEdge = sourceEdges[i];
+	        newEdge = new _three2.default.Vector3();
+
+	        edgeVertexWeight = 3 / 8;
+	        adjacentVertexWeight = 1 / 8;
+
+	        connectedFaces = currentEdge.faces.length;
+
+	        // check how many linked faces. 2 should be correct.
+	        if (connectedFaces !== 2) {
+	          // if length is not 2, handle condition
+	          edgeVertexWeight = 0.5;
+	          adjacentVertexWeight = 0;
+
+	          if (connectedFaces !== 1) {
+	            if (WARNINGS) {
+	              console.warn('Subdivision Modifier: Number of connected faces != 2, is: ', connectedFaces, currentEdge);
+	            }
+	          }
+	        }
+
+	        newEdge.addVectors(currentEdge.a, currentEdge.b).multiplyScalar(edgeVertexWeight);
+	        tmp.set(0, 0, 0);
+
+	        for (j = 0; j < connectedFaces; j++) {
+	          face = currentEdge.faces[j];
+	          for (k = 0; k < 3; k++) {
+	            other = oldVertices[face[ABC[k]]];
+	            if (other !== currentEdge.a && other !== currentEdge.b) {
+	              break;
+	            }
+	          }
+	          tmp.add(other);
+	        }
+
+	        tmp.multiplyScalar(adjacentVertexWeight);
+	        newEdge.add(tmp);
+
+	        currentEdge.newEdge = newEdgeVertices.length;
+	        newEdgeVertices.push(newEdge);
+
+	        // console.log(currentEdge, newEdge);
+	      }
+
+	      // Step 2: Reposition each source vertices.
+
+	      var beta = undefined,
+	          sourceVertexWeight = undefined,
+	          connectingVertexWeight = undefined;
+	      var connectingEdge = undefined,
+	          connectingEdges = undefined,
+	          oldVertex = undefined,
+	          newSourceVertex = undefined;
+	      newSourceVertices = [];
+
+	      for (i = 0, il = oldVertices.length; i < il; i++) {
+	        oldVertex = oldVertices[i];
+	        // find all connecting edges (using lookupTable)
+	        connectingEdges = metaVertices[i].edges;
+	        n = connectingEdges.length;
+
+	        if (n === 3) {
+	          beta = 3 / 16;
+	        } else if (n > 3) {
+	          beta = 3 / (8 * n); // Warren's modified formula
+	        }
+	        // Loop's original beta formula
+	        // beta = 1 / n * ( 5/8 - Math.pow( 3/8 + 1/4 * Math.cos( 2 * Math. PI / n ), 2) );
+	        sourceVertexWeight = 1 - n * beta;
+	        connectingVertexWeight = beta;
+	        if (n <= 2) {
+	          // crease and boundary rules
+	          // console.warn('crease and boundary rules');
+	          if (n === 2) {
+	            if (WARNINGS) {
+	              console.warn('2 connecting edges', connectingEdges);
+	            }
+	            sourceVertexWeight = 3 / 4;
+	            connectingVertexWeight = 1 / 8;
+	            // sourceVertexWeight = 1;
+	            // connectingVertexWeight = 0;
+	          } else if (n === 1) {
+	              if (WARNINGS) {
+	                console.warn('only 1 connecting edge');
+	              }
+	            } else if (n === 0) {
+	              if (WARNINGS) {
+	                console.warn('0 connecting edges');
+	              }
+	            }
+	        }
+
+	        newSourceVertex = oldVertex.clone().multiplyScalar(sourceVertexWeight);
+	        tmp.set(0, 0, 0);
+	        for (j = 0; j < n; j++) {
+	          connectingEdge = connectingEdges[j];
+	          other = connectingEdge.a !== oldVertex ? connectingEdge.a : connectingEdge.b;
+	          tmp.add(other);
+	        }
+
+	        tmp.multiplyScalar(connectingVertexWeight);
+	        newSourceVertex.add(tmp);
+	        newSourceVertices.push(newSourceVertex);
+	      }
+
+	      // Step 3: Generate Faces between source vertecies and edge vertices.
+
+	      newVertices = newSourceVertices.concat(newEdgeVertices);
+	      var sl = newSourceVertices.length,
+	          edge1 = undefined,
+	          edge2 = undefined,
+	          edge3 = undefined;
+	      newFaces = [];
+
+	      for (i = 0, il = oldFaces.length; i < il; i++) {
+	        face = oldFaces[i];
+	        // find the 3 new edges vertex of each old face
+	        edge1 = getEdge(face.a, face.b, sourceEdges).newEdge + sl;
+	        edge2 = getEdge(face.b, face.c, sourceEdges).newEdge + sl;
+	        edge3 = getEdge(face.c, face.a, sourceEdges).newEdge + sl;
+	        // create 4 faces.
+	        newFace(newFaces, edge1, edge2, edge3);
+	        newFace(newFaces, face.a, edge1, edge3);
+	        newFace(newFaces, face.b, edge2, edge1);
+	        newFace(newFaces, face.c, edge3, edge2);
+	      }
+
+	      // Overwrite old arrays
+	      geometry.vertices = newVertices;
+	      geometry.faces = newFaces;
+	    }
+	  }]);
+	  return SubdivisionModifier;
+	})();
+
+	exports.default = SubdivisionModifier;
 
 /***/ }
 /******/ ]);
