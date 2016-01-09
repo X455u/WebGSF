@@ -5339,7 +5339,7 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	var CAMERA_DISTANCE = 4;
+	var CAMERA_DISTANCE = 5;
 	var CAMERA_VELOCITY = 5;
 
 	var MAX_DELTA = 0.1; // s
@@ -5361,14 +5361,26 @@
 	camera.position.z = CAMERA_DISTANCE;
 
 	// prepare loader and load the model
-	var loader = new _three2.default.ObjectLoader();
+	var loader = new _three2.default.JSONLoader();
+	var texLoader = new _three2.default.TextureLoader();
 	var ship = undefined;
 	var shotController = new _ShotController2.default(scene);
+	// let textureLoader = THREE.TextureLoader();
 	var loadPromise = new _promise2.default(function (done) {
-	  loader.load('./media/star-wars-vader-tie-fighter.json', function (object) {
-	    ship = new _Ship2.default(object, shotController);
-	    scene.add(ship);
-	    done();
+	  texLoader.load('./media/spaceship_comp.png', function (texture) {
+	    texLoader.load('./media/spaceship_nor.png', function (normalMap) {
+	      loader.load('./media/nicce_fighter.json', function (geometry) {
+	        var material = new _three2.default.MeshPhongMaterial({
+	          map: texture,
+	          normalMap: normalMap
+	        });
+	        geometry.scale(0.5, 0.5, 0.5);
+	        var mesh = new _three2.default.Mesh(geometry, material);
+	        ship = new _Ship2.default(mesh, shotController);
+	        scene.add(ship);
+	        done();
+	      });
+	    });
 	  });
 	});
 
@@ -42875,8 +42887,8 @@
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	var TURN_SPEED = Math.PI; // rad/s
-	var MAX_VELOCITY = 20; // units/s
-	var ACCELERATION = 12.5; // units/s^2
+	var MAX_VELOCITY = 50; // units/s
+	var ACCELERATION = 40; // units/s^2
 
 	var RELOAD_TIME = 0.25; // seconds
 
@@ -42892,8 +42904,8 @@
 	  );
 	}
 
-	var Ship = (function (_THREE$Object3D) {
-	  (0, _inherits3.default)(Ship, _THREE$Object3D);
+	var Ship = (function (_THREE$Mesh) {
+	  (0, _inherits3.default)(Ship, _THREE$Mesh);
 
 	  function Ship(ship, shotController) {
 	    (0, _classCallCheck3.default)(this, Ship);
@@ -42919,6 +42931,7 @@
 	    }
 	    _this.shotController = shotController;
 	    _this.reload = 0.0;
+	    _this.activeGun = 1; // Bad initial solution
 	    return _this;
 	  }
 
@@ -42980,7 +42993,7 @@
 	    }
 	  }]);
 	  return Ship;
-	})(_three2.default.Object3D);
+	})(_three2.default.Mesh);
 
 	exports.default = Ship;
 
@@ -56281,6 +56294,9 @@
 	      var shot = new _LaserShot2.default();
 	      shot.position.copy(ship.position);
 	      shot.quaternion.copy(ship.quaternion);
+	      shot.translateX(0.7 * ship.activeGun); // Bad initial solution
+	      shot.translateZ(-2.5); // Bad initial solution
+	      ship.activeGun *= -1; // Bad initial solution
 	      this.shots.push(shot);
 	      this.scene.add(shot);
 	    }
@@ -56326,22 +56342,8 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	var VELOCITY = 100; // units/s
+	var VELOCITY = 300; // units/s
 	var LIFETIME = 5.0; // seconds
-
-	var shotGeometry = new _three2.default.CylinderGeometry(0.075, 0.075, 0.75, 8, 1);
-	shotGeometry.rotateX(Math.PI / 2);
-	// TODO: Subdivision on shotGeometry.
-	var shotMaterial = new _three2.default.MeshPhongMaterial({
-	  color: 0x000000,
-	  specular: 0x666666,
-	  emissive: 0xff0000,
-	  shininess: 10,
-	  shading: _three2.default.SmoothShading,
-	  opacity: 0.9,
-	  transparent: true
-	});
-	var shotMesh = new _three2.default.Mesh(shotGeometry, shotMaterial);
 
 	var LaserShot = (function (_THREE$Object3D) {
 	  (0, _inherits3.default)(LaserShot, _THREE$Object3D);
@@ -56351,7 +56353,20 @@
 
 	    var _this = (0, _possibleConstructorReturn3.default)(this, (0, _getPrototypeOf2.default)(LaserShot).call(this));
 
-	    _this.add(shotMesh.clone());
+	    var shotGeometry = new _three2.default.CylinderGeometry(0.05, 0.05, 5, 8, 1);
+	    shotGeometry.rotateX(Math.PI / 2);
+	    var shotMaterial = new _three2.default.MeshPhongMaterial({
+	      color: 0x000000,
+	      specular: 0x666666,
+	      emissive: 0xff0000,
+	      shininess: 10,
+	      shading: _three2.default.SmoothShading,
+	      opacity: 0.9,
+	      transparent: true
+	    });
+	    var shotMesh = new _three2.default.Mesh(shotGeometry, shotMaterial);
+
+	    _this.add(shotMesh);
 	    _this.lifetimeLeft = LIFETIME;
 	    return _this;
 	  }
