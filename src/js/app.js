@@ -4,7 +4,7 @@ import Ship from './Ship';
 import Planet from './Planet';
 import ShotController from './ShotController';
 
-const CAMERA_DISTANCE = 4;
+const CAMERA_DISTANCE = 5;
 const CAMERA_VELOCITY = 5;
 
 const MAX_DELTA = 0.1; // s
@@ -26,14 +26,26 @@ scene.add(light);
 camera.position.z = CAMERA_DISTANCE;
 
 // prepare loader and load the model
-let loader = new THREE.ObjectLoader();
+let loader = new THREE.JSONLoader();
+let texLoader = new THREE.TextureLoader();
 let ship;
 let shotController = new ShotController(scene);
+// let textureLoader = THREE.TextureLoader();
 let loadPromise = new Promise(done => {
-  loader.load('./media/star-wars-vader-tie-fighter.json', function(object) {
-    ship = new Ship(object, shotController);
-    scene.add(ship);
-    done();
+  texLoader.load('./media/spaceship_comp.png', function(texture) {
+    texLoader.load('./media/spaceship_nor.png', function(normalMap) {
+      loader.load('./media/nicce_fighter.json', function(geometry) {
+        let material = new THREE.MeshPhongMaterial({
+          map: texture,
+          normalMap: normalMap
+        });
+        geometry.scale(0.5, 0.5, 0.5);
+        let mesh = new THREE.Mesh(geometry, material);
+        ship = new Ship(mesh, shotController);
+        scene.add(ship);
+        done();
+      });
+    });
   });
 });
 

@@ -4,7 +4,7 @@ import keymaster from 'keymaster';
 
 const TURN_SPEED = Math.PI; // rad/s
 const MAX_VELOCITY = 50; // units/s
-const ACCELERATION = 25; // units/s^2
+const ACCELERATION = 40; // units/s^2
 
 const RELOAD_TIME = 0.25; // seconds
 
@@ -20,7 +20,7 @@ function isAndroid() {
 }
 
 
-class Ship extends THREE.Object3D {
+class Ship extends THREE.Mesh {
 
   constructor(ship, shotController) {
     super();
