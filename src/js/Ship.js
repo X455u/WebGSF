@@ -43,6 +43,7 @@ class Ship extends THREE.Mesh {
     }
     this.shotController = shotController;
     this.reload = 0.0;
+    this.activeGun = 1; // Bad initial solution
   }
 
   update(delta) {

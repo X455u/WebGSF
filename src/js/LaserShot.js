@@ -1,14 +1,13 @@
 import THREE from 'three';
 
-const VELOCITY = 100; // units/s
+const VELOCITY = 300; // units/s
 const LIFETIME = 5.0; // seconds
 
 class LaserShot extends THREE.Object3D {
 
   constructor() {
     super();
-    let shotGeometry = new THREE.CylinderGeometry(1, 1, 10, 8, 1);
-    shotGeometry.scale(0.05, 0.05, 0.05);
+    let shotGeometry = new THREE.CylinderGeometry(0.05, 0.05, 5, 8, 1);
     shotGeometry.rotateX(Math.PI / 2);
     let shotMaterial = new THREE.MeshPhongMaterial({
       color: 0x000000,
