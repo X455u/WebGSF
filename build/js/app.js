@@ -5369,6 +5369,9 @@
 	var loadPromise = new _promise2.default(function (done) {
 	  texLoader.load('./media/spaceship_comp.png', function (texture) {
 	    texLoader.load('./media/spaceship_nor.png', function (normalMap) {
+	      normalMap.wrapS = _three2.default.MirroredRepeatWrapping;
+	      normalMap.wrapT = _three2.default.MirroredRepeatWrapping;
+	      normalMap.needsUpdate = true;
 	      loader.load('./media/nicce_fighter.json', function (geometry) {
 	        var material = new _three2.default.MeshPhongMaterial({
 	          map: texture,
@@ -42960,7 +42963,7 @@
 
 	      // Ship reloading and shooting
 	      this.reload = Math.max(0.0, this.reload - delta);
-	      if (_keymaster2.default.isPressed('x') && this.reload === 0.0) {
+	      if ((_keymaster2.default.isPressed('x') || this.shooting) && this.reload === 0.0) {
 	        this.reload = RELOAD_TIME;
 	        this.shotController.shootLaserShot(this);
 	      }
@@ -42984,12 +42987,26 @@
 	        };
 	      };
 	      // Touch events
-	      document.body.addEventListener('touchstart', function () {
-	        _this2.acceleration = ACCELERATION;
-	      }, false);
-	      document.body.addEventListener('touchend', function () {
-	        _this2.acceleration = -ACCELERATION;
-	      }, false);
+	      var updateMobileState = function updateMobileState(event) {
+	        var halfWidth = window.innerWidth / 2;
+	        var touches = event.touches;
+	        if (_lodash2.default.range(touches.length).some(function (i) {
+	          return touches.item(i).pageX > halfWidth;
+	        })) {
+	          _this2.acceleration = ACCELERATION;
+	        } else {
+	          _this2.acceleration = -ACCELERATION;
+	        }
+	        if (_lodash2.default.range(touches.length).some(function (i) {
+	          return touches.item(i).pageX < halfWidth;
+	        })) {
+	          _this2.shooting = true;
+	        } else {
+	          _this2.shooting = false;
+	        }
+	      };
+	      document.body.addEventListener('touchstart', updateMobileState, false);
+	      document.body.addEventListener('touchend', updateMobileState, false);
 	    }
 	  }]);
 	  return Ship;
@@ -56282,7 +56299,7 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	var DETAIL = 4;
+	var DETAIL = 3;
 	var NOISE = 0.16;
 	var SMOOTHNESS = 2.3;
 
@@ -56292,24 +56309,32 @@
 	  function Planet(radius) {
 	    (0, _classCallCheck3.default)(this, Planet);
 
-	    var geometry = new _three2.default.IcosahedronGeometry(radius, 1);
+	    var geometry = new _three2.default.IcosahedronGeometry(radius, 2);
 	    var modifier = new _SubdivisionModifier2.default(1);
 
 	    _lodash2.default.range(DETAIL).forEach(function (i) {
-	      modifier.modify(geometry);
 	      geometry.vertices.forEach(function (v) {
 	        var noiseFactor = NOISE / Math.pow(SMOOTHNESS, i);
 	        var s = 1 + (2 * Math.random() - 1) * noiseFactor;
 	        v.multiplyScalar(s);
 	      });
+	      modifier.modify(geometry);
 	    });
 
-	    geometry.faceVertexUvs = [];
+	    // Dummy UV implementation
+	    geometry.faceVertexUvs = [geometry.faces.map(function () {
+	      return [new _three2.default.Vector2(0, 0), new _three2.default.Vector2(1, 0), new _three2.default.Vector2(0, 1)];
+	    })];
 	    geometry.uvsNeedUpdate = true;
 
 	    var material = new _three2.default.MeshPhongMaterial({
 	      color: 0x903d3d,
-	      shininess: 10
+	      shininess: 20
+	    });
+
+	    var texLoader = new _three2.default.TextureLoader();
+	    texLoader.load('./media/planet_nor.png', function (normalMap) {
+	      material.normalMap = normalMap;
 	    });
 
 	    return (0, _possibleConstructorReturn3.default)(this, (0, _getPrototypeOf2.default)(Planet).call(this, geometry, material));
@@ -56660,7 +56685,7 @@
 	      shot.position.copy(ship.position);
 	      shot.quaternion.copy(ship.quaternion);
 	      shot.translateX(0.7 * ship.activeGun); // Bad initial solution
-	      // shot.translateZ(0); // Bad initial solution
+	      shot.translateZ(-2.5); // Bad initial solution
 	      ship.activeGun *= -1; // Bad initial solution
 	      this.shots.push(shot);
 	      this.scene.add(shot);
