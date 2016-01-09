@@ -5369,9 +5369,6 @@
 	var loadPromise = new _promise2.default(function (done) {
 	  texLoader.load('./media/spaceship_comp.png', function (texture) {
 	    texLoader.load('./media/spaceship_nor.png', function (normalMap) {
-	      normalMap.wrapS = _three2.default.MirroredRepeatWrapping;
-	      normalMap.wrapT = _three2.default.MirroredRepeatWrapping;
-	      normalMap.needsUpdate = true;
 	      loader.load('./media/nicce_fighter.json', function (geometry) {
 	        var material = new _three2.default.MeshPhongMaterial({
 	          map: texture,
