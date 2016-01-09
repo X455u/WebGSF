@@ -3683,7 +3683,7 @@
 	      , ACCEPT_ITERABLES     = $iterDetect(function(iter){ new C(iter); }) // eslint-disable-line no-new
 	      // for early implementations -0 and +0 not the same
 	      , BUGGY_ZERO;
-	    if(!ACCEPT_ITERABLES){ 
+	    if(!ACCEPT_ITERABLES){
 	      C = wrapper(function(target, iterable){
 	        strictNew(target, C, NAME);
 	        var that = new Base;
@@ -5444,7 +5444,7 @@
 /* 194 */
 /***/ function(module, exports) {
 
-	
+
 
 /***/ },
 /* 195 */
@@ -10389,7 +10389,7 @@
 			};
 
 		}(),
-		
+
 		clone: function () {
 
 			return new this.constructor().copy( this );
@@ -20413,20 +20413,20 @@
 	};
 
 	THREE.OrthographicCamera.prototype.copy = function ( source ) {
-		
+
 		THREE.Camera.prototype.copy.call( this, source );
-		
+
 		this.left = source.left;
 		this.right = source.right;
 		this.top = source.top;
 		this.bottom = source.bottom;
 		this.near = source.near;
 		this.far = source.far;
-		
+
 		this.zoom = source.zoom;
-		
+
 		return this;
-			
+
 	};
 
 	THREE.OrthographicCamera.prototype.toJSON = function ( meta ) {
@@ -20572,18 +20572,18 @@
 	};
 
 	THREE.PerspectiveCamera.prototype.copy = function ( source ) {
-		
+
 		THREE.Camera.prototype.copy.call( this, source );
-		
+
 		this.fov = source.fov;
 		this.aspect = source.aspect;
 		this.near = source.near;
 		this.far = source.far;
-		
+
 		this.zoom = source.zoom;
-		
+
 		return this;
-			
+
 	};
 
 	THREE.PerspectiveCamera.prototype.toJSON = function ( meta ) {
@@ -23696,7 +23696,7 @@
 		THREE.Material.prototype.copy.call( this, source );
 
 		this.color.copy( source.color );
-		
+
 		this.linewidth = source.linewidth;
 
 		this.scale = source.scale;
@@ -23795,7 +23795,7 @@
 	THREE.MeshBasicMaterial.prototype.constructor = THREE.MeshBasicMaterial;
 
 	THREE.MeshBasicMaterial.prototype.copy = function ( source ) {
-		
+
 		THREE.Material.prototype.copy.call( this, source );
 
 		this.color.copy( source.color );
@@ -23827,7 +23827,7 @@
 
 		this.skinning = source.skinning;
 		this.morphTargets = source.morphTargets;
-		
+
 		return this;
 
 	};
@@ -24907,9 +24907,9 @@
 	THREE.CubeTexture.prototype.copy = function ( source ) {
 
 		THREE.Texture.prototype.copy.call( this, source );
-		
+
 		this.images = source.images;
-		
+
 		return this;
 
 	};
@@ -24955,7 +24955,7 @@
 
 		this.magFilter = magFilter !== undefined ? magFilter : THREE.NearestFilter;
 		this.minFilter = minFilter !== undefined ? minFilter : THREE.NearestFilter;
-		
+
 		this.flipY = false;
 		this.generateMipmaps  = false;
 
@@ -25722,11 +25722,11 @@
 	THREE.Bone.prototype.constructor = THREE.Bone;
 
 	THREE.Bone.prototype.copy = function ( source ) {
-		
+
 		THREE.Object3D.prototype.copy.call( this, source );
-		
+
 		this.skin = source.skin;
-		
+
 		return this;
 
 	};
@@ -25763,7 +25763,7 @@
 			//       32x32 pixel texture max  256 bones * 4 pixels = (32 * 32)
 			//       64x64 pixel texture max 1024 bones * 4 pixels = (64 * 64)
 
-			
+
 			var size = Math.sqrt( this.bones.length * 4 ); // 4 pixels needed for 1 matrix
 			size = THREE.Math.nextPowerOfTwo( Math.ceil( size ) );
 			size = Math.max( size, 4 );
@@ -25989,7 +25989,7 @@
 		if ( bindMatrix === undefined ) {
 
 			this.updateMatrixWorld( true );
-			
+
 			this.skeleton.calculateInverses();
 
 			bindMatrix = this.matrixWorld;
@@ -37592,7 +37592,7 @@
 
 		var b3 = THREE.ShapeUtils.b3;
 
-		return new THREE.Vector2( 
+		return new THREE.Vector2(
 			b3( t, this.v0.x, this.v1.x, this.v2.x, this.v3.x ),
 			b3( t, this.v0.y, this.v1.y, this.v2.y, this.v3.y )
 		);
@@ -37603,7 +37603,7 @@
 
 		var tangentCubicBezier = THREE.CurveUtils.tangentCubicBezier;
 
-		return new THREE.Vector2( 
+		return new THREE.Vector2(
 			tangentCubicBezier( t, this.v0.x, this.v1.x, this.v2.x, this.v3.x ),
 			tangentCubicBezier( t, this.v0.y, this.v1.y, this.v2.y, this.v3.y )
 		).normalize();
@@ -37665,7 +37665,7 @@
 		this.aEndAngle = aEndAngle;
 
 		this.aClockwise = aClockwise;
-		
+
 		this.aRotation = aRotation || 0;
 
 	};
@@ -37691,7 +37691,7 @@
 			angle = this.aStartAngle + t * deltaAngle;
 
 		}
-		
+
 		var x = this.aX + this.xRadius * Math.cos( angle );
 		var y = this.aY + this.yRadius * Math.sin( angle );
 
@@ -37774,7 +37774,7 @@
 
 		function ( t ) {
 
-			var b2 = THREE.ShapeUtils.b2;		
+			var b2 = THREE.ShapeUtils.b2;
 
 			return new THREE.Vector3(
 				b2( t, this.v0.x, this.v1.x, this.v2.x ),
@@ -39488,7 +39488,7 @@
 	 * @author bhouston / http://clara.io
 	 */
 
-	// points - to create a closed torus, one must use a set of points 
+	// points - to create a closed torus, one must use a set of points
 	//    like so: [ a, b, c, d, a ], see first is the same as last.
 	// segments - the number of circumference segments to create
 	// phiStart - the starting radian
@@ -41367,7 +41367,7 @@
 			if ( headWidth === undefined ) headWidth = 0.2 * headLength;
 
 			this.position.copy( origin );
-			
+
 			if ( headLength < length ) {
 				this.line = new THREE.Line( lineGeometry, new THREE.LineBasicMaterial( { color: color } ) );
 				this.line.matrixAutoUpdate = false;
@@ -42979,7 +42979,7 @@
 	      // Accelerometer
 	      window.ondevicemotion = function (event) {
 	        _this2.turnParameters = {
-	          x: invertCoefficient * event.accelerationIncludingGravity.z / 6,
+	          x: -invertCoefficient * event.accelerationIncludingGravity.z / 6,
 	          z: invertCoefficient * event.accelerationIncludingGravity.x / 6
 	        };
 	      };
