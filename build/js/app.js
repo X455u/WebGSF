@@ -5329,11 +5329,11 @@
 
 	var _Ship2 = _interopRequireDefault(_Ship);
 
-	var _Planet = __webpack_require__(282);
+	var _Planet = __webpack_require__(279);
 
 	var _Planet2 = _interopRequireDefault(_Planet);
 
-	var _ShotController = __webpack_require__(280);
+	var _ShotController = __webpack_require__(281);
 
 	var _ShotController2 = _interopRequireDefault(_ShotController);
 
@@ -56243,148 +56243,7 @@
 
 
 /***/ },
-/* 279 */,
-/* 280 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _classCallCheck2 = __webpack_require__(257);
-
-	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
-
-	var _createClass2 = __webpack_require__(258);
-
-	var _createClass3 = _interopRequireDefault(_createClass2);
-
-	var _LaserShot = __webpack_require__(281);
-
-	var _LaserShot2 = _interopRequireDefault(_LaserShot);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	var ShotController = (function () {
-	  function ShotController(scene) {
-	    (0, _classCallCheck3.default)(this, ShotController);
-
-	    this.shots = [];
-	    this.scene = scene;
-	  }
-
-	  (0, _createClass3.default)(ShotController, [{
-	    key: 'update',
-	    value: function update(delta) {
-	      var _this = this;
-
-	      this.shots.forEach(function (shot) {
-	        shot.update(delta);
-	        if (shot.lifetimeLeft <= 0.0) {
-	          _this.scene.remove(shot);
-	          _this.shots.splice(_this.shots.indexOf(shot), 1);
-	        }
-	      });
-	    }
-	  }, {
-	    key: 'shootLaserShot',
-	    value: function shootLaserShot(ship) {
-	      var shot = new _LaserShot2.default();
-	      shot.position.copy(ship.position);
-	      shot.quaternion.copy(ship.quaternion);
-	      shot.translateX(0.7 * ship.activeGun); // Bad initial solution
-	      shot.translateZ(-2.5); // Bad initial solution
-	      ship.activeGun *= -1; // Bad initial solution
-	      this.shots.push(shot);
-	      this.scene.add(shot);
-	    }
-	  }]);
-	  return ShotController;
-	})();
-
-	exports.default = ShotController;
-
-/***/ },
-/* 281 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _getPrototypeOf = __webpack_require__(254);
-
-	var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
-
-	var _classCallCheck2 = __webpack_require__(257);
-
-	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
-
-	var _createClass2 = __webpack_require__(258);
-
-	var _createClass3 = _interopRequireDefault(_createClass2);
-
-	var _possibleConstructorReturn2 = __webpack_require__(261);
-
-	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
-
-	var _inherits2 = __webpack_require__(270);
-
-	var _inherits3 = _interopRequireDefault(_inherits2);
-
-	var _three = __webpack_require__(247);
-
-	var _three2 = _interopRequireDefault(_three);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	var VELOCITY = 300; // units/s
-	var LIFETIME = 5.0; // seconds
-
-	var LaserShot = (function (_THREE$Object3D) {
-	  (0, _inherits3.default)(LaserShot, _THREE$Object3D);
-
-	  function LaserShot() {
-	    (0, _classCallCheck3.default)(this, LaserShot);
-
-	    var _this = (0, _possibleConstructorReturn3.default)(this, (0, _getPrototypeOf2.default)(LaserShot).call(this));
-
-	    var shotGeometry = new _three2.default.CylinderGeometry(0.05, 0.05, 5, 8, 1);
-	    shotGeometry.rotateX(Math.PI / 2);
-	    var shotMaterial = new _three2.default.MeshPhongMaterial({
-	      color: 0x000000,
-	      specular: 0x666666,
-	      emissive: 0xff0000,
-	      shininess: 10,
-	      shading: _three2.default.SmoothShading,
-	      opacity: 0.9,
-	      transparent: true
-	    });
-	    var shotMesh = new _three2.default.Mesh(shotGeometry, shotMaterial);
-
-	    _this.add(shotMesh);
-	    _this.lifetimeLeft = LIFETIME;
-	    return _this;
-	  }
-
-	  (0, _createClass3.default)(LaserShot, [{
-	    key: 'update',
-	    value: function update(delta) {
-	      this.lifetimeLeft -= delta;
-	      this.translateZ(-VELOCITY * delta);
-	    }
-	  }]);
-	  return LaserShot;
-	})(_three2.default.Object3D);
-
-	exports.default = LaserShot;
-
-/***/ },
-/* 282 */
+/* 279 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -56417,7 +56276,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _SubdivisionModifier = __webpack_require__(283);
+	var _SubdivisionModifier = __webpack_require__(280);
 
 	var _SubdivisionModifier2 = _interopRequireDefault(_SubdivisionModifier);
 
@@ -56462,7 +56321,7 @@
 	exports.default = Planet;
 
 /***/ },
-/* 283 */
+/* 280 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -56748,6 +56607,146 @@
 	})();
 
 	exports.default = SubdivisionModifier;
+
+/***/ },
+/* 281 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _classCallCheck2 = __webpack_require__(257);
+
+	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+	var _createClass2 = __webpack_require__(258);
+
+	var _createClass3 = _interopRequireDefault(_createClass2);
+
+	var _LaserShot = __webpack_require__(282);
+
+	var _LaserShot2 = _interopRequireDefault(_LaserShot);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var ShotController = (function () {
+	  function ShotController(scene) {
+	    (0, _classCallCheck3.default)(this, ShotController);
+
+	    this.shots = [];
+	    this.scene = scene;
+	  }
+
+	  (0, _createClass3.default)(ShotController, [{
+	    key: 'update',
+	    value: function update(delta) {
+	      var _this = this;
+
+	      this.shots.forEach(function (shot) {
+	        shot.update(delta);
+	        if (shot.lifetimeLeft <= 0.0) {
+	          _this.scene.remove(shot);
+	          _this.shots.splice(_this.shots.indexOf(shot), 1);
+	        }
+	      });
+	    }
+	  }, {
+	    key: 'shootLaserShot',
+	    value: function shootLaserShot(ship) {
+	      var shot = new _LaserShot2.default();
+	      shot.position.copy(ship.position);
+	      shot.quaternion.copy(ship.quaternion);
+	      shot.translateX(0.7 * ship.activeGun); // Bad initial solution
+	      // shot.translateZ(0); // Bad initial solution
+	      ship.activeGun *= -1; // Bad initial solution
+	      this.shots.push(shot);
+	      this.scene.add(shot);
+	    }
+	  }]);
+	  return ShotController;
+	})();
+
+	exports.default = ShotController;
+
+/***/ },
+/* 282 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _getPrototypeOf = __webpack_require__(254);
+
+	var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
+
+	var _classCallCheck2 = __webpack_require__(257);
+
+	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+	var _createClass2 = __webpack_require__(258);
+
+	var _createClass3 = _interopRequireDefault(_createClass2);
+
+	var _possibleConstructorReturn2 = __webpack_require__(261);
+
+	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+	var _inherits2 = __webpack_require__(270);
+
+	var _inherits3 = _interopRequireDefault(_inherits2);
+
+	var _three = __webpack_require__(247);
+
+	var _three2 = _interopRequireDefault(_three);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var VELOCITY = 300; // units/s
+	var LIFETIME = 5.0; // seconds
+
+	var LaserShot = (function (_THREE$Object3D) {
+	  (0, _inherits3.default)(LaserShot, _THREE$Object3D);
+
+	  function LaserShot() {
+	    (0, _classCallCheck3.default)(this, LaserShot);
+
+	    var _this = (0, _possibleConstructorReturn3.default)(this, (0, _getPrototypeOf2.default)(LaserShot).call(this));
+
+	    var shotGeometry = new _three2.default.CylinderGeometry(0.05, 0.05, 5, 8, 1);
+	    shotGeometry.rotateX(Math.PI / 2);
+	    var shotMaterial = new _three2.default.MeshPhongMaterial({
+	      color: 0x000000,
+	      specular: 0x666666,
+	      emissive: 0xff0000,
+	      shininess: 10,
+	      shading: _three2.default.SmoothShading,
+	      opacity: 0.9,
+	      transparent: true
+	    });
+	    var shotMesh = new _three2.default.Mesh(shotGeometry, shotMaterial);
+
+	    _this.add(shotMesh);
+	    _this.lifetimeLeft = LIFETIME;
+	    return _this;
+	  }
+
+	  (0, _createClass3.default)(LaserShot, [{
+	    key: 'update',
+	    value: function update(delta) {
+	      this.lifetimeLeft -= delta;
+	      this.translateZ(-VELOCITY * delta);
+	    }
+	  }]);
+	  return LaserShot;
+	})(_three2.default.Object3D);
+
+	exports.default = LaserShot;
 
 /***/ }
 /******/ ]);
