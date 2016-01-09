@@ -85,7 +85,7 @@ class Ship extends THREE.Mesh {
     // Accelerometer
     window.ondevicemotion = (event) => {
       this.turnParameters = {
-        x: event.accelerationIncludingGravity.z / 6,
+        x: invertCoefficient * event.accelerationIncludingGravity.z / 6,
         z: invertCoefficient * event.accelerationIncludingGravity.x / 6
       };
     };
