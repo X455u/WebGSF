@@ -42979,7 +42979,7 @@
 	      // Accelerometer
 	      window.ondevicemotion = function (event) {
 	        _this2.turnParameters = {
-	          x: event.accelerationIncludingGravity.z / 6,
+	          x: invertCoefficient * event.accelerationIncludingGravity.z / 6,
 	          z: invertCoefficient * event.accelerationIncludingGravity.x / 6
 	        };
 	      };
@@ -56752,6 +56752,8 @@
 	      transparent: true
 	    });
 	    var shotMesh = new _three2.default.Mesh(shotGeometry, shotMaterial);
+
+	    var shotGlow = new _three2.default.PointLight(0xff0000, 1);
 
 	    _this.add(shotMesh);
 	    _this.lifetimeLeft = LIFETIME;
