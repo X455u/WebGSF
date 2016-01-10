@@ -22,7 +22,6 @@ class ShotController {
     shot.position.copy(ship.position);
     shot.quaternion.copy(ship.quaternion);
     shot.translateX(0.7 * ship.activeGun); // Bad initial solution
-    shot.translateZ(-2.5); // Bad initial solution
     ship.activeGun *= -1; // Bad initial solution
     this.shots.push(shot);
     this.scene.add(shot);
