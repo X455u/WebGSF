@@ -3,7 +3,6 @@
     "materials": [{
         "depthWrite": true,
         "DbgColor": 15658734,
-        "colorAmbient": [0.64,0.64,0.64],
         "transparent": false,
         "depthTest": true,
         "specularCoef": 50,
