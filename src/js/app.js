@@ -8,6 +8,7 @@ const DEBUG = false;
 
 const CAMERA_DISTANCE = 5;
 const CAMERA_VELOCITY = 5;
+const CAMERA_DIRECTION = new THREE.Vector3(0, 0.5, 1).normalize();
 
 const LIGHT_VECTOR = new THREE.Vector3(0, 1000, 0);
 
@@ -26,6 +27,7 @@ renderer.domElement.focus();
 
 let ambientLight = new THREE.AmbientLight(0x444444, 0.1);
 let light = new THREE.DirectionalLight(0xffffff, 1);
+let spotlight = new THREE.SpotLight(0xffffff, 5, 1000);
 light.position.copy(LIGHT_VECTOR);
 
 if (SHADOWS) {
@@ -39,12 +41,18 @@ if (SHADOWS) {
   light.shadowCameraTop = 100;
   light.shadowCameraBottom = -100;
   light.shadowBias = -0.001;
-  if (DEBUG) {
-    scene.add(new THREE.CameraHelper(light.shadow.camera));
-  }
+  spotlight.castShadow = true;
+  spotlight.shadowCameraNear = 4;
+  spotlight.shadowCameraFar = 2000;
+  spotlight.shadowBias = 0.005;
+}
+if (DEBUG) {
+  scene.add(new THREE.CameraHelper(light.shadow.camera));
+  scene.add(new THREE.CameraHelper(spotlight.shadow.camera));
 }
 
 scene.add(ambientLight);
+scene.add(spotlight);
 scene.add(light);
 camera.position.z = CAMERA_DISTANCE;
 
@@ -108,12 +116,19 @@ function render() {
   light.position.copy(ship.position.clone().add(LIGHT_VECTOR));
 
   // Camera follow
-  let direction = new THREE.Vector3(0, 0.5, 1);
-  direction.normalize();
+  let direction = CAMERA_DIRECTION.clone();
   direction.applyQuaternion(ship.quaternion).setLength(CAMERA_DISTANCE);
   let cameraTargetPosition = ship.position.clone().add(direction);
   camera.position.lerp(cameraTargetPosition, CAMERA_VELOCITY * delta);
   camera.quaternion.slerp(ship.quaternion, CAMERA_VELOCITY * delta);
+
+  // update spotlight position and direction
+  direction = CAMERA_DIRECTION.clone().negate();
+  direction.applyQuaternion(ship.quaternion).setLength(1000);
+  spotlight.position.copy(ship.position);
+  spotlight.target.quaternion.copy(ship.quaternion).inverse();
+  spotlight.target.position.copy(ship.position.clone().add(direction));
+  spotlight.target.updateMatrixWorld();
 
   renderer.render(scene, camera);
 
