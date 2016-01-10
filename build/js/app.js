@@ -56756,8 +56756,6 @@
 	    });
 	    var shotMesh = new _three2.default.Mesh(shotGeometry, shotMaterial);
 
-	    var shotGlow = new _three2.default.PointLight(0xff0000, 1);
-
 	    _this.add(shotMesh);
 	    _this.lifetimeLeft = LIFETIME;
 	    return _this;
