@@ -106,6 +106,7 @@ class Ship extends THREE.Mesh {
     };
     document.body.addEventListener('touchstart', updateMobileState, false);
     document.body.addEventListener('touchend', updateMobileState, false);
+    document.body.addEventListener('touchmove', event => event.preventDefault(), false);
   }
 }
 
