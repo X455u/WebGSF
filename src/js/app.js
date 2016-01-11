@@ -4,6 +4,8 @@ import Ship from './Ship';
 import Planet from './Planet';
 import ShotController from './ShotController';
 
+const DEBUG = false;
+
 const CAMERA_DISTANCE = 5;
 const CAMERA_VELOCITY = 5;
 
@@ -55,10 +57,13 @@ planet.position.y = -550;
 scene.add(planet);
 
 // Format debugging text
-let text = document.createElement('div');
-text.className = 'debug';
-text.innerHTML = 'Loading...';
-document.body.appendChild(text);
+let text;
+if (DEBUG) {
+  text = document.createElement('div');
+  text.className = 'debug';
+  text.innerHTML = 'Loading...';
+  document.body.appendChild(text);
+}
 
 // Game Loop
 let previousTime;
@@ -80,9 +85,10 @@ function render() {
   renderer.render(scene, camera);
 
   //Update debugging text
-  text.innerHTML = 'X: ' + ship.position.x +
-    '<br/>Y: ' + ship.position.y +
-    '<br/>Z: ' + ship.position.z;
+  if (DEBUG) {
+    text.innerHTML = ['x', 'y', 'z'].map(x => x + ': ' + ship.position[x]).join('<br/>');
+  }
+
   requestAnimationFrame(render);
 }
 
