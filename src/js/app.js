@@ -3,6 +3,7 @@ import THREE from 'three';
 import Ship from './Ship';
 import Planet from './Planet';
 import ShotController from './ShotController';
+import ParticleSystem from './ParticleSystem';
 
 const CAMERA_DISTANCE = 5;
 const CAMERA_VELOCITY = 5;
@@ -30,7 +31,6 @@ let loader = new THREE.JSONLoader();
 let texLoader = new THREE.TextureLoader();
 let ship;
 let shotController = new ShotController(scene);
-// let textureLoader = THREE.TextureLoader();
 let loadPromise = new Promise(done => {
   texLoader.load('./media/spaceship_comp.png', function(texture) {
     texLoader.load('./media/spaceship_nor.png', function(normalMap) {
@@ -43,31 +43,6 @@ let loadPromise = new Promise(done => {
         let mesh = new THREE.Mesh(geometry, material);
         ship = new Ship(mesh, shotController);
         scene.add(ship);
-
-        // Ship thruster particles
-        let particles = 5000;
-        let pGeometry = new THREE.BufferGeometry();
-        let partPositions = new Float32Array(particles * 3);
-        let partColors = new Float32Array(particles * 3);
-        let partColor = new THREE.Color(0xff0000);
-        let partPosX = ship.position.x;
-        let partPosY = ship.position.y;
-        let partPosZ = ship.position.z;
-        for (var i = 0; i < partPositions.length; i += 3) {
-          partPositions[i + 0] = partPosX + Math.random(); // x
-          partPositions[i + 1] = partPosY + Math.random(); // y
-          partPositions[i + 2] = partPosZ + Math.random(); // z
-          partColors[i + 0] = partColor.r;
-          partColors[i + 1] = partColor.g;
-          partColors[i + 2] = partColor.b;
-        }
-        pGeometry.addAttribute('position', new THREE.BufferAttribute(partPositions, 3));
-        pGeometry.addAttribute('color', new THREE.BufferAttribute(partColors, 3));
-        pGeometry.computeBoundingSphere();
-
-        let pMaterial = new THREE.PointsMaterial({vertexColors: THREE.VertexColors});
-        let particleSystem = new THREE.Points(pGeometry, pMaterial);
-        scene.add(particleSystem);
         done();
       });
     });
@@ -78,6 +53,32 @@ let loadPromise = new Promise(done => {
 let planet = new Planet(500);
 planet.position.y = -550;
 scene.add(planet);
+
+// Thruster particles
+let particleSystem = new ParticleSystem(scene);
+particleSystem.createGroup({
+  maxParticles: 1000,
+  color: new THREE.Color(0x00ff00),
+  spawnRate: 200,
+  lifetime: 5,
+  position: new THREE.Vector3(0, 0, 0),
+  velocity: new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5)
+});
+// let particles = new THREE.Geometry();
+// for (let p = 0; p < 100000; p++) {
+//   let part = new THREE.Vector3(Math.random(), Math.random(), Math.random());
+//   part.velocity = new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5);
+//   particles.vertices.push(part);
+// }
+// let particleSystem = new THREE.Points(
+//   particles,
+//   new THREE.PointsMaterial({
+//     color: 0x00ff00,
+//     size: 0.1
+//   })
+// );
+// scene.add(particleSystem);
+
 
 // Format debugging text
 let text = document.createElement('div');
@@ -93,6 +94,15 @@ function render() {
   previousTime = time;
 
   ship.update(delta);
+
+  // Particle update
+  particleSystem.update(delta);
+  // for (let p = 0; p < 100000; p++) {
+  //   let cur = particles.vertices[p];
+  //   cur.add(cur.velocity);
+  // }
+  // particles.verticesNeedUpdate = true;
+  // particles.computeBoundingSphere();
 
   // Camera follow
   let direction = new THREE.Vector3(0, 0.5, 1);
