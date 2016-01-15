@@ -56,28 +56,14 @@ scene.add(planet);
 
 // Thruster particles
 let particleSystem = new ParticleSystem(scene);
-particleSystem.createGroup({
-  maxParticles: 1000,
-  color: new THREE.Color(0x00ff00),
-  spawnRate: 200,
+particleSystem.createEmitter({
+  color: 0x0000ff,
+  spawnRate: 20000,
   lifetime: 5,
-  position: new THREE.Vector3(0, 0, 0),
-  velocity: new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5)
+  size: 0.1,
+  position: new THREE.Vector3(Math.random(), Math.random(), Math.random() - 10),
+  velocity: new THREE.Vector3(5 * (Math.random() - 0.5), 5 * (Math.random() - 0.5), 5 * (Math.random() - 0.5))
 });
-// let particles = new THREE.Geometry();
-// for (let p = 0; p < 100000; p++) {
-//   let part = new THREE.Vector3(Math.random(), Math.random(), Math.random());
-//   part.velocity = new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5);
-//   particles.vertices.push(part);
-// }
-// let particleSystem = new THREE.Points(
-//   particles,
-//   new THREE.PointsMaterial({
-//     color: 0x00ff00,
-//     size: 0.1
-//   })
-// );
-// scene.add(particleSystem);
 
 
 // Format debugging text
@@ -94,15 +80,7 @@ function render() {
   previousTime = time;
 
   ship.update(delta);
-
-  // Particle update
   particleSystem.update(delta);
-  // for (let p = 0; p < 100000; p++) {
-  //   let cur = particles.vertices[p];
-  //   cur.add(cur.velocity);
-  // }
-  // particles.verticesNeedUpdate = true;
-  // particles.computeBoundingSphere();
 
   // Camera follow
   let direction = new THREE.Vector3(0, 0.5, 1);
