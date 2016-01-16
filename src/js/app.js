@@ -29,8 +29,9 @@ camera.position.z = CAMERA_DISTANCE;
 // prepare loader and load the model
 let loader = new THREE.JSONLoader();
 let texLoader = new THREE.TextureLoader();
-let ship;
+var ship;
 let shotController = new ShotController(scene);
+let particleSystem = new ParticleSystem(scene);
 let loadPromise = new Promise(done => {
   texLoader.load('./media/spaceship_comp.png', function(texture) {
     texLoader.load('./media/spaceship_nor.png', function(normalMap) {
@@ -42,6 +43,18 @@ let loadPromise = new Promise(done => {
         geometry.scale(0.5, 0.5, 0.5);
         let mesh = new THREE.Mesh(geometry, material);
         ship = new Ship(mesh, shotController);
+        // Thruster particles
+        particleSystem.createEmitter({
+          color: 0x0000ff,
+          spawnRate: 1000,
+          lifetime: 0.1,
+          size: 0.1,
+          bindTo: ship,
+          offset: new THREE.Vector3(-0.8, 0.25, 0.9),
+          r: 0.15,
+          velocity: new THREE.Vector3(0, 0, 1.5),
+          velocityRandomness: 0.4
+        });
         scene.add(ship);
         done();
       });
@@ -53,18 +66,6 @@ let loadPromise = new Promise(done => {
 let planet = new Planet(500);
 planet.position.y = -550;
 scene.add(planet);
-
-// Thruster particles
-let particleSystem = new ParticleSystem(scene);
-particleSystem.createEmitter({
-  color: 0x0000ff,
-  spawnRate: 20000,
-  lifetime: 5,
-  size: 0.1,
-  position: new THREE.Vector3(Math.random(), Math.random(), Math.random() - 10),
-  velocity: new THREE.Vector3(5 * (Math.random() - 0.5), 5 * (Math.random() - 0.5), 5 * (Math.random() - 0.5))
-});
-
 
 // Format debugging text
 let text = document.createElement('div');
