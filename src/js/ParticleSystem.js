@@ -52,6 +52,9 @@ class ParticleSystem {
 
     emitter.material = new THREE.PointsMaterial({
       color: options.color,
+      blending: THREE.AdditiveBlending,
+      transparent: true,
+      map: options.map,
       size: options.size
     });
 
