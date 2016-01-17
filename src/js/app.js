@@ -93,6 +93,7 @@ scene.add(planet);
 
 // Format debugging text
 let text;
+let fps = 60.0;
 if (DEBUG) {
   text = document.createElement('div');
   text.className = 'debug';
@@ -133,6 +134,9 @@ function render() {
   //Update debugging text
   if (DEBUG) {
     text.innerHTML = ['x', 'y', 'z'].map(x => x + ': ' + ship.position[x]).join('<br/>');
+    fps = fps * 9.0 / 10.0;
+    fps += (1.0 / (Math.max(delta, 0.01) * 10));
+    text.innerHTML += '<br/>fps: ' + fps;
   }
 
   requestAnimationFrame(render);
