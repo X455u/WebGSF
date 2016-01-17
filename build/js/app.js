@@ -5339,8 +5339,16 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+	var DEBUG = false;
+
 	var CAMERA_DISTANCE = 5;
 	var CAMERA_VELOCITY = 5;
+	var CAMERA_DIRECTION = new _three2.default.Vector3(0, 0.5, 1).normalize();
+
+	var LIGHT_VECTOR = new _three2.default.Vector3(0, 1000, 0);
+	var SPOTLIGHT_VECTOR = new _three2.default.Vector3(0, 0, -300);
+
+	var SHADOWS = true;
 
 	var MAX_DELTA = 0.1; // s
 
@@ -5355,8 +5363,28 @@
 
 	var ambientLight = new _three2.default.AmbientLight(0x444444, 0.1);
 	var light = new _three2.default.DirectionalLight(0xffffff, 1);
-	light.position.set(0.2, 0.2, 0.8);
+	var spotlight = new _three2.default.SpotLight(0xffffff, 3, 1000);
+	light.position.copy(LIGHT_VECTOR);
+
+	if (SHADOWS) {
+	  renderer.shadowMap.enabled = true;
+	  renderer.shadowMap.type = _three2.default.PCFShadowMap;
+	  light.castShadow = true;
+	  light.shadowCameraNear = 10;
+	  light.shadowCameraFar = 2000;
+	  light.shadowCameraLeft = 100;
+	  light.shadowCameraRight = -100;
+	  light.shadowCameraTop = 100;
+	  light.shadowCameraBottom = -100;
+	  light.shadowBias = -0.001;
+	}
+	if (DEBUG) {
+	  scene.add(new _three2.default.CameraHelper(light.shadow.camera));
+	  scene.add(new _three2.default.CameraHelper(spotlight.shadow.camera));
+	}
+
 	scene.add(ambientLight);
+	scene.add(spotlight);
 	scene.add(light);
 	camera.position.z = CAMERA_DISTANCE;
 
@@ -5377,6 +5405,10 @@
 	        geometry.scale(0.5, 0.5, 0.5);
 	        var mesh = new _three2.default.Mesh(geometry, material);
 	        ship = new _Ship2.default(mesh, shotController);
+	        if (SHADOWS) {
+	          ship.receiveShadow = true;
+	        }
+	        light.target = ship;
 	        scene.add(ship);
 	        done();
 	      });
@@ -5387,13 +5419,19 @@
 	// Planet testing
 	var planet = new _Planet2.default(500);
 	planet.position.y = -550;
+	if (SHADOWS) {
+	  planet.castShadow = true;
+	}
 	scene.add(planet);
 
 	// Format debugging text
-	var text = document.createElement('div');
-	text.className = 'debug';
-	text.innerHTML = 'Loading...';
-	document.body.appendChild(text);
+	var text = undefined;
+	if (DEBUG) {
+	  text = document.createElement('div');
+	  text.className = 'debug';
+	  text.innerHTML = 'Loading...';
+	  document.body.appendChild(text);
+	}
 
 	// Game Loop
 	var previousTime = undefined;
@@ -5404,18 +5442,33 @@
 
 	  ship.update(delta);
 
+	  // light/shadow map follow
+	  light.position.copy(ship.position.clone().add(LIGHT_VECTOR));
+
 	  // Camera follow
-	  var direction = new _three2.default.Vector3(0, 0.5, 1);
-	  direction.normalize();
+	  var direction = CAMERA_DIRECTION.clone();
 	  direction.applyQuaternion(ship.quaternion).setLength(CAMERA_DISTANCE);
 	  var cameraTargetPosition = ship.position.clone().add(direction);
 	  camera.position.lerp(cameraTargetPosition, CAMERA_VELOCITY * delta);
 	  camera.quaternion.slerp(ship.quaternion, CAMERA_VELOCITY * delta);
 
+	  // update spotlight position and direction
+	  direction = SPOTLIGHT_VECTOR.clone();
+	  direction.applyQuaternion(ship.quaternion);
+	  spotlight.position.copy(ship.position);
+	  spotlight.target.quaternion.copy(ship.quaternion).inverse();
+	  spotlight.target.position.copy(ship.position.clone().add(direction));
+	  spotlight.target.updateMatrixWorld();
+
 	  renderer.render(scene, camera);
 
 	  //Update debugging text
-	  text.innerHTML = 'X: ' + ship.position.x + '<br/>Y: ' + ship.position.y + '<br/>Z: ' + ship.position.z;
+	  if (DEBUG) {
+	    text.innerHTML = ['x', 'y', 'z'].map(function (x) {
+	      return x + ': ' + ship.position[x];
+	    }).join('<br/>');
+	  }
+
 	  requestAnimationFrame(render);
 	}
 
@@ -42979,7 +43032,7 @@
 	      // Accelerometer
 	      window.ondevicemotion = function (event) {
 	        _this2.turnParameters = {
-	          x: event.accelerationIncludingGravity.z / 6,
+	          x: -invertCoefficient * event.accelerationIncludingGravity.z / 6,
 	          z: invertCoefficient * event.accelerationIncludingGravity.x / 6
 	        };
 	      };
@@ -56321,6 +56374,9 @@
 	      modifier.modify(geometry);
 	    });
 
+	    geometry.computeBoundingBox();
+	    geometry.computeBoundingSphere();
+
 	    // Dummy UV implementation
 	    geometry.faceVertexUvs = [geometry.faces.map(function () {
 	      return [new _three2.default.Vector2(0, 0), new _three2.default.Vector2(1, 0), new _three2.default.Vector2(0, 1)];
@@ -56328,7 +56384,7 @@
 	    geometry.uvsNeedUpdate = true;
 
 	    var material = new _three2.default.MeshPhongMaterial({
-	      color: 0x903d3d,
+	      color: 0x652a2a,
 	      shininess: 20
 	    });
 
@@ -56685,7 +56741,6 @@
 	      shot.position.copy(ship.position);
 	      shot.quaternion.copy(ship.quaternion);
 	      shot.translateX(0.7 * ship.activeGun); // Bad initial solution
-	      shot.translateZ(-2.5); // Bad initial solution
 	      ship.activeGun *= -1; // Bad initial solution
 	      this.shots.push(shot);
 	      this.scene.add(shot);
