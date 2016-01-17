@@ -20,6 +20,9 @@ class Planet extends THREE.Mesh {
       modifier.modify(geometry);
     });
 
+    geometry.computeBoundingBox();
+    geometry.computeBoundingSphere();
+
     // Dummy UV implementation
     geometry.faceVertexUvs = [geometry.faces.map(() => [
       new THREE.Vector2(0, 0),
@@ -29,7 +32,7 @@ class Planet extends THREE.Mesh {
     geometry.uvsNeedUpdate = true;
 
     let material = new THREE.MeshPhongMaterial({
-      color: 0x903d3d,
+      color: 0x652a2a,
       shininess: 20
     });
 
