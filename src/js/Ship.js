@@ -22,7 +22,7 @@ function isAndroid() {
 
 class Ship extends THREE.Mesh {
 
-  constructor(ship, shotController) {
+  constructor(ship, shotController, particleSystem) {
     super();
     let skip = ['position', 'rotation', 'quaternion', 'scale'];
     Object.keys(ship).forEach(key => {
@@ -44,6 +44,26 @@ class Ship extends THREE.Mesh {
     this.shotController = shotController;
     this.reload = 0.0;
     this.activeGun = 1; // Bad initial solution
+    // Thruster particles
+    let thrusters = [
+      new THREE.Vector3(-0.8, 0.25, 0.9), // Up-left
+      new THREE.Vector3(0.8, 0.25, 0.9), // Up-right
+      new THREE.Vector3(-0.8, -0.25, 0.9), // Down-left
+      new THREE.Vector3(0.8, -0.25, 0.9) // Down-right
+    ];
+    thrusters.forEach(t => {
+      particleSystem.createEmitter({
+        color: 0x0000ff,
+        spawnRate: 2000,
+        lifetime: 0.02,
+        size: 0.1,
+        bindTo: this,
+        offset: t,
+        pointRandomness: 0.15,
+        velocity: new THREE.Vector3(0, 0, 3),
+        velocityRandomness: 0.4
+      });
+    });
   }
 
   update(delta) {

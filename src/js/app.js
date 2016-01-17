@@ -42,19 +42,7 @@ let loadPromise = new Promise(done => {
         });
         geometry.scale(0.5, 0.5, 0.5);
         let mesh = new THREE.Mesh(geometry, material);
-        ship = new Ship(mesh, shotController);
-        // Thruster particles
-        particleSystem.createEmitter({
-          color: 0x0000ff,
-          spawnRate: 1000,
-          lifetime: 0.05,
-          size: 0.1,
-          bindTo: ship,
-          offset: new THREE.Vector3(-0.8, 0.25, 0.9),
-          pointRandomness: 0.15,
-          velocity: new THREE.Vector3(0, 0, 1.5),
-          velocityRandomness: 0.4
-        });
+        ship = new Ship(mesh, shotController, particleSystem);
         scene.add(ship);
         done();
       });
