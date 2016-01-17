@@ -20,6 +20,12 @@ const SHADOWS = true;
 
 const MAX_DELTA = 0.1; // s
 
+let sound = new Audio('media/main_theme.mp3'); // GSF theme music
+sound.load();
+sound.loop = true;
+sound.volume = 0.4;
+sound.play();
+
 let scene = new THREE.Scene();
 let aspect = window.innerWidth / window.innerHeight;
 let camera = new THREE.PerspectiveCamera(75, aspect, 0.1, 10000);
