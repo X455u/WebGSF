@@ -58,7 +58,8 @@ let loader = new THREE.JSONLoader();
 let texLoader = new THREE.TextureLoader();
 let ship;
 let shotController = new ShotController(scene);
-// let textureLoader = THREE.TextureLoader();
+let crosshairRay = new THREE.Raycaster();
+crosshairRay.far = 500;
 let loadPromise = new Promise(done => {
   texLoader.load('./media/spaceship_comp.png', function(texture) {
     texLoader.load('./media/spaceship_nor.png', function(normalMap) {
@@ -74,6 +75,7 @@ let loadPromise = new Promise(done => {
           ship.receiveShadow = true;
         }
         light.target = ship;
+        crosshairRay.set(ship, ship.rotation);
         scene.add(ship);
         done();
       });
