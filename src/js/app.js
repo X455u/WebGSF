@@ -3,6 +3,7 @@ import THREE from 'three';
 import Ship from './Ship';
 import Planet from './Planet';
 import ShotController from './ShotController';
+import Crosshair from './Crosshair';
 
 const DEBUG = false;
 
@@ -58,8 +59,7 @@ let loader = new THREE.JSONLoader();
 let texLoader = new THREE.TextureLoader();
 let ship;
 let shotController = new ShotController(scene);
-let crosshairRay = new THREE.Raycaster();
-crosshairRay.far = 500;
+var crosshair;
 let loadPromise = new Promise(done => {
   texLoader.load('./media/spaceship_comp.png', function(texture) {
     texLoader.load('./media/spaceship_nor.png', function(normalMap) {
@@ -75,8 +75,8 @@ let loadPromise = new Promise(done => {
           ship.receiveShadow = true;
         }
         light.target = ship;
-        crosshairRay.set(ship, ship.rotation);
         scene.add(ship);
+        crosshair = new Crosshair(scene, ship);
         done();
       });
     });
@@ -108,6 +108,7 @@ function render() {
   previousTime = time;
 
   ship.update(delta);
+  crosshair.update([planet]);
 
   // light/shadow map follow
   light.position.copy(ship.position.clone().add(LIGHT_VECTOR));
