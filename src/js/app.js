@@ -76,7 +76,7 @@ let loadPromise = new Promise(done => {
         }
         light.target = ship;
         scene.add(ship);
-        crosshair = new Crosshair(scene, ship);
+        crosshair = new Crosshair(scene, camera, ship);
         done();
       });
     });
