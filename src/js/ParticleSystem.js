@@ -1,6 +1,6 @@
 import THREE from 'three';
 
-function spawnPointRandomness(r) {
+function applyPointRandomness(r) {
   let p = new THREE.Vector3(
     (Math.random() - 0.5),
     (Math.random() - 0.5),
@@ -27,20 +27,27 @@ class ParticleSystem {
     let emitter = new THREE.Points();
 
     emitter.offset = options.offset;
+    emitter.oldPosition = emitter.offset.clone();
     emitter.bindTo = options.bindTo;
     emitter.spawnRate = options.spawnRate;
     emitter.lifetime = options.lifetime;
     emitter.velocity = options.velocity;
     emitter.velocityRandomness = options.velocityRandomness;
-    emitter.r = options.r;
+    emitter.pointRandomness = options.pointRandomness;
 
     emitter.geometry = new THREE.Geometry();
-    for (let i = 0; i < Math.ceil(emitter.spawnRate * emitter.lifetime); i++) {
-      let part = emitter.bindTo.position.clone();
-      part.copy(spawnPointRandomness(emitter.r));
-      part.velocity = emitter.velocity.clone();
-      part.velocity.multiplyScalar(1 - emitter.velocityRandomness * (2 * Math.random() - 1));
-      emitter.geometry.vertices.push(part);
+    let toSpawn = Math.ceil(emitter.spawnRate * emitter.lifetime);
+    for (let i = 0; i < toSpawn; i++) {
+      let point = emitter.bindTo.position.clone();
+      let offset = emitter.offset.clone();
+      offset.applyQuaternion(emitter.bindTo.quaternion);
+      if (i === toSpawn - 1) {emitter.oldPosition.copy(point);} // Before randomness
+      offset.add(applyPointRandomness(emitter.pointRandomness));
+      point.add(offset);
+      emitter.geometry.vertices[emitter.iterator] = point;
+      point.velocity = emitter.velocity.clone();
+      point.velocity.multiplyScalar(1 - emitter.velocityRandomness * (2 * Math.random() - 1));
+      emitter.geometry.vertices.push(point);
     }
 
     emitter.material = new THREE.PointsMaterial({
@@ -57,18 +64,33 @@ class ParticleSystem {
   }
 
   updateOne(emit, delta) {
-    let max = (emit.iterator + Math.ceil(emit.spawnRate * delta + 1)) % emit.geometry.vertices.length;
+    let n = 0;
+    let toSpawn = Math.ceil(emit.spawnRate * delta + 1);
+    let max = (emit.iterator + toSpawn) % emit.geometry.vertices.length;
     while (emit.iterator !== max) {
-      let p = emit.geometry.vertices[emit.iterator];
-      p.copy(emit.bindTo.position);
+      n++;
+
+      // New position
+      let newPoint = emit.bindTo.position.clone();
       let offset = emit.offset.clone();
       offset.applyQuaternion(emit.bindTo.quaternion);
-      offset.add(spawnPointRandomness(emit.r));
-      p.add(offset);
+      newPoint.add(offset);
+      let point = emit.oldPosition.clone();
+      point.lerp(newPoint, n / toSpawn);
+      if (n === toSpawn) {emit.oldPosition.copy(point);} // Before randomness
+      point.add(applyPointRandomness(emit.pointRandomness));
+      emit.geometry.vertices[emit.iterator].copy(point);
+
+      // New velocity
+      point.velocity = emit.velocity.clone();
+      point.velocity.multiplyScalar(1 - emit.velocityRandomness * (2 * Math.random() - 1));
+
       emit.iterator = (emit.iterator + 1) % emit.geometry.vertices.length;
     }
     emit.geometry.vertices.forEach(particle => {
-      particle.addScaledVector(particle.velocity, delta);
+      let velocity = particle.velocity.clone();
+      velocity.applyQuaternion(emit.bindTo.quaternion);
+      particle.addScaledVector(velocity, delta);
     });
     emit.geometry.verticesNeedUpdate = true;
     emit.geometry.computeBoundingSphere();

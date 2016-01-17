@@ -47,11 +47,11 @@ let loadPromise = new Promise(done => {
         particleSystem.createEmitter({
           color: 0x0000ff,
           spawnRate: 1000,
-          lifetime: 0.1,
+          lifetime: 0.05,
           size: 0.1,
           bindTo: ship,
           offset: new THREE.Vector3(-0.8, 0.25, 0.9),
-          r: 0.15,
+          pointRandomness: 0.15,
           velocity: new THREE.Vector3(0, 0, 1.5),
           velocityRandomness: 0.4
         });
