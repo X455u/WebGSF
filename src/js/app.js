@@ -3,6 +3,7 @@ import THREE from 'three';
 import Ship from './Ship';
 import Planet from './Planet';
 import ShotController from './ShotController';
+import Crosshair from './Crosshair';
 
 const DEBUG = false;
 
@@ -58,7 +59,7 @@ let loader = new THREE.JSONLoader();
 let texLoader = new THREE.TextureLoader();
 let ship;
 let shotController = new ShotController(scene);
-// let textureLoader = THREE.TextureLoader();
+var crosshair;
 let loadPromise = new Promise(done => {
   texLoader.load('./media/spaceship_comp.png', function(texture) {
     texLoader.load('./media/spaceship_nor.png', function(normalMap) {
@@ -75,6 +76,7 @@ let loadPromise = new Promise(done => {
         }
         light.target = ship;
         scene.add(ship);
+        crosshair = new Crosshair(scene, camera, ship);
         done();
       });
     });
@@ -91,6 +93,7 @@ scene.add(planet);
 
 // Format debugging text
 let text;
+let fps = 60.0;
 if (DEBUG) {
   text = document.createElement('div');
   text.className = 'debug';
@@ -106,6 +109,7 @@ function render() {
   previousTime = time;
 
   ship.update(delta);
+  crosshair.update([planet]);
 
   // light/shadow map follow
   light.position.copy(ship.position.clone().add(LIGHT_VECTOR));
@@ -130,6 +134,9 @@ function render() {
   //Update debugging text
   if (DEBUG) {
     text.innerHTML = ['x', 'y', 'z'].map(x => x + ': ' + ship.position[x]).join('<br/>');
+    fps = fps * 9.0 / 10.0;
+    fps += (1.0 / (Math.max(delta, 0.01) * 10));
+    text.innerHTML += '<br/>fps: ' + fps;
   }
 
   requestAnimationFrame(render);
