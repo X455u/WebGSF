@@ -44,7 +44,6 @@ class ParticleSystem {
       if (i === toSpawn - 1) {emitter.oldPosition.copy(point);} // Before randomness
       offset.add(applyPointRandomness(emitter.pointRandomness));
       point.add(offset);
-      emitter.geometry.vertices[emitter.iterator] = point;
       point.velocity = emitter.velocity.clone();
       point.velocity.multiplyScalar(1 - emitter.velocityRandomness * (2 * Math.random() - 1));
       emitter.geometry.vertices.push(point);
