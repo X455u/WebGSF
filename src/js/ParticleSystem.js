@@ -19,7 +19,7 @@ class ParticleSystem {
 
   update(delta) {
     this.emitters.forEach(emit => {
-      this.updateOne(emit, delta);
+      this.updateEmitter(emit, delta);
     });
   }
 
@@ -65,7 +65,7 @@ class ParticleSystem {
     return emitter;
   }
 
-  updateOne(emit, delta) {
+  updateEmitter(emit, delta) {
     let n = 0;
     let toSpawn = Math.ceil(emit.spawnRate * delta + 1);
     let max = (emit.iterator + toSpawn) % emit.geometry.vertices.length;
