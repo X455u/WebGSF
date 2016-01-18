@@ -12,14 +12,16 @@ texLoader.load('./media/crosshair.png', function(texture) {
   });
 });
 
+const FARTHEST = 500;
+const SCALING_FACTOR = 10;
+
 class Crosshair {
 
   constructor(scene, camera, source) {
     this.camera = camera;
     this.source = source;
     this.raycaster = new THREE.Raycaster();
-    this.raycaster.far = 500;
-    this.scalingFactor = 10;
+    this.raycaster.far = FARTHEST;
 
     this.sprite = new THREE.Sprite(crosshairMaterial);
     this.sprite.renderDepth = 0;
@@ -31,15 +33,10 @@ class Crosshair {
     direction.applyQuaternion(this.source.quaternion);
     this.raycaster.set(this.source.position, direction);
     let intersections = this.raycaster.intersectObjects(objects);
-    let point;
-    if (intersections.length > 0) {
-      point = intersections[0].point;
-    } else {
-      point = this.raycaster.ray.at(500);
-    }
+    let point = intersections.length > 0 ? intersections[0].point : this.raycaster.ray.at(FARTHEST);
     this.sprite.position.copy(point);
     let v = new THREE.Vector3();
-    let scale = v.subVectors(this.sprite.position, this.camera.position).length() / this.scalingFactor;
+    let scale = v.subVectors(this.sprite.position, this.camera.position).length() / SCALING_FACTOR;
     this.sprite.scale.x = scale;
     this.sprite.scale.y = scale;
   }
