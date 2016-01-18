@@ -8,6 +8,8 @@ let shotGeometry = new THREE.CylinderGeometry(0.05, 0.05, 5, 8, 1);
 shotGeometry.rotateX(Math.PI / 2);
 let modifier = new SubdivisionModifier(1);
 modifier.modify(shotGeometry);
+shotGeometry.faceVertexUvs = [];
+shotGeometry.uvsNeedUpdate = true;
 let shotMaterial = new THREE.MeshPhongMaterial({
   color: 0x000000,
   specular: 0x666666,
