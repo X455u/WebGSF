@@ -62,14 +62,14 @@ class Ship extends THREE.Mesh {
       particleSystem.createEmitter({
         color: 0x0000ff,
         map: thrusterParticleMap,
-        spawnRate: 2000,
+        spawnRate: 500,
         lifetime: 0.04,
         size: 0.15,
         bindTo: this,
         offset: t,
         pointRandomness: 0.15,
         velocity: new THREE.Vector3(0, 0, 3),
-        velocityRandomness: 0.4
+        velocityRandomness: 0.8
       });
     });
     // });

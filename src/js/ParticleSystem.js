@@ -10,6 +10,14 @@ function applyPointRandomness(r) {
   return p;
 }
 
+function newParticlePosition(oldPosition, newPosition, lerpFactor, offset, pointRandomness) {
+  let result = new THREE.Vector3();
+  result.copy(oldPosition);
+  result.lerp(newPosition.clone().add(offset), lerpFactor);
+  result.add(applyPointRandomness(pointRandomness));
+  return result;
+}
+
 class ParticleSystem {
 
   constructor(scene) {
@@ -38,12 +46,13 @@ class ParticleSystem {
     emitter.geometry = new THREE.Geometry();
     let toSpawn = Math.ceil(emitter.spawnRate * emitter.lifetime);
     for (let i = 0; i < toSpawn; i++) {
-      let point = emitter.bindTo.position.clone();
-      let offset = emitter.offset.clone();
-      offset.applyQuaternion(emitter.bindTo.quaternion);
-      if (i === toSpawn - 1) {emitter.oldPosition.copy(point);} // Before randomness
-      offset.add(applyPointRandomness(emitter.pointRandomness));
-      point.add(offset);
+      let point = newParticlePosition(
+        emitter.oldPosition,
+        emitter.bindTo.position,
+        1,
+        emitter.offset.clone().applyQuaternion(emitter.bindTo.quaternion),
+        emitter.pointRandomness
+      );
       emitter.geometry.vertices[i] = point;
       point.velocity = emitter.velocity.clone();
       point.velocity.multiplyScalar(1 - emitter.velocityRandomness * (2 * Math.random() - 1));
@@ -66,30 +75,41 @@ class ParticleSystem {
   }
 
   updateEmitter(emit, delta) {
+    // Helpers for lerping between frames
     let n = 0;
     let toSpawn = Math.ceil(emit.spawnRate * delta + 1);
+    // Index of last particle (minus one) to update
     let max = (emit.iterator + toSpawn) % emit.geometry.vertices.length;
+    // Reposition ("respawn") particles
     while (emit.iterator !== max) {
       n++;
-
       // New position
-      let newPoint = emit.bindTo.position.clone();
-      let offset = emit.offset.clone();
-      offset.applyQuaternion(emit.bindTo.quaternion);
-      newPoint.add(offset);
-      let point = emit.oldPosition.clone();
-      point.lerp(newPoint, n / toSpawn);
-      if (n === toSpawn) {emit.oldPosition.copy(point);} // Before randomness
-      point.add(applyPointRandomness(emit.pointRandomness));
+      let point = newParticlePosition(
+        emit.oldPosition,
+        emit.bindTo.position,
+        n / toSpawn,
+        emit.offset.clone().applyQuaternion(emit.bindTo.quaternion),
+        emit.pointRandomness
+      );
       emit.geometry.vertices[emit.iterator].copy(point);
 
       // New velocity
       point.velocity = emit.velocity.clone();
       point.velocity.multiplyScalar(1 - emit.velocityRandomness * (2 * Math.random() - 1));
-
+      // Iterate to next particle
       emit.iterator = (emit.iterator + 1) % emit.geometry.vertices.length;
     }
+    // Put position of last particle (without randomness) to oldPosition
+    emit.oldPosition = newParticlePosition(
+      emit.oldPosition,
+      emit.bindTo.position,
+      1,
+      emit.offset.clone().applyQuaternion(emit.bindTo.quaternion),
+      0
+    );
+    // Update particles
     emit.geometry.vertices.forEach(particle => {
+      // Update velocity
       let velocity = particle.velocity.clone();
       velocity.applyQuaternion(emit.bindTo.quaternion);
       particle.addScaledVector(velocity, delta);
