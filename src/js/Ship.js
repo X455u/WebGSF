@@ -12,7 +12,7 @@ const Z_AXIS = new THREE.Vector3(0, 0, 1);
 const X_AXIS = new THREE.Vector3(1, 0, 0);
 
 let texLoader = new THREE.TextureLoader();
-var thrusterParticleMap;
+let thrusterParticleMap;
 texLoader.load('./media/particle2.png', function(map) {
   thrusterParticleMap = map;
 });
