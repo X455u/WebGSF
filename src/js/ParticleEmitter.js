@@ -16,6 +16,9 @@ function newParticle(emitter, emitterPosition, lerpFactor = 1) {
   let result = emitter.oldPosition.clone();
   result.lerp(emitterPosition, lerpFactor);
   result.add(applyPointRandomness(emitter.pointRandomness));
+  result.velocity = emitter.velocity.clone();
+  result.velocity.multiplyScalar(1 - emitter.velocityRandomness * (2 * Math.random() - 1));
+  result.velocity.applyQuaternion(emitter.bindTo.quaternion);
   return result;
 }
 
@@ -38,12 +41,7 @@ class ParticleEmitter extends THREE.Points {
 
     this.geometry = new THREE.Geometry();
     let toSpawn = Math.ceil(this.spawnRate * this.lifetime);
-    for (let i = 0; i < toSpawn; i++) {
-      let point = newParticle(this, this.bindTo.position);
-      this.geometry.vertices[i] = point;
-      point.velocity = this.velocity.clone();
-      point.velocity.multiplyScalar(1 - this.velocityRandomness * (2 * Math.random() - 1));
-    }
+    this.geometry.vertices = _.range(toSpawn).map(() => newParticle(this, this.bindTo.position));
 
     this.material = new THREE.PointsMaterial({
       color: options.color,
@@ -63,13 +61,7 @@ class ParticleEmitter extends THREE.Points {
 
     // Spawn new particles
     let toSpawn = Math.min(Math.ceil(this.spawnRate * delta + 1), this.geometry.vertices.length);
-    let spawned = _.range(toSpawn).map(n => {
-      let point = newParticle(this, emitterPosition, n / toSpawn);
-      point.velocity = this.velocity.clone();
-      point.velocity.multiplyScalar(1 - this.velocityRandomness * (2 * Math.random() - 1));
-      point.velocity.applyQuaternion(this.bindTo.quaternion);
-      return point;
-    });
+    let spawned = _.range(toSpawn).map(n => newParticle(this, emitterPosition, n / toSpawn));
 
     // Update particles
     this.geometry.vertices.splice(0, toSpawn);
