@@ -1,10 +1,12 @@
+import _ from 'lodash';
 import THREE from 'three';
 
 function applyPointRandomness(r) {
   let p = new THREE.Vector3(
-    (Math.random() - 0.5),
-    (Math.random() - 0.5),
-    (Math.random() - 0.5))
+      Math.random() - 0.5,
+      Math.random() - 0.5,
+      Math.random() - 0.5
+    )
     .normalize()
     .multiplyScalar(r);
   return p;
@@ -31,14 +33,17 @@ class ParticleEmitter extends THREE.Points {
   constructor(options) {
     super();
 
-    this.offset = options.offset;
+    let emitterOptions = _.pick(options, [
+      'offset',
+      'bindTo',
+      'spawnRate',
+      'lifetime',
+      'velocity',
+      'velocityRandomness',
+      'pointRandomness'
+    ]);
+    Object.assign(this, emitterOptions);
     this.oldPosition = this.offset.clone();
-    this.bindTo = options.bindTo;
-    this.spawnRate = options.spawnRate;
-    this.lifetime = options.lifetime;
-    this.velocity = options.velocity;
-    this.velocityRandomness = options.velocityRandomness;
-    this.pointRandomness = options.pointRandomness;
 
     this.geometry = new THREE.Geometry();
     let toSpawn = Math.ceil(this.spawnRate * this.lifetime);
