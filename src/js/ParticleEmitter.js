@@ -12,19 +12,10 @@ function applyPointRandomness(r) {
   return p;
 }
 
-function newParticle(emitter, lerpFactor) {
-  let result = new THREE.Vector3();
-  result.copy(emitter.oldPosition);
-  let rotatedOffset = emitter.offset.clone().applyQuaternion(emitter.bindTo.quaternion);
-  result.lerp(emitter.bindTo.position.clone().add(rotatedOffset), lerpFactor);
+function newParticle(emitter, emitterPosition, lerpFactor = 1) {
+  let result = emitter.oldPosition.clone();
+  result.lerp(emitterPosition, lerpFactor);
   result.add(applyPointRandomness(emitter.pointRandomness));
-  return result;
-}
-
-function calculateEndPosition(oldPosition, newPosition, offset) {
-  let result = new THREE.Vector3();
-  result.copy(oldPosition);
-  result.lerp(newPosition.clone().add(offset), 1);
   return result;
 }
 
@@ -48,7 +39,7 @@ class ParticleEmitter extends THREE.Points {
     this.geometry = new THREE.Geometry();
     let toSpawn = Math.ceil(this.spawnRate * this.lifetime);
     for (let i = 0; i < toSpawn; i++) {
-      let point = newParticle(this, 1);
+      let point = newParticle(this, this.bindTo.position);
       this.geometry.vertices[i] = point;
       point.velocity = this.velocity.clone();
       point.velocity.multiplyScalar(1 - this.velocityRandomness * (2 * Math.random() - 1));
@@ -68,6 +59,8 @@ class ParticleEmitter extends THREE.Points {
 
   update(delta) {
     // Helpers for lerping between frames
+    let rotatedOffset = this.offset.clone().applyQuaternion(this.bindTo.quaternion);
+    let emitterPosition = this.bindTo.position.clone().add(rotatedOffset);
     let n = 0;
     let toSpawn = Math.ceil(this.spawnRate * delta + 1);
     // Index of last particle (minus one) to update
@@ -76,7 +69,7 @@ class ParticleEmitter extends THREE.Points {
     while (this.iterator !== max) {
       n++;
       // New position
-      let point = newParticle(this, n / toSpawn);
+      let point = newParticle(this, emitterPosition, n / toSpawn);
       this.geometry.vertices[this.iterator].copy(point);
 
       // New velocity
@@ -85,12 +78,8 @@ class ParticleEmitter extends THREE.Points {
       // Iterate to next particle
       this.iterator = (this.iterator + 1) % this.geometry.vertices.length;
     }
-    // Put position of last particle (without randomness) to oldPosition
-    this.oldPosition = calculateEndPosition(
-      this.oldPosition,
-      this.bindTo.position,
-      this.offset.clone().applyQuaternion(this.bindTo.quaternion)
-    );
+    // Set oldPosition as current emitter position
+    this.oldPosition = emitterPosition;
     // Update particles
     this.geometry.vertices.forEach(particle => {
       // Update velocity
