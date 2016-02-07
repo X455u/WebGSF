@@ -58,35 +58,31 @@ class ParticleEmitter extends THREE.Points {
   }
 
   update(delta) {
-    // Helpers for lerping between frames
     let rotatedOffset = this.offset.clone().applyQuaternion(this.bindTo.quaternion);
     let emitterPosition = this.bindTo.position.clone().add(rotatedOffset);
-    let n = 0;
-    let toSpawn = Math.ceil(this.spawnRate * delta + 1);
-    // Index of last particle (minus one) to update
-    let max = (this.iterator + toSpawn) % this.geometry.vertices.length;
-    // Reposition ("respawn") particles
-    while (this.iterator !== max) {
-      n++;
-      // New position
-      let point = newParticle(this, emitterPosition, n / toSpawn);
-      this.geometry.vertices[this.iterator].copy(point);
 
-      // New velocity
+    // Spawn new particles
+    let toSpawn = Math.min(Math.ceil(this.spawnRate * delta + 1), this.geometry.vertices.length);
+    let spawned = _.range(toSpawn).map(n => {
+      let point = newParticle(this, emitterPosition, n / toSpawn);
       point.velocity = this.velocity.clone();
       point.velocity.multiplyScalar(1 - this.velocityRandomness * (2 * Math.random() - 1));
-      // Iterate to next particle
-      this.iterator = (this.iterator + 1) % this.geometry.vertices.length;
-    }
+      point.velocity.applyQuaternion(this.bindTo.quaternion);
+      return point;
+    });
+
+    // Update particles
+    this.geometry.vertices.splice(0, toSpawn);
+    this.geometry.vertices = this.geometry.vertices.concat(spawned);
+
+    // Move particles
+    this.geometry.vertices.forEach((particle) => {
+      particle.addScaledVector(particle.velocity, delta);
+    });
+
     // Set oldPosition as current emitter position
     this.oldPosition = emitterPosition;
-    // Update particles
-    this.geometry.vertices.forEach(particle => {
-      // Update velocity
-      let velocity = particle.velocity.clone();
-      velocity.applyQuaternion(this.bindTo.quaternion);
-      particle.addScaledVector(velocity, delta);
-    });
+
     this.geometry.verticesNeedUpdate = true;
     this.geometry.computeBoundingSphere();
   }
