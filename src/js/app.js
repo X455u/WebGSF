@@ -58,10 +58,10 @@ camera.position.z = CAMERA_DISTANCE;
 // prepare loader and load the model
 let loader = new THREE.JSONLoader();
 let texLoader = new THREE.TextureLoader();
-var ship;
+let ship;
 let shotController = new ShotController(scene);
 let particleSystem = new ParticleSystem(scene);
-var crosshair;
+let crosshair;
 let loadPromise = new Promise(done => {
   texLoader.load('./media/spaceship_comp.png', function(texture) {
     texLoader.load('./media/spaceship_nor.png', function(normalMap) {
