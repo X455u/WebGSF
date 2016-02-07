@@ -18,6 +18,13 @@ function newParticle(oldPosition, newPosition, lerpFactor, offset, pointRandomne
   return result;
 }
 
+function calculateOldPosition(oldPosition, newPosition, offset) {
+  let result = new THREE.Vector3();
+  result.copy(oldPosition);
+  result.lerp(newPosition.clone().add(offset), 1);
+  return result;
+}
+
 class ParticleSystem {
 
   constructor(scene) {
@@ -100,12 +107,10 @@ class ParticleSystem {
       emit.iterator = (emit.iterator + 1) % emit.geometry.vertices.length;
     }
     // Put position of last particle (without randomness) to oldPosition
-    emit.oldPosition = newParticle(
+    emit.oldPosition = calculateOldPosition(
       emit.oldPosition,
       emit.bindTo.position,
-      1,
-      emit.offset.clone().applyQuaternion(emit.bindTo.quaternion),
-      0
+      emit.offset.clone().applyQuaternion(emit.bindTo.quaternion)
     );
     // Update particles
     emit.geometry.vertices.forEach(particle => {
