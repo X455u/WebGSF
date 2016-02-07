@@ -19,7 +19,7 @@ function newParticle(emitter, lerpFactor) {
   return result;
 }
 
-function calculateOldPosition(oldPosition, newPosition, offset) {
+function calculateEndPosition(oldPosition, newPosition, offset) {
   let result = new THREE.Vector3();
   result.copy(oldPosition);
   result.lerp(newPosition.clone().add(offset), 1);
@@ -81,7 +81,7 @@ class ParticleEmitter extends THREE.Points {
       this.iterator = (this.iterator + 1) % this.geometry.vertices.length;
     }
     // Put position of last particle (without randomness) to oldPosition
-    this.oldPosition = calculateOldPosition(
+    this.oldPosition = calculateEndPosition(
       this.oldPosition,
       this.bindTo.position,
       this.offset.clone().applyQuaternion(this.bindTo.quaternion)
