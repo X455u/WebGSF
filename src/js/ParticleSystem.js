@@ -10,7 +10,7 @@ function applyPointRandomness(r) {
   return p;
 }
 
-function newParticlePosition(oldPosition, newPosition, lerpFactor, offset, pointRandomness) {
+function newParticle(oldPosition, newPosition, lerpFactor, offset, pointRandomness) {
   let result = new THREE.Vector3();
   result.copy(oldPosition);
   result.lerp(newPosition.clone().add(offset), lerpFactor);
@@ -46,7 +46,7 @@ class ParticleSystem {
     emitter.geometry = new THREE.Geometry();
     let toSpawn = Math.ceil(emitter.spawnRate * emitter.lifetime);
     for (let i = 0; i < toSpawn; i++) {
-      let point = newParticlePosition(
+      let point = newParticle(
         emitter.oldPosition,
         emitter.bindTo.position,
         1,
@@ -84,7 +84,7 @@ class ParticleSystem {
     while (emit.iterator !== max) {
       n++;
       // New position
-      let point = newParticlePosition(
+      let point = newParticle(
         emit.oldPosition,
         emit.bindTo.position,
         n / toSpawn,
@@ -100,7 +100,7 @@ class ParticleSystem {
       emit.iterator = (emit.iterator + 1) % emit.geometry.vertices.length;
     }
     // Put position of last particle (without randomness) to oldPosition
-    emit.oldPosition = newParticlePosition(
+    emit.oldPosition = newParticle(
       emit.oldPosition,
       emit.bindTo.position,
       1,
