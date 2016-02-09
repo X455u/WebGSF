@@ -5329,13 +5329,17 @@
 
 	var _Ship2 = _interopRequireDefault(_Ship);
 
-	var _Planet = __webpack_require__(281);
+	var _Planet = __webpack_require__(279);
 
 	var _Planet2 = _interopRequireDefault(_Planet);
 
-	var _ShotController = __webpack_require__(283);
+	var _ShotController = __webpack_require__(281);
 
 	var _ShotController2 = _interopRequireDefault(_ShotController);
+
+	var _Crosshair = __webpack_require__(283);
+
+	var _Crosshair2 = _interopRequireDefault(_Crosshair);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -5393,7 +5397,7 @@
 	var texLoader = new _three2.default.TextureLoader();
 	var ship = undefined;
 	var shotController = new _ShotController2.default(scene);
-	// let textureLoader = THREE.TextureLoader();
+	var crosshair;
 	var loadPromise = new _promise2.default(function (done) {
 	  texLoader.load('./media/spaceship_comp.png', function (texture) {
 	    texLoader.load('./media/spaceship_nor.png', function (normalMap) {
@@ -5410,6 +5414,7 @@
 	        }
 	        light.target = ship;
 	        scene.add(ship);
+	        crosshair = new _Crosshair2.default(scene, camera, ship);
 	        done();
 	      });
 	    });
@@ -5426,6 +5431,7 @@
 
 	// Format debugging text
 	var text = undefined;
+	var fps = 60.0;
 	if (DEBUG) {
 	  text = document.createElement('div');
 	  text.className = 'debug';
@@ -5441,6 +5447,7 @@
 	  previousTime = time;
 
 	  ship.update(delta);
+	  crosshair.update([planet]);
 
 	  // light/shadow map follow
 	  light.position.copy(ship.position.clone().add(LIGHT_VECTOR));
@@ -5467,6 +5474,9 @@
 	    text.innerHTML = ['x', 'y', 'z'].map(function (x) {
 	      return x + ': ' + ship.position[x];
 	    }).join('<br/>');
+	    fps = fps * 9.0 / 10.0;
+	    fps += 1.0 / (Math.max(delta, 0.01) * 10);
+	    text.innerHTML += '<br/>fps: ' + fps;
 	  }
 
 	  requestAnimationFrame(render);
@@ -42933,7 +42943,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _keymaster = __webpack_require__(280);
+	var _keymaster = __webpack_require__(278);
 
 	var _keymaster2 = _interopRequireDefault(_keymaster);
 
@@ -56011,9 +56021,7 @@
 
 
 /***/ },
-/* 278 */,
-/* 279 */,
-/* 280 */
+/* 278 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//     keymaster.js
@@ -56315,7 +56323,7 @@
 
 
 /***/ },
-/* 281 */
+/* 279 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -56348,7 +56356,7 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
-	var _SubdivisionModifier = __webpack_require__(282);
+	var _SubdivisionModifier = __webpack_require__(280);
 
 	var _SubdivisionModifier2 = _interopRequireDefault(_SubdivisionModifier);
 
@@ -56404,7 +56412,7 @@
 	exports.default = Planet;
 
 /***/ },
-/* 282 */
+/* 280 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -56692,7 +56700,7 @@
 	exports.default = SubdivisionModifier;
 
 /***/ },
-/* 283 */
+/* 281 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -56709,7 +56717,7 @@
 
 	var _createClass3 = _interopRequireDefault(_createClass2);
 
-	var _LaserShot = __webpack_require__(284);
+	var _LaserShot = __webpack_require__(282);
 
 	var _LaserShot2 = _interopRequireDefault(_LaserShot);
 
@@ -56754,7 +56762,7 @@
 	exports.default = ShotController;
 
 /***/ },
-/* 284 */
+/* 282 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -56787,10 +56795,31 @@
 
 	var _three2 = _interopRequireDefault(_three);
 
+	var _SubdivisionModifier = __webpack_require__(280);
+
+	var _SubdivisionModifier2 = _interopRequireDefault(_SubdivisionModifier);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	var VELOCITY = 300; // units/s
 	var LIFETIME = 5.0; // seconds
+
+	var shotGeometry = new _three2.default.CylinderGeometry(0.05, 0.05, 5, 8, 1);
+	shotGeometry.rotateX(Math.PI / 2);
+	var modifier = new _SubdivisionModifier2.default(1);
+	modifier.modify(shotGeometry);
+	shotGeometry.faceVertexUvs = [];
+	shotGeometry.uvsNeedUpdate = true;
+	var shotMaterial = new _three2.default.MeshPhongMaterial({
+	  color: 0x000000,
+	  specular: 0x666666,
+	  emissive: 0xff0000,
+	  shininess: 0,
+	  shading: _three2.default.SmoothShading,
+	  opacity: 0.9,
+	  transparent: true
+	});
+	var shotMesh = new _three2.default.Mesh(shotGeometry, shotMaterial);
 
 	var LaserShot = (function (_THREE$Object3D) {
 	  (0, _inherits3.default)(LaserShot, _THREE$Object3D);
@@ -56800,20 +56829,7 @@
 
 	    var _this = (0, _possibleConstructorReturn3.default)(this, (0, _getPrototypeOf2.default)(LaserShot).call(this));
 
-	    var shotGeometry = new _three2.default.CylinderGeometry(0.05, 0.05, 5, 8, 1);
-	    shotGeometry.rotateX(Math.PI / 2);
-	    var shotMaterial = new _three2.default.MeshPhongMaterial({
-	      color: 0x000000,
-	      specular: 0x666666,
-	      emissive: 0xff0000,
-	      shininess: 10,
-	      shading: _three2.default.SmoothShading,
-	      opacity: 0.9,
-	      transparent: true
-	    });
-	    var shotMesh = new _three2.default.Mesh(shotGeometry, shotMaterial);
-
-	    _this.add(shotMesh);
+	    _this.add(shotMesh.clone());
 	    _this.lifetimeLeft = LIFETIME;
 	    return _this;
 	  }
@@ -56829,6 +56845,79 @@
 	})(_three2.default.Object3D);
 
 	exports.default = LaserShot;
+
+/***/ },
+/* 283 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _classCallCheck2 = __webpack_require__(257);
+
+	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+	var _createClass2 = __webpack_require__(258);
+
+	var _createClass3 = _interopRequireDefault(_createClass2);
+
+	var _three = __webpack_require__(247);
+
+	var _three2 = _interopRequireDefault(_three);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var texLoader = new _three2.default.TextureLoader();
+	var crosshairMaterial = undefined;
+	texLoader.load('./media/crosshair.png', function (texture) {
+	  crosshairMaterial = new _three2.default.SpriteMaterial({
+	    color: 0x00ff00,
+	    map: texture,
+	    blending: _three2.default.NormalBlending,
+	    depthWrite: false,
+	    depthTest: false
+	  });
+	});
+
+	var FARTHEST = 500;
+	var SCALING_FACTOR = 10;
+
+	var Crosshair = (function () {
+	  function Crosshair(scene, camera, source) {
+	    (0, _classCallCheck3.default)(this, Crosshair);
+
+	    this.camera = camera;
+	    this.source = source;
+	    this.raycaster = new _three2.default.Raycaster();
+	    this.raycaster.far = FARTHEST;
+
+	    this.sprite = new _three2.default.Sprite(crosshairMaterial);
+	    this.sprite.renderDepth = 0;
+	    scene.add(this.sprite);
+	  }
+
+	  (0, _createClass3.default)(Crosshair, [{
+	    key: 'update',
+	    value: function update(objects) {
+	      var direction = new _three2.default.Vector3(0, 0, -1);
+	      direction.applyQuaternion(this.source.quaternion);
+	      this.raycaster.set(this.source.position, direction);
+	      var intersections = this.raycaster.intersectObjects(objects);
+	      var point = intersections.length > 0 ? intersections[0].point : this.raycaster.ray.at(FARTHEST);
+	      this.sprite.position.copy(point);
+	      var v = new _three2.default.Vector3();
+	      var scale = v.subVectors(this.sprite.position, this.camera.position).length() / SCALING_FACTOR;
+	      this.sprite.scale.x = scale;
+	      this.sprite.scale.y = scale;
+	    }
+	  }]);
+	  return Crosshair;
+	})();
+
+	exports.default = Crosshair;
 
 /***/ }
 /******/ ]);
