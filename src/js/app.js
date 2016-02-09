@@ -1,4 +1,5 @@
 import THREE from 'three';
+import CANNON from 'cannon';
 
 import Ship from './Ship';
 import Planet from './Planet';
@@ -49,6 +50,9 @@ if (DEBUG) {
   scene.add(new THREE.CameraHelper(spotlight.shadow.camera));
 }
 
+let physics = new CANNON.World();
+physics.broadphase = new CANNON.NaiveBroadphase();
+
 scene.add(ambientLight);
 scene.add(spotlight);
 scene.add(light);
@@ -60,6 +64,7 @@ let texLoader = new THREE.TextureLoader();
 let ship;
 let shotController = new ShotController(scene);
 var crosshair;
+var sphereShape;
 let loadPromise = new Promise(done => {
   texLoader.load('./media/spaceship_comp.png', function(texture) {
     texLoader.load('./media/spaceship_nor.png', function(normalMap) {
@@ -77,6 +82,7 @@ let loadPromise = new Promise(done => {
         light.target = ship;
         scene.add(ship);
         crosshair = new Crosshair(scene, camera, ship);
+        sphereShape = new CANNON.Sphere(1);
         done();
       });
     });
