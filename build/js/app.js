@@ -5337,6 +5337,10 @@
 
 	var _ShotController2 = _interopRequireDefault(_ShotController);
 
+	var _ParticleSystem = __webpack_require__(284);
+
+	var _ParticleSystem2 = _interopRequireDefault(_ParticleSystem);
+
 	var _Crosshair = __webpack_require__(283);
 
 	var _Crosshair2 = _interopRequireDefault(_Crosshair);
@@ -5397,7 +5401,8 @@
 	var texLoader = new _three2.default.TextureLoader();
 	var ship = undefined;
 	var shotController = new _ShotController2.default(scene);
-	var crosshair;
+	var particleSystem = new _ParticleSystem2.default(scene);
+	var crosshair = undefined;
 	var loadPromise = new _promise2.default(function (done) {
 	  texLoader.load('./media/spaceship_comp.png', function (texture) {
 	    texLoader.load('./media/spaceship_nor.png', function (normalMap) {
@@ -5408,7 +5413,7 @@
 	        });
 	        geometry.scale(0.5, 0.5, 0.5);
 	        var mesh = new _three2.default.Mesh(geometry, material);
-	        ship = new _Ship2.default(mesh, shotController);
+	        ship = new _Ship2.default(mesh, shotController, particleSystem);
 	        if (SHADOWS) {
 	          ship.receiveShadow = true;
 	        }
@@ -5447,6 +5452,7 @@
 	  previousTime = time;
 
 	  ship.update(delta);
+	  particleSystem.update(delta);
 	  crosshair.update([planet]);
 
 	  // light/shadow map follow
@@ -42958,6 +42964,12 @@
 	var Z_AXIS = new _three2.default.Vector3(0, 0, 1);
 	var X_AXIS = new _three2.default.Vector3(1, 0, 0);
 
+	var texLoader = new _three2.default.TextureLoader();
+	var thrusterParticleMap = undefined;
+	texLoader.load('./media/particle2.png', function (map) {
+	  thrusterParticleMap = map;
+	});
+
 	function isMobile() {
 	  return window.DeviceMotionEvent !== undefined && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 	}
@@ -42970,7 +42982,7 @@
 	var Ship = (function (_THREE$Mesh) {
 	  (0, _inherits3.default)(Ship, _THREE$Mesh);
 
-	  function Ship(ship, shotController) {
+	  function Ship(ship, shotController, particleSystem) {
 	    (0, _classCallCheck3.default)(this, Ship);
 
 	    var _this = (0, _possibleConstructorReturn3.default)(this, (0, _getPrototypeOf2.default)(Ship).call(this));
@@ -42995,6 +43007,28 @@
 	    _this.shotController = shotController;
 	    _this.reload = 0.0;
 	    _this.activeGun = 1; // Bad initial solution
+	    // Thruster particles
+	    var thrusters = [new _three2.default.Vector3(-0.8, 0.25, 0.9), // Up-left
+	    new _three2.default.Vector3(0.8, 0.25, 0.9), // Up-right
+	    new _three2.default.Vector3(-0.8, -0.25, 0.9), // Down-left
+	    new _three2.default.Vector3(0.8, -0.25, 0.9) // Down-right
+	    ];
+	    // texLoader.load('./media/particle2.png', function(map) {
+	    thrusters.forEach(function (t) {
+	      particleSystem.createEmitter({
+	        color: 0x0000ff,
+	        map: thrusterParticleMap,
+	        spawnRate: 500,
+	        lifetime: 0.04,
+	        size: 0.15,
+	        bindTo: _this,
+	        offset: t,
+	        pointRandomness: 0.15,
+	        velocity: new _three2.default.Vector3(0, 0, 3),
+	        velocityRandomness: 0.8
+	      });
+	    });
+	    // });
 	    return _this;
 	  }
 
@@ -56918,6 +56952,245 @@
 	})();
 
 	exports.default = Crosshair;
+
+/***/ },
+/* 284 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _classCallCheck2 = __webpack_require__(257);
+
+	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+	var _createClass2 = __webpack_require__(258);
+
+	var _createClass3 = _interopRequireDefault(_createClass2);
+
+	var _ParticleEmitter = __webpack_require__(285);
+
+	var _ParticleEmitter2 = _interopRequireDefault(_ParticleEmitter);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var ParticleSystem = (function () {
+	  function ParticleSystem(scene) {
+	    (0, _classCallCheck3.default)(this, ParticleSystem);
+
+	    this.emitters = [];
+	    this.scene = scene;
+	  }
+
+	  (0, _createClass3.default)(ParticleSystem, [{
+	    key: 'update',
+	    value: function update(delta) {
+	      this.emitters.forEach(function (emit) {
+	        emit.update(delta);
+	      });
+	    }
+	  }, {
+	    key: 'createEmitter',
+	    value: function createEmitter(options) {
+	      var newEmitter = new _ParticleEmitter2.default(options);
+	      this.emitters.push(newEmitter);
+	      this.scene.add(newEmitter);
+	    }
+	  }]);
+	  return ParticleSystem;
+	})();
+
+	exports.default = ParticleSystem;
+
+/***/ },
+/* 285 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _assign = __webpack_require__(286);
+
+	var _assign2 = _interopRequireDefault(_assign);
+
+	var _getPrototypeOf = __webpack_require__(254);
+
+	var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
+
+	var _classCallCheck2 = __webpack_require__(257);
+
+	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+	var _createClass2 = __webpack_require__(258);
+
+	var _createClass3 = _interopRequireDefault(_createClass2);
+
+	var _possibleConstructorReturn2 = __webpack_require__(261);
+
+	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+	var _inherits2 = __webpack_require__(270);
+
+	var _inherits3 = _interopRequireDefault(_inherits2);
+
+	var _lodash = __webpack_require__(276);
+
+	var _lodash2 = _interopRequireDefault(_lodash);
+
+	var _three = __webpack_require__(247);
+
+	var _three2 = _interopRequireDefault(_three);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function applyPointRandomness(r) {
+	  var p = new _three2.default.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize().multiplyScalar(r);
+	  return p;
+	}
+
+	function newParticle(emitter, emitterPosition) {
+	  var lerpFactor = arguments.length <= 2 || arguments[2] === undefined ? 1 : arguments[2];
+
+	  var result = emitter.oldPosition.clone();
+	  result.lerp(emitterPosition, lerpFactor);
+	  result.add(applyPointRandomness(emitter.pointRandomness));
+	  result.velocity = emitter.velocity.clone();
+	  result.velocity.multiplyScalar(1 - emitter.velocityRandomness * (2 * Math.random() - 1));
+	  result.velocity.applyQuaternion(emitter.bindTo.quaternion);
+	  return result;
+	}
+
+	var ParticleEmitter = (function (_THREE$Points) {
+	  (0, _inherits3.default)(ParticleEmitter, _THREE$Points);
+
+	  function ParticleEmitter(options) {
+	    (0, _classCallCheck3.default)(this, ParticleEmitter);
+
+	    var _this = (0, _possibleConstructorReturn3.default)(this, (0, _getPrototypeOf2.default)(ParticleEmitter).call(this));
+
+	    var emitterOptions = _lodash2.default.pick(options, ['offset', 'bindTo', 'spawnRate', 'lifetime', 'velocity', 'velocityRandomness', 'pointRandomness']);
+	    (0, _assign2.default)(_this, emitterOptions);
+	    _this.oldPosition = _this.offset.clone();
+
+	    _this.geometry = new _three2.default.Geometry();
+	    var toSpawn = Math.ceil(_this.spawnRate * _this.lifetime);
+	    _this.geometry.vertices = _lodash2.default.range(toSpawn).map(function () {
+	      return newParticle(_this, _this.bindTo.position);
+	    });
+
+	    _this.material = new _three2.default.PointsMaterial({
+	      color: options.color,
+	      blending: _three2.default.AdditiveBlending,
+	      transparent: true,
+	      map: options.map,
+	      size: options.size
+	    });
+
+	    _this.iterator = 0;
+	    _this.geometry.computeBoundingSphere();
+	    return _this;
+	  }
+
+	  (0, _createClass3.default)(ParticleEmitter, [{
+	    key: 'update',
+	    value: function update(delta) {
+	      var _this2 = this;
+
+	      var rotatedOffset = this.offset.clone().applyQuaternion(this.bindTo.quaternion);
+	      var emitterPosition = this.bindTo.position.clone().add(rotatedOffset);
+
+	      // Spawn new particles
+	      var toSpawn = Math.min(Math.ceil(this.spawnRate * delta + 1), this.geometry.vertices.length);
+	      var spawned = _lodash2.default.range(toSpawn).map(function (n) {
+	        return newParticle(_this2, emitterPosition, n / toSpawn);
+	      });
+
+	      // Update particles
+	      this.geometry.vertices.splice(0, toSpawn);
+	      this.geometry.vertices = this.geometry.vertices.concat(spawned);
+
+	      // Move particles
+	      this.geometry.vertices.forEach(function (particle) {
+	        particle.addScaledVector(particle.velocity, delta);
+	      });
+
+	      // Set oldPosition as current emitter position
+	      this.oldPosition = emitterPosition;
+
+	      this.geometry.verticesNeedUpdate = true;
+	      this.geometry.computeBoundingSphere();
+	    }
+	  }]);
+	  return ParticleEmitter;
+	})(_three2.default.Points);
+
+	exports.default = ParticleEmitter;
+
+/***/ },
+/* 286 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = { "default": __webpack_require__(287), __esModule: true };
+
+/***/ },
+/* 287 */
+/***/ function(module, exports, __webpack_require__) {
+
+	__webpack_require__(288);
+	module.exports = __webpack_require__(203).Object.assign;
+
+/***/ },
+/* 288 */
+/***/ function(module, exports, __webpack_require__) {
+
+	// 19.1.3.1 Object.assign(target, source)
+	var $export = __webpack_require__(201);
+
+	$export($export.S + $export.F, 'Object', {assign: __webpack_require__(289)});
+
+/***/ },
+/* 289 */
+/***/ function(module, exports, __webpack_require__) {
+
+	// 19.1.2.1 Object.assign(target, source, ...)
+	var $        = __webpack_require__(208)
+	  , toObject = __webpack_require__(252)
+	  , IObject  = __webpack_require__(224);
+
+	// should work with symbols and should have deterministic property order (V8 bug)
+	module.exports = __webpack_require__(211)(function(){
+	  var a = Object.assign
+	    , A = {}
+	    , B = {}
+	    , S = Symbol()
+	    , K = 'abcdefghijklmnopqrst';
+	  A[S] = 7;
+	  K.split('').forEach(function(k){ B[k] = k; });
+	  return a({}, A)[S] != 7 || Object.keys(a({}, B)).join('') != K;
+	}) ? function assign(target, source){ // eslint-disable-line no-unused-vars
+	  var T     = toObject(target)
+	    , $$    = arguments
+	    , $$len = $$.length
+	    , index = 1
+	    , getKeys    = $.getKeys
+	    , getSymbols = $.getSymbols
+	    , isEnum     = $.isEnum;
+	  while($$len > index){
+	    var S      = IObject($$[index++])
+	      , keys   = getSymbols ? getKeys(S).concat(getSymbols(S)) : getKeys(S)
+	      , length = keys.length
+	      , j      = 0
+	      , key;
+	    while(length > j)if(isEnum.call(S, key = keys[j++]))T[key] = S[key];
+	  }
+	  return T;
+	} : Object.assign;
 
 /***/ }
 /******/ ]);
