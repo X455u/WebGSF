@@ -3,6 +3,7 @@ import THREE from 'three';
 import Ship from './Ship';
 import Planet from './Planet';
 import ShotController from './ShotController';
+import ParticleSystem from './ParticleSystem';
 import Crosshair from './Crosshair';
 
 const DEBUG = false;
@@ -59,7 +60,8 @@ let loader = new THREE.JSONLoader();
 let texLoader = new THREE.TextureLoader();
 let ship;
 let shotController = new ShotController(scene);
-var crosshair;
+let particleSystem = new ParticleSystem(scene);
+let crosshair;
 let loadPromise = new Promise(done => {
   texLoader.load('./media/spaceship_comp.png', function(texture) {
     texLoader.load('./media/spaceship_nor.png', function(normalMap) {
@@ -70,7 +72,7 @@ let loadPromise = new Promise(done => {
         });
         geometry.scale(0.5, 0.5, 0.5);
         let mesh = new THREE.Mesh(geometry, material);
-        ship = new Ship(mesh, shotController);
+        ship = new Ship(mesh, shotController, particleSystem);
         if (SHADOWS) {
           ship.receiveShadow = true;
         }
@@ -109,6 +111,7 @@ function render() {
   previousTime = time;
 
   ship.update(delta);
+  particleSystem.update(delta);
   crosshair.update([planet]);
 
   // light/shadow map follow
