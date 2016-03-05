@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import THREE from 'three';
+import CANNON from 'cannon';
 import SubdivisionModifier from './SubdivisionModifier';
 
 const DETAIL = 3;
@@ -7,7 +8,8 @@ const NOISE = 0.16;
 const SMOOTHNESS = 2.3;
 
 class Planet extends THREE.Mesh {
-  constructor(radius) {
+  constructor(radius, physics) {
+
     let geometry = new THREE.IcosahedronGeometry(radius, 2);
     let modifier = new SubdivisionModifier(1);
 
@@ -40,6 +42,25 @@ class Planet extends THREE.Mesh {
     texLoader.load('./media/planet_nor.png', normalMap => {
       material.normalMap = normalMap;
     });
+
+    // let sphereShape = new CANNON.Sphere(radius);
+    let planetBody = new CANNON.Body({material: physics.planetMaterial});
+    planetBody.position = new CANNON.Vec3(0, -500, 0);
+    let vertices = [];
+    geometry.vertices.forEach(v => {
+      vertices.push(v.x);
+      vertices.push(v.y);
+      vertices.push(v.z);
+    });
+    let faces = [];
+    geometry.faces.forEach(f => {
+      faces.push(f.a);
+      faces.push(f.b);
+      faces.push(f.c);
+    });
+    let planetShape = new CANNON.Trimesh(vertices, faces);
+    planetBody.addShape(planetShape);
+    physics.add(planetBody);
 
     super(geometry, material);
   }

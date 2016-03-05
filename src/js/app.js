@@ -1,10 +1,10 @@
 import THREE from 'three';
-import CANNON from 'cannon';
 
 import Ship from './Ship';
 import Planet from './Planet';
 import ShotController from './ShotController';
 import Crosshair from './Crosshair';
+import Physics from './Physics';
 
 const DEBUG = false;
 
@@ -50,8 +50,7 @@ if (DEBUG) {
   scene.add(new THREE.CameraHelper(spotlight.shadow.camera));
 }
 
-let physics = new CANNON.World();
-physics.broadphase = new CANNON.NaiveBroadphase();
+let physics = new Physics();
 
 scene.add(ambientLight);
 scene.add(spotlight);
@@ -64,7 +63,6 @@ let texLoader = new THREE.TextureLoader();
 let ship;
 let shotController = new ShotController(scene);
 var crosshair;
-var sphereShape;
 let loadPromise = new Promise(done => {
   texLoader.load('./media/spaceship_comp.png', function(texture) {
     texLoader.load('./media/spaceship_nor.png', function(normalMap) {
@@ -75,14 +73,13 @@ let loadPromise = new Promise(done => {
         });
         geometry.scale(0.5, 0.5, 0.5);
         let mesh = new THREE.Mesh(geometry, material);
-        ship = new Ship(mesh, shotController);
+        ship = new Ship(mesh, shotController, physics);
         if (SHADOWS) {
           ship.receiveShadow = true;
         }
         light.target = ship;
         scene.add(ship);
         crosshair = new Crosshair(scene, camera, ship);
-        sphereShape = new CANNON.Sphere(1);
         done();
       });
     });
@@ -90,8 +87,8 @@ let loadPromise = new Promise(done => {
 });
 
 // Planet testing
-let planet = new Planet(500);
-planet.position.y = -550;
+let planet = new Planet(400, physics);
+planet.position.y = -500;
 if (SHADOWS) {
   planet.castShadow = true;
 }
@@ -116,6 +113,7 @@ function render() {
 
   ship.update(delta);
   crosshair.update([planet]);
+  physics.update(delta);
 
   // light/shadow map follow
   light.position.copy(ship.position.clone().add(LIGHT_VECTOR));

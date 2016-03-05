@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import THREE from 'three';
+import CANNON from 'cannon';
 import keymaster from 'keymaster';
 
 const TURN_SPEED = Math.PI; // rad/s
@@ -22,7 +23,7 @@ function isAndroid() {
 
 class Ship extends THREE.Mesh {
 
-  constructor(ship, shotController) {
+  constructor(ship, shotController, physics) {
     super();
     let skip = ['position', 'rotation', 'quaternion', 'scale'];
     Object.keys(ship).forEach(key => {
@@ -44,6 +45,13 @@ class Ship extends THREE.Mesh {
     this.shotController = shotController;
     this.reload = 0.0;
     this.activeGun = 1; // Bad initial solution
+    let sphereShape = new CANNON.Sphere(1);
+    let sphereBody = new CANNON.Body({
+      mass: 1,
+      shape: sphereShape,
+      material: physics.shipMaterial});
+    physics.add(sphereBody);
+    this.physicsBody = sphereBody;
   }
 
   update(delta) {
@@ -65,7 +73,16 @@ class Ship extends THREE.Mesh {
 
     this.velocity = Math.max(0, Math.min(MAX_VELOCITY, this.velocity + this.acceleration * delta));
     this.quaternion.slerp(this.targetQuaternion, delta * 10);
-    this.translateZ(-this.velocity * delta);
+    // this.translateZ(-this.velocity * delta);
+    let vector = new THREE.Vector3(0, 0, -1);
+    vector.applyQuaternion(this.quaternion);
+    let forceVector = new CANNON.Vec3(vector.x, vector.y, vector.z);
+    let forcePoint = forceVector.clone().negate();
+    forcePoint.vadd(new CANNON.Vec3(this.position.x, this.position.y, this.position.z));
+    this.physicsBody.applyForce(forceVector.scale((keymaster.isPressed('space') ? 100 : 0)), forcePoint);
+    // this.physicsBody.applyLocalForce(forceVector.scale(5), this.physicsBody.pointToLocalFrame(forcePoint));
+
+    this.position.set(this.physicsBody.position.x, this.physicsBody.position.y, this.physicsBody.position.z);
 
     // Ship reloading and shooting
     this.reload = Math.max(0.0, this.reload - delta);
