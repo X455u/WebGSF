@@ -49,7 +49,9 @@ class Ship extends THREE.Mesh {
     let sphereBody = new CANNON.Body({
       mass: 1,
       shape: sphereShape,
-      material: physics.shipMaterial});
+      material: physics.shipMaterial,
+      linearDamping: 0.5
+    });
     physics.add(sphereBody);
     this.physicsBody = sphereBody;
   }

@@ -122,7 +122,8 @@ function render() {
   let direction = CAMERA_DIRECTION.clone();
   direction.applyQuaternion(ship.quaternion).setLength(CAMERA_DISTANCE);
   let cameraTargetPosition = ship.position.clone().add(direction);
-  camera.position.lerp(cameraTargetPosition, CAMERA_VELOCITY * delta);
+  // camera.position.lerp(cameraTargetPosition, CAMERA_VELOCITY * delta);
+  camera.position.copy(cameraTargetPosition);
   camera.quaternion.slerp(ship.quaternion, CAMERA_VELOCITY * delta);
 
   // update spotlight position and direction
