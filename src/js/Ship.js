@@ -113,7 +113,7 @@ class Ship extends THREE.Mesh {
     let forceVector = new CANNON.Vec3(vector.x, vector.y, vector.z);
     let forcePoint = forceVector.clone().negate();
     forcePoint.vadd(new CANNON.Vec3(this.position.x, this.position.y, this.position.z));
-    this.physicsBody.applyForce(forceVector.scale((keymaster.isPressed('space') ? 100 : 0)), forcePoint);
+    this.physicsBody.applyImpulse(forceVector.scale((keymaster.isPressed('space') ? 100 * delta : 0)), forcePoint);
     // this.physicsBody.applyLocalForce(forceVector.scale(5), this.physicsBody.pointToLocalFrame(forcePoint));
 
     this.position.set(this.physicsBody.position.x, this.physicsBody.position.y, this.physicsBody.position.z);
