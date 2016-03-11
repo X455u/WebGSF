@@ -116,7 +116,8 @@ class Ship extends THREE.Mesh {
     this.physicsBody.applyImpulse(forceVector.scale((keymaster.isPressed('space') ? 100 * delta : 0)), forcePoint);
     // this.physicsBody.applyLocalForce(forceVector.scale(5), this.physicsBody.pointToLocalFrame(forcePoint));
 
-    this.position.set(this.physicsBody.position.x, this.physicsBody.position.y, this.physicsBody.position.z);
+    let physicalPosition = new THREE.Vector3(this.physicsBody.position.x, this.physicsBody.position.y, this.physicsBody.position.z);
+    this.position.lerp(physicalPosition, 0.9);
 
     // Ship reloading and shooting
     this.reload = Math.max(0.0, this.reload - delta);

@@ -129,12 +129,20 @@ function render() {
   camera.position.copy(cameraTargetPosition);
   camera.quaternion.slerp(ship.quaternion, CAMERA_VELOCITY * delta);
 
+  // An effort to smoothen camera behaviour
+  // let cameraTargetPosition = CAMERA_DIRECTION.clone();
+  // cameraTargetPosition.applyQuaternion(ship.quaternion).setLength(CAMERA_DISTANCE);
+  // let cameraPosition = camera.position.sub(ship.position);
+  // cameraPosition.lerp(cameraTargetPosition, 4 * CAMERA_VELOCITY * delta);
+  // camera.position.copy(ship.position.clone().add(cameraPosition));
+  // camera.quaternion.slerp(ship.quaternion, 4 * CAMERA_VELOCITY * delta);
+
   // update spotlight position and direction
-  direction = SPOTLIGHT_VECTOR.clone();
-  direction.applyQuaternion(ship.quaternion);
+  let spotLightDirection = SPOTLIGHT_VECTOR.clone();
+  spotLightDirection.applyQuaternion(ship.quaternion);
   spotlight.position.copy(ship.position);
   spotlight.target.quaternion.copy(ship.quaternion).inverse();
-  spotlight.target.position.copy(ship.position.clone().add(direction));
+  spotlight.target.position.copy(ship.position.clone().add(spotLightDirection));
   spotlight.target.updateMatrixWorld();
 
   renderer.render(scene, camera);
