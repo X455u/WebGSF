@@ -12,7 +12,7 @@ class Physics extends CANNON.World {
 // World setup
     this.gravity = new CANNON.Vec3(0, 0, 0);
     this.allowSleep = false;
-    this.solver = new CANNON.GSSolver();
+    this.solver = new CANNON.SplitSolver(new CANNON.GSSolver());
     this.solver.iterations = 50;
     this.solver.tolerance = 0.0001;
 
