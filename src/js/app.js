@@ -6,6 +6,7 @@ import ShotController from './ShotController';
 import ParticleSystem from './ParticleSystem';
 import Crosshair from './Crosshair';
 import Physics from './Physics';
+import GameObjects from './GameObjects';
 
 const DEBUG = false;
 
@@ -106,6 +107,11 @@ if (DEBUG) {
   document.body.appendChild(text);
 }
 
+let objects = new GameObjects(scene, physics);
+
+let turret = objects.create('turretBasic');
+turret.physical.position.z = -5;
+
 // Game Loop
 let previousTime;
 function render() {
@@ -117,6 +123,8 @@ function render() {
   particleSystem.update(delta);
   crosshair.update([planet]);
   physics.update(delta);
+  objects.update(delta);
+  turret.visual.lookAt(ship.position);
 
   // light/shadow map follow
   light.position.copy(ship.position.clone().add(LIGHT_VECTOR));
@@ -130,6 +138,24 @@ function render() {
   camera.quaternion.slerp(ship.quaternion, CAMERA_VELOCITY * delta);
 
   // An effort to smoothen camera behaviour
+  // let v1 = new THREE.Vector3(0, 0, -1);
+  // v1.applyQuaternion(camera.quaternion);
+  // let v2 = camera.position.clone().sub(ship.position);
+  // let camCrossV = new THREE.Vector3();
+  // camCrossV.crossVectors(v1, v2);
+  // // let cameraW = Math.sqrt(Math.pow(v1.length(), 2) * Math.pow(v2.length(), 2)) + v1.dot(v2);
+  // let cameraQuaternion = new THREE.Quaternion();
+  // // cameraQuaternion.set(camV.x, camV.y, camV.z, v1.dot(v2)).normalize();
+  // cameraQuaternion.setFromAxisAngle(camCrossV, -v1.angleTo(v2));
+  // let cameraTarget = new THREE.Quaternion();
+  // cameraTarget.copy(camera.quaternion);
+  // cameraTarget.multiply(cameraQuaternion);
+  // if (cameraTarget !== null) {
+  //   if (v1.angleTo(v2) > 0.01 && v1.angleTo(v2) < 30) {
+  //     camera.quaternion.slerp(cameraTarget, 0.01);
+  //   }
+  // }
+
   // let cameraTargetPosition = CAMERA_DIRECTION.clone();
   // cameraTargetPosition.applyQuaternion(ship.quaternion).setLength(CAMERA_DISTANCE);
   // let cameraPosition = camera.position.sub(ship.position);
