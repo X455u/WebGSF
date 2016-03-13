@@ -1,6 +1,6 @@
 import LaserShot from './LaserShot';
 
-class ShotController {
+class Shots {
 
   constructor(scene) {
     this.shots = [];
@@ -29,4 +29,4 @@ class ShotController {
 
 }
 
-export default ShotController;
+export default Shots;

@@ -29,7 +29,7 @@ function isAndroid() {
 
 class Ship extends THREE.Mesh {
 
-  constructor(ship, shotController, particleSystem, physics) {
+  constructor(ship, shots, particleSystem, physics) {
     super();
     let skip = ['position', 'rotation', 'quaternion', 'scale'];
     Object.keys(ship).forEach(key => {
@@ -48,7 +48,7 @@ class Ship extends THREE.Mesh {
     if (isMobile()) {
       this.setMobileEventListeners();
     }
-    this.shotController = shotController;
+    this.shots = shots;
     this.reload = 0.0;
     this.activeGun = 1; // Bad initial solution
 
@@ -123,9 +123,9 @@ class Ship extends THREE.Mesh {
     this.reload = Math.max(0.0, this.reload - delta);
     if ((keymaster.isPressed('x') || this.shooting) && this.reload === 0.0) {
       this.reload = RELOAD_TIME;
-      this.shotController.shootLaserShot(this);
+      this.shots.shootLaserShot(this);
     }
-    this.shotController.update(delta);
+    this.shots.update(delta);
   }
 
   setMobileEventListeners() {

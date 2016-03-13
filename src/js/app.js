@@ -2,7 +2,7 @@ import THREE from 'three';
 
 import Ship from './Ship';
 import Planet from './Planet';
-import ShotController from './ShotController';
+import Shots from './Shots';
 import ParticleSystem from './ParticleSystem';
 import Crosshair from './Crosshair';
 import Physics from './Physics';
@@ -63,7 +63,7 @@ camera.position.z = CAMERA_DISTANCE;
 let loader = new THREE.JSONLoader();
 let texLoader = new THREE.TextureLoader();
 let ship;
-let shotController = new ShotController(scene);
+let shots = new Shots(scene);
 let particleSystem = new ParticleSystem(scene);
 let crosshair;
 let loadPromise = new Promise(done => {
@@ -76,7 +76,7 @@ let loadPromise = new Promise(done => {
         });
         geometry.scale(0.5, 0.5, 0.5);
         let mesh = new THREE.Mesh(geometry, material);
-        ship = new Ship(mesh, shotController, particleSystem, physics);
+        ship = new Ship(mesh, shots, particleSystem, physics);
         if (SHADOWS) {
           ship.receiveShadow = true;
         }
