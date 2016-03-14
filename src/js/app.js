@@ -115,8 +115,14 @@ let game = {
 let objects = new GameObjects(game);
 game.objects = objects;
 
-let turret = objects.create('turretBasic');
-turret.physical.position.z = -5;
+let turret1 = objects.create('turretBasic');
+turret1.physical.position.z = -50;
+let turret2 = objects.create('turretBasic');
+turret2.physical.position.z = -50;
+turret2.physical.position.x = -50;
+let turret3 = objects.create('turretBasic');
+turret3.physical.position.z = -50;
+turret3.physical.position.x = 50;
 
 // Game Loop
 let previousTime;
@@ -130,7 +136,9 @@ function render() {
   crosshair.update([planet]);
   physics.update(delta);
   objects.update(delta);
-  turret.visual.lookAt(ship.position);
+  turret1.visual.lookAt(ship.position);
+  turret2.visual.lookAt(ship.position);
+  turret3.visual.lookAt(ship.position);
 
   // light/shadow map follow
   light.position.copy(ship.position.clone().add(LIGHT_VECTOR));
