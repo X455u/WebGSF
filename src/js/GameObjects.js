@@ -13,7 +13,7 @@ function turretBasicVisual() {
     new THREE.CylinderGeometry(1, 1, 4.5),
     new THREE.MeshBasicMaterial({color: 0xaa1111})
   );
-  gun.rotateOnAxis(new THREE.Vector3(1, 0, 0), Math.PI / 2);
+  gun.rotateX(Math.PI / 2);
   gun.translateY(4.5);
 
   object.add(middle);
@@ -32,12 +32,13 @@ function turretBasicPhysical(material) {
 
 class GameObjects {
 
-  constructor(scene, physics) {
+  constructor(game) {
 
-    // this.game = game;
+    this.game = game;
 
-    this.scene = scene;
-    this.physics = physics;
+    this.scene = game.scene;
+    this.physics = game.physics;
+    this.shots = game.shots;
 
     this.objects = [];
 
@@ -53,7 +54,7 @@ class GameObjects {
   }
 
   createObject(visual, physical) {
-    let newObject = new GameObject(visual, physical);
+    let newObject = new GameObject(this.game, visual, physical);
     this.objects.push(newObject);
     this.scene.add(visual);
     this.physics.add(physical);

@@ -1,11 +1,15 @@
 // import THREE from 'three';
 // import CANNON from 'cannon';
 
+const TURRET_RELOAD_TIME = 0.5;
+
 class GameObject {
 
-  constructor(visual, physical) {
+  constructor(game, visual, physical) {
 
-    // this.game = game;
+    this.game = game;
+    this.shots = game.shots;
+
     this.visual = visual;
     this.physical = physical;
 
@@ -14,6 +18,7 @@ class GameObject {
     this.isDead = false;
     this.removed = false;
 
+    this.reload = 0;
   }
 
   update(delta) {
@@ -28,6 +33,11 @@ class GameObject {
     //   this.physical.quaternion.z,
     //   this.physical.quaternion.w
     // );
+    this.reload = Math.max(0, this.reload - delta);
+    if (this.reload === 0) {
+      this.shots.shootTurretShot(this.visual);
+      this.reload = TURRET_RELOAD_TIME;
+    }
   }
 
   damage(damage) {

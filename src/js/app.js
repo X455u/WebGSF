@@ -107,7 +107,13 @@ if (DEBUG) {
   document.body.appendChild(text);
 }
 
-let objects = new GameObjects(scene, physics);
+let game = {
+  scene: scene,
+  physics: physics,
+  shots: shots
+};
+let objects = new GameObjects(game);
+game.objects = objects;
 
 let turret = objects.create('turretBasic');
 turret.physical.position.z = -5;

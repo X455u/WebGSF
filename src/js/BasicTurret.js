@@ -1,10 +1,10 @@
 import THREE from 'three';
 import CANNON from 'cannon';
-import Enemy from './Enemy';
+import GameObject from './GameObject';
 
 const RELOAD_TIME = 1; // seconds
 
-class BasicTurret extends Enemy {
+class BasicTurret extends GameObject {
 
   constructor(physics) {
     super();

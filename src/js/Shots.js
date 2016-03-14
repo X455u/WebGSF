@@ -17,6 +17,16 @@ class Shots {
     });
   }
 
+  shootTurretShot(turret) {
+    let shot = new LaserShot();
+    shot.position.copy(turret.position);
+    shot.quaternion.copy(turret.quaternion);
+    shot.rotateX(Math.PI);
+    shot.translateZ(-2);
+    this.shots.push(shot);
+    this.scene.add(shot);
+  }
+
   shootLaserShot(ship) {
     let shot = new LaserShot();
     shot.position.copy(ship.position);
