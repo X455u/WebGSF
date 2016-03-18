@@ -144,64 +144,16 @@ function render() {
   light.position.copy(ship.position.clone().add(LIGHT_VECTOR));
 
   // Camera follow
-  // let direction = CAMERA_DIRECTION.clone();
-  // direction.applyQuaternion(ship.quaternion).setLength(CAMERA_DISTANCE);
-  // let cameraTargetPosition = ship.position.clone().add(direction);
-  // // camera.position.lerp(cameraTargetPosition, CAMERA_VELOCITY * delta);
-  // camera.position.copy(cameraTargetPosition);
-  // camera.quaternion.slerp(ship.quaternion, CAMERA_VELOCITY * delta);
-
-  // An effort to smoothen camera behaviour
-  let currentV = new THREE.Vector3(0, 0, -1);
-  currentV.applyQuaternion(camera.quaternion);
-  currentV.normalize();
-  let targetV = new THREE.Vector3();
-  targetV.subVectors(ship.position, camera.position);
-  targetV.normalize();
-  let rotQuaternion = new THREE.Quaternion();
-  rotQuaternion.setFromUnitVectors(currentV, targetV);
-  let targetQuaternion = new THREE.Quaternion();
-  targetQuaternion.copy(camera.quaternion);
-  targetQuaternion.multiply(rotQuaternion);
-  camera.quaternion.slerp(targetQuaternion, 0.1);
-
-  // let newForwardUnit = new THREE.Vector3();
-  // newForwardUnit.subVectors(ship.position, camera.position);
-  // let rotAxis = new THREE.Vector3();
-  // let avatarForwardUnit = new THREE.Vector3(0, 0, -1);
-  // avatarForwardUnit.applyQuaternion(camera.quaternion);
-  // rotAxis.crossVectors(avatarForwardUnit.normalize(), newForwardUnit.normalize());
-  // let rotAngle = avatarForwardUnit.angleTo(newForwardUnit);
-  // let rotQuaternion = new THREE.Quaternion();
-  // rotQuaternion.setFromAxisAngle(rotAxis.normalize(), rotAngle);
-  // let newQuaternion = new THREE.Quaternion();
-  // newQuaternion.multiplyQuaternions(camera.quaternion, rotQuaternion);
-  // camera.quaternion.copy(newQuaternion);
-
-  // let v1 = new THREE.Vector3(0, 0, -1);
-  // v1.applyQuaternion(camera.quaternion);
-  // let v2 = camera.position.clone().sub(ship.position);
-  // let camCrossV = new THREE.Vector3();
-  // camCrossV.crossVectors(v1, v2);
-  // // let cameraW = Math.sqrt(Math.pow(v1.length(), 2) * Math.pow(v2.length(), 2)) + v1.dot(v2);
-  // let cameraQuaternion = new THREE.Quaternion();
-  // // cameraQuaternion.set(camV.x, camV.y, camV.z, v1.dot(v2)).normalize();
-  // cameraQuaternion.setFromAxisAngle(camCrossV, -v1.angleTo(v2));
-  // let cameraTarget = new THREE.Quaternion();
-  // cameraTarget.copy(camera.quaternion);
-  // cameraTarget.multiply(cameraQuaternion);
-  // if (cameraTarget !== null) {
-  //   if (v1.angleTo(v2) > 0.01 && v1.angleTo(v2) < 30) {
-  //     camera.quaternion.slerp(cameraTarget, 0.01);
-  //   }
-  // }
-
-  // let cameraTargetPosition = CAMERA_DIRECTION.clone();
-  // cameraTargetPosition.applyQuaternion(ship.quaternion).setLength(CAMERA_DISTANCE);
-  // let cameraPosition = camera.position.sub(ship.position);
-  // cameraPosition.lerp(cameraTargetPosition, 4 * CAMERA_VELOCITY * delta);
-  // camera.position.copy(ship.position.clone().add(cameraPosition));
-  // camera.quaternion.slerp(ship.quaternion, 4 * CAMERA_VELOCITY * delta);
+  let directionV = CAMERA_DIRECTION.clone();
+  let directionQ = camera.quaternion.clone();
+  directionQ.slerp(ship.quaternion, CAMERA_VELOCITY * delta);
+  let cameraDistance = (new THREE.Vector3()).subVectors(camera.position, ship.position).length();
+  let cameraDistanceModifier = 0.1 * ship.physicsBody.velocity.length();
+  cameraDistance = CAMERA_DISTANCE + cameraDistanceModifier;
+  directionV.applyQuaternion(directionQ).setLength(cameraDistance);
+  let cameraTargetPosition = ship.position.clone().add(directionV);
+  camera.position.copy(cameraTargetPosition);
+  camera.quaternion.slerp(ship.quaternion, CAMERA_VELOCITY * delta);
 
   // update spotlight position and direction
   let spotLightDirection = SPOTLIGHT_VECTOR.clone();
