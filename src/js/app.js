@@ -144,14 +144,40 @@ function render() {
   light.position.copy(ship.position.clone().add(LIGHT_VECTOR));
 
   // Camera follow
-  let direction = CAMERA_DIRECTION.clone();
-  direction.applyQuaternion(ship.quaternion).setLength(CAMERA_DISTANCE);
-  let cameraTargetPosition = ship.position.clone().add(direction);
-  // camera.position.lerp(cameraTargetPosition, CAMERA_VELOCITY * delta);
-  camera.position.copy(cameraTargetPosition);
-  camera.quaternion.slerp(ship.quaternion, CAMERA_VELOCITY * delta);
+  // let direction = CAMERA_DIRECTION.clone();
+  // direction.applyQuaternion(ship.quaternion).setLength(CAMERA_DISTANCE);
+  // let cameraTargetPosition = ship.position.clone().add(direction);
+  // // camera.position.lerp(cameraTargetPosition, CAMERA_VELOCITY * delta);
+  // camera.position.copy(cameraTargetPosition);
+  // camera.quaternion.slerp(ship.quaternion, CAMERA_VELOCITY * delta);
 
   // An effort to smoothen camera behaviour
+  let currentV = new THREE.Vector3(0, 0, -1);
+  currentV.applyQuaternion(camera.quaternion);
+  currentV.normalize();
+  let targetV = new THREE.Vector3();
+  targetV.subVectors(ship.position, camera.position);
+  targetV.normalize();
+  let rotQuaternion = new THREE.Quaternion();
+  rotQuaternion.setFromUnitVectors(currentV, targetV);
+  let targetQuaternion = new THREE.Quaternion();
+  targetQuaternion.copy(camera.quaternion);
+  targetQuaternion.multiply(rotQuaternion);
+  camera.quaternion.slerp(targetQuaternion, 0.1);
+
+  // let newForwardUnit = new THREE.Vector3();
+  // newForwardUnit.subVectors(ship.position, camera.position);
+  // let rotAxis = new THREE.Vector3();
+  // let avatarForwardUnit = new THREE.Vector3(0, 0, -1);
+  // avatarForwardUnit.applyQuaternion(camera.quaternion);
+  // rotAxis.crossVectors(avatarForwardUnit.normalize(), newForwardUnit.normalize());
+  // let rotAngle = avatarForwardUnit.angleTo(newForwardUnit);
+  // let rotQuaternion = new THREE.Quaternion();
+  // rotQuaternion.setFromAxisAngle(rotAxis.normalize(), rotAngle);
+  // let newQuaternion = new THREE.Quaternion();
+  // newQuaternion.multiplyQuaternions(camera.quaternion, rotQuaternion);
+  // camera.quaternion.copy(newQuaternion);
+
   // let v1 = new THREE.Vector3(0, 0, -1);
   // v1.applyQuaternion(camera.quaternion);
   // let v2 = camera.position.clone().sub(ship.position);
