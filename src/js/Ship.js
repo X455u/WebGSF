@@ -52,7 +52,7 @@ class Ship extends THREE.Mesh {
     this.reload = 0.0;
     this.activeGun = 1; // Bad initial solution
 
-    let sphereShape = new CANNON.Sphere(1);
+    let sphereShape = new CANNON.Sphere(2);
     let sphereBody = new CANNON.Body({
       mass: 1,
       shape: sphereShape,
