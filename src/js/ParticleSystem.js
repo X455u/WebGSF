@@ -7,9 +7,9 @@ class ParticleSystem {
     this.scene = scene;
   }
 
-  update(delta) {
+  update(delta, power) {
     this.emitters.forEach(emit => {
-      emit.update(delta);
+      emit.update(delta, power);
     });
   }
 

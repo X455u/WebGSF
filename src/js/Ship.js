@@ -4,7 +4,7 @@ import CANNON from 'cannon';
 import keymaster from 'keymaster';
 
 const TURN_SPEED = Math.PI; // rad/s
-const MAX_VELOCITY = 50; // units/s
+// const MAX_VELOCITY = 50; // units/s
 const ACCELERATION = 40; // units/s^2
 
 const RELOAD_TIME = 0.25; // seconds
@@ -105,7 +105,7 @@ class Ship extends THREE.Mesh {
     turnQuaternion.setFromAxisAngle(X_AXIS, delta * TURN_SPEED * this.turnParameters.x);
     this.targetQuaternion.multiply(turnQuaternion).normalize();
 
-    this.velocity = Math.max(0, Math.min(MAX_VELOCITY, this.velocity + this.acceleration * delta));
+    // this.velocity = Math.max(0, Math.min(MAX_VELOCITY, this.velocity + this.acceleration * delta));
     this.quaternion.slerp(this.targetQuaternion, delta * 10);
     // this.translateZ(-this.velocity * delta);
     let vector = new THREE.Vector3(0, 0, -1);

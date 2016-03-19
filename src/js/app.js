@@ -1,4 +1,5 @@
 import THREE from 'three';
+import keymaster from 'keymaster';
 
 import Ship from './Ship';
 import Planet from './Planet';
@@ -132,7 +133,7 @@ function render() {
   previousTime = time;
 
   ship.update(delta);
-  particleSystem.update(delta);
+  particleSystem.update(delta, (keymaster.isPressed('space') ? 5 : 1));
   crosshair.update([planet]);
   physics.update(delta);
   objects.update(delta);

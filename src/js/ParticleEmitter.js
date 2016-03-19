@@ -12,12 +12,14 @@ function applyPointRandomness(r) {
   return p;
 }
 
-function newParticle(emitter, emitterPosition, lerpFactor = 1) {
-  let result = emitter.oldPosition.clone();
-  result.lerp(emitterPosition, lerpFactor);
+function newParticle(emitter, power = 1) {
+  // let result = emitter.oldPosition.clone();
+  // result.lerp(emitter.position, lerpFactor);
+  let result = new THREE.Vector3();
   result.add(applyPointRandomness(emitter.pointRandomness));
   result.velocity = emitter.velocity.clone();
   result.velocity.multiplyScalar(1 - emitter.velocityRandomness * (2 * Math.random() - 1));
+  result.velocity.multiplyScalar(power);
   result.velocity.applyQuaternion(emitter.bindTo.quaternion);
   return result;
 }
@@ -37,11 +39,11 @@ class ParticleEmitter extends THREE.Points {
       'pointRandomness'
     ]);
     Object.assign(this, emitterOptions);
-    this.oldPosition = this.offset.clone();
+    // this.oldPosition = this.offset.clone();
 
     this.geometry = new THREE.Geometry();
     let toSpawn = Math.ceil(this.spawnRate * this.lifetime);
-    this.geometry.vertices = _.range(toSpawn).map(() => newParticle(this, this.bindTo.position));
+    this.geometry.vertices = _.range(toSpawn).map(() => newParticle(this));
 
     this.material = new THREE.PointsMaterial({
       color: options.color,
@@ -55,13 +57,15 @@ class ParticleEmitter extends THREE.Points {
     this.geometry.computeBoundingSphere();
   }
 
-  update(delta) {
-    let rotatedOffset = this.offset.clone().applyQuaternion(this.bindTo.quaternion);
-    let emitterPosition = this.bindTo.position.clone().add(rotatedOffset);
+  update(delta, power) {
+    let emitterPosition = this.offset.clone().applyQuaternion(this.bindTo.quaternion);
+    emitterPosition.add(this.bindTo.position);
+    this.position.copy(emitterPosition);
 
     // Spawn new particles
     let toSpawn = Math.min(Math.ceil(this.spawnRate * delta + 1), this.geometry.vertices.length);
-    let spawned = _.range(toSpawn).map(n => newParticle(this, emitterPosition, n / toSpawn));
+    let spawned = _.range(toSpawn).map(() => newParticle(this, power));
+
 
     // Update particles
     this.geometry.vertices.splice(0, toSpawn);
@@ -73,7 +77,7 @@ class ParticleEmitter extends THREE.Points {
     });
 
     // Set oldPosition as current emitter position
-    this.oldPosition = emitterPosition;
+    // this.oldPosition = emitterPosition;
 
     this.geometry.verticesNeedUpdate = true;
     this.geometry.computeBoundingSphere();
