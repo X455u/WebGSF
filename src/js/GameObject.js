@@ -1,7 +1,8 @@
-// import THREE from 'three';
-// import CANNON from 'cannon';
+import THREE from 'three';
+import CANNON from 'cannon';
+import LaserShot from './LaserShot';
 
-const TURRET_RELOAD_TIME = 0.5;
+const RELOAD_TIME = 0.5;
 
 class GameObject {
 
@@ -17,6 +18,7 @@ class GameObject {
     this.side = 0;
     this.isDead = false;
     this.removed = false;
+    this.target = null;
 
     this.reload = 0;
   }
@@ -33,10 +35,40 @@ class GameObject {
     //   this.physical.quaternion.z,
     //   this.physical.quaternion.w
     // );
+    // this.reload = Math.max(0, this.reload - delta);
+    // if (this.reload === 0) {
+    //   this.shots.shootTurretShot(this.visual);
+    //   this.reload = TURRET_RELOAD_TIME;
+    // }
+    if (this.target !== null) {
+      this.aimAdvance(this.target);
+      this.shoot();
+    }
     this.reload = Math.max(0, this.reload - delta);
+  }
+
+  aim(target) {
+    this.mesh.lookAt(target.position);
+  }
+
+  // Acceleration or new distance to target after travel time not taken in account
+  aimAdvance(target) { // target should be Ship for now
+    let distance = this.physical.position.distanceTo(target.physicsBody.position);
+    let shotVelocity = 300;
+    let shotTravelTime = distance / shotVelocity;
+    let targetNewPosition = target.physicsBody.position.clone();
+    targetNewPosition.vadd(target.physicsBody.velocity.scale(shotTravelTime), targetNewPosition);
+    this.visual.lookAt(new THREE.Vector3(
+      targetNewPosition.x,
+      targetNewPosition.y,
+      targetNewPosition.z
+    ));
+  }
+
+  shoot() {
     if (this.reload === 0) {
+      this.reload = RELOAD_TIME;
       this.shots.shootTurretShot(this.visual);
-      this.reload = TURRET_RELOAD_TIME;
     }
   }
 

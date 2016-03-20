@@ -66,6 +66,19 @@ scene.add(spotlight);
 scene.add(light);
 camera.position.z = CAMERA_DISTANCE;
 
+
+let objects = new GameObjects(game);
+game.objects = objects;
+
+let turret1 = objects.create('turretBasic');
+turret1.physical.position.z = -50;
+let turret2 = objects.create('turretBasic');
+turret2.physical.position.z = -50;
+turret2.physical.position.x = -50;
+let turret3 = objects.create('turretBasic');
+turret3.physical.position.z = -50;
+turret3.physical.position.x = 50;
+
 // prepare loader and load the model
 let loader = new THREE.JSONLoader();
 let texLoader = new THREE.TextureLoader();
@@ -89,6 +102,9 @@ let loadPromise = new Promise(done => {
         light.target = ship;
         scene.add(ship);
         crosshair = new Crosshair(scene, camera, ship);
+        turret1.target = ship;
+        turret2.target = ship;
+        turret3.target = ship;
         done();
       });
     });
@@ -113,18 +129,6 @@ if (DEBUG) {
   document.body.appendChild(text);
 }
 
-let objects = new GameObjects(game);
-game.objects = objects;
-
-let turret1 = objects.create('turretBasic');
-turret1.physical.position.z = -50;
-let turret2 = objects.create('turretBasic');
-turret2.physical.position.z = -50;
-turret2.physical.position.x = -50;
-let turret3 = objects.create('turretBasic');
-turret3.physical.position.z = -50;
-turret3.physical.position.x = 50;
-
 // Game Loop
 let previousTime;
 function render() {
@@ -137,9 +141,9 @@ function render() {
   crosshair.update([planet]);
   physics.update(delta);
   objects.update(delta);
-  turret1.visual.lookAt(ship.position);
-  turret2.visual.lookAt(ship.position);
-  turret3.visual.lookAt(ship.position);
+  // turret1.visual.lookAt(ship.position);
+  // turret2.visual.lookAt(ship.position);
+  // turret3.visual.lookAt(ship.position);
 
   // light/shadow map follow
   light.position.copy(ship.position.clone().add(LIGHT_VECTOR));
