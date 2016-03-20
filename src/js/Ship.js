@@ -64,10 +64,10 @@ class Ship extends THREE.Mesh {
 
     // Thruster particles
     let thrusters = [
-      new THREE.Vector3(-0.8, 0.25, 0.9), // Up-left
-      new THREE.Vector3(0.8, 0.25, 0.9), // Up-right
-      new THREE.Vector3(-0.8, -0.25, 0.9), // Down-left
-      new THREE.Vector3(0.8, -0.25, 0.9) // Down-right
+      new THREE.Vector3(-0.8, 0.3, 0.9), // Up-left
+      new THREE.Vector3(0.8, 0.3, 0.9), // Up-right
+      new THREE.Vector3(-0.8, -0.3, 0.9), // Down-left
+      new THREE.Vector3(0.8, -0.3, 0.9) // Down-right
     ];
     // texLoader.load('./media/particle2.png', function(map) {
     thrusters.forEach(t => {
