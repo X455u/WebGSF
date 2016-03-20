@@ -54,6 +54,12 @@ if (DEBUG) {
 }
 
 let physics = new Physics();
+let shots = new Shots(scene, physics);
+let game = {
+  scene: scene,
+  physics: physics,
+  shots: shots
+};
 
 scene.add(ambientLight);
 scene.add(spotlight);
@@ -64,7 +70,6 @@ camera.position.z = CAMERA_DISTANCE;
 let loader = new THREE.JSONLoader();
 let texLoader = new THREE.TextureLoader();
 let ship;
-let shots = new Shots(scene);
 let particleSystem = new ParticleSystem(scene);
 let crosshair;
 let loadPromise = new Promise(done => {
@@ -108,11 +113,6 @@ if (DEBUG) {
   document.body.appendChild(text);
 }
 
-let game = {
-  scene: scene,
-  physics: physics,
-  shots: shots
-};
 let objects = new GameObjects(game);
 game.objects = objects;
 

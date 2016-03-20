@@ -1,4 +1,5 @@
 import THREE from 'three';
+import CANNON from 'cannon';
 import SubdivisionModifier from './SubdivisionModifier';
 
 const VELOCITY = 300; // units/s
@@ -23,16 +24,32 @@ let shotMesh = new THREE.Mesh(shotGeometry, shotMaterial);
 
 class LaserShot extends THREE.Object3D {
 
-  constructor() {
+  constructor(physicsWorld) {
     super();
 
+    this.physicsWorld = physicsWorld;
     this.add(shotMesh.clone());
     this.lifetimeLeft = LIFETIME;
   }
 
   update(delta) {
     this.lifetimeLeft -= delta;
+
+    let rayStart = new CANNON.Vec3(
+      this.position.x,
+      this.position.y,
+      this.position.z
+    );
     this.translateZ(-VELOCITY * delta);
+    let rayEnd = new CANNON.Vec3(
+      this.position.x,
+      this.position.y,
+      this.position.z
+    );
+    let ray = new CANNON.Ray(rayStart, rayEnd);
+    if (ray.intersectWorld(this.physicsWorld, {mode: CANNON.Ray.CLOSEST, skipBackfaces: true})) {
+      this.lifetimeLeft = 0;
+    }
   }
 
 }

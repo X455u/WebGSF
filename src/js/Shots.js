@@ -2,9 +2,10 @@ import LaserShot from './LaserShot';
 
 class Shots {
 
-  constructor(scene) {
+  constructor(scene, physicsWorld) {
     this.shots = [];
     this.scene = scene;
+    this.physicsWorld = physicsWorld;
   }
 
   update(delta) {
@@ -18,7 +19,7 @@ class Shots {
   }
 
   shootTurretShot(turret) {
-    let shot = new LaserShot();
+    let shot = new LaserShot(this.physicsWorld);
     shot.position.copy(turret.position);
     shot.quaternion.copy(turret.quaternion);
     shot.rotateX(Math.PI);
@@ -28,7 +29,7 @@ class Shots {
   }
 
   shootLaserShot(ship) {
-    let shot = new LaserShot();
+    let shot = new LaserShot(this.physicsWorld);
     shot.position.copy(ship.position);
     shot.quaternion.copy(ship.quaternion);
     shot.translateX(0.7 * ship.activeGun); // Bad initial solution
