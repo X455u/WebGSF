@@ -1,7 +1,7 @@
 import CANNON from 'cannon';
 
 const PHYSICS_DELTA = 1 / 60;
-const SUBSTEPS = 2;
+const SUBSTEPS = 1;
 
 class Physics extends CANNON.World {
 
@@ -13,8 +13,8 @@ class Physics extends CANNON.World {
     this.gravity = new CANNON.Vec3(0, 0, 0);
     this.allowSleep = false;
     this.solver = new CANNON.SplitSolver(new CANNON.GSSolver());
-    this.solver.iterations = 20;
-    this.solver.tolerance = 0.0001;
+    this.solver.iterations = 10;
+    this.solver.tolerance = 0.001;
 
 // Materials
     this.shipMaterial = new CANNON.Material('shipMaterial');

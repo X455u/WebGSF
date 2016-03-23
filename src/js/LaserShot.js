@@ -49,6 +49,7 @@ class LaserShot extends THREE.Object3D {
     let ray = new CANNON.Ray(rayStart, rayEnd);
     if (ray.intersectWorld(this.physicsWorld, {mode: CANNON.Ray.CLOSEST, skipBackfaces: true})) {
       this.lifetimeLeft = 0;
+      console.log('boom');
     }
   }
 
