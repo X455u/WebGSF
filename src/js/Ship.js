@@ -5,7 +5,7 @@ import keymaster from 'keymaster';
 
 const TURN_SPEED = Math.PI; // rad/s
 // const MAX_VELOCITY = 50; // units/s
-const ACCELERATION = 40; // units/s^2
+const ENGINEPOWER = 100; // Newton?
 
 const RELOAD_TIME = 0.25; // seconds
 
@@ -85,6 +85,7 @@ class Ship extends THREE.Mesh {
       });
     });
     // });
+    this.enginesOn = false;
 
   }
 
@@ -97,24 +98,23 @@ class Ship extends THREE.Mesh {
         ).sum()]
       ).object().value();
       // Ship acceleration
-      this.acceleration = ACCELERATION * (keymaster.isPressed('space') ? 1 : -1);
+      this.enginesOn = keymaster.isPressed('space');
     }
     let turnQuaternion = new THREE.Quaternion();
     turnQuaternion.setFromAxisAngle(Z_AXIS, delta * TURN_SPEED * this.turnParameters.z);
     this.targetQuaternion.multiply(turnQuaternion).normalize();
     turnQuaternion.setFromAxisAngle(X_AXIS, delta * TURN_SPEED * this.turnParameters.x);
     this.targetQuaternion.multiply(turnQuaternion).normalize();
-
-    // this.velocity = Math.max(0, Math.min(MAX_VELOCITY, this.velocity + this.acceleration * delta));
     this.quaternion.slerp(this.targetQuaternion, delta * 10);
-    // this.translateZ(-this.velocity * delta);
-    let vector = new THREE.Vector3(0, 0, -1);
-    vector.applyQuaternion(this.quaternion);
-    let forceVector = new CANNON.Vec3(vector.x, vector.y, vector.z);
-    let forcePoint = forceVector.clone().negate();
-    forcePoint.vadd(new CANNON.Vec3(this.position.x, this.position.y, this.position.z));
-    this.physicsBody.applyImpulse(forceVector.scale((keymaster.isPressed('space') ? 100 * delta : 0)), forcePoint);
-    // this.physicsBody.applyLocalForce(forceVector.scale(5), this.physicsBody.pointToLocalFrame(forcePoint));
+
+    if (this.enginesOn) {
+      let vector = new THREE.Vector3(0, 0, -1);
+      vector.applyQuaternion(this.quaternion);
+      let forceVector = new CANNON.Vec3(vector.x, vector.y, vector.z);
+      let forcePoint = forceVector.clone().negate();
+      forcePoint.vadd(new CANNON.Vec3(this.position.x, this.position.y, this.position.z));
+      this.physicsBody.applyImpulse(forceVector.scale(ENGINEPOWER * delta), forcePoint);
+    }
 
     let physicalPosition = new THREE.Vector3(this.physicsBody.position.x, this.physicsBody.position.y, this.physicsBody.position.z);
     this.position.copy(physicalPosition);
@@ -146,9 +146,9 @@ class Ship extends THREE.Mesh {
       let halfWidth = window.innerWidth / 2;
       let touches = event.touches;
       if (_.range(touches.length).some(i => touches.item(i).pageX > halfWidth)) {
-        this.acceleration = ACCELERATION;
+        this.enginesOn = true;
       } else {
-        this.acceleration = -ACCELERATION;
+        this.enginesOn = false;
       }
       if (_.range(touches.length).some(i => touches.item(i).pageX < halfWidth)) {
         this.shooting = true;
