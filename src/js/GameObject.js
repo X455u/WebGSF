@@ -1,6 +1,4 @@
 import THREE from 'three';
-import CANNON from 'cannon';
-import LaserShot from './LaserShot';
 
 const RELOAD_TIME = 0.5;
 
