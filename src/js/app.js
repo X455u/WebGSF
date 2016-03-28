@@ -6,6 +6,7 @@ import ShotController from './ShotController';
 import ParticleSystem from './ParticleSystem';
 import Crosshair from './Crosshair';
 import EnemyShip from './EnemyShip';
+import HUD from './HUD';
 
 const DEBUG = false;
 
@@ -31,6 +32,7 @@ let aspect = window.innerWidth / window.innerHeight;
 let camera = new THREE.PerspectiveCamera(75, aspect, 0.1, 10000);
 let renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.autoClear = false;
 document.body.appendChild(renderer.domElement);
 renderer.domElement.setAttribute('tabIndex', '0');
 renderer.domElement.focus();
@@ -130,6 +132,10 @@ function initEnemies() {
   }
 }
 
+// HUD
+let hud = new HUD(window);
+hud.createBasicHUD();
+
 // Game Loop
 let previousTime;
 function render() {
@@ -168,6 +174,7 @@ function render() {
   shotController.update(delta);
 
   renderer.render(scene, camera);
+  renderer.render(hud.scene, hud.camera);
 
   //Update debugging text
   if (DEBUG) {
