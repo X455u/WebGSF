@@ -141,9 +141,6 @@ function render() {
   crosshair.update([planet]);
   physics.update(delta);
   objects.update(delta);
-  // turret1.visual.lookAt(ship.position);
-  // turret2.visual.lookAt(ship.position);
-  // turret3.visual.lookAt(ship.position);
 
   // light/shadow map follow
   light.position.copy(ship.position.clone().add(LIGHT_VECTOR));

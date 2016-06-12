@@ -27,17 +27,6 @@ class GameObject {
       this.physical.position.y,
       this.physical.position.z
     );
-    // this.visual.quaternion.set(
-    //   this.physical.quaternion.x,
-    //   this.physical.quaternion.y,
-    //   this.physical.quaternion.z,
-    //   this.physical.quaternion.w
-    // );
-    // this.reload = Math.max(0, this.reload - delta);
-    // if (this.reload === 0) {
-    //   this.shots.shootTurretShot(this.visual);
-    //   this.reload = TURRET_RELOAD_TIME;
-    // }
     if (this.target !== null) {
       this.aimAdvance(this.target);
       this.shoot();
