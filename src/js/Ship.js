@@ -5,7 +5,7 @@ import keymaster from 'keymaster';
 
 const TURN_SPEED = Math.PI; // rad/s
 // const MAX_VELOCITY = 50; // units/s
-const ENGINEPOWER = 100; // Newton?
+const ENGINEPOWER = 250; // Newton?
 
 const RELOAD_TIME = 0.25; // seconds
 
@@ -57,7 +57,7 @@ class Ship extends THREE.Mesh {
       mass: 1,
       shape: sphereShape,
       material: physics.shipMaterial,
-      linearDamping: 0.5
+      linearDamping: 0.9
     });
     physics.add(sphereBody);
     this.physicsBody = sphereBody;
