@@ -7,6 +7,8 @@ const DETAIL = 3;
 const NOISE = 0.16;
 const SMOOTHNESS = 2.3;
 
+export const PLANET_MATERIAL = new CANNON.Material('planetMaterial');
+
 class Planet extends THREE.Mesh {
   constructor(radius, physics) {
 
@@ -44,7 +46,7 @@ class Planet extends THREE.Mesh {
     });
 
     // let sphereShape = new CANNON.Sphere(radius);
-    let planetBody = new CANNON.Body({material: physics.planetMaterial});
+    let planetBody = new CANNON.Body({material: PLANET_MATERIAL});
     planetBody.position = new CANNON.Vec3(0, -500, 0);
     let vertices = [];
     geometry.vertices.forEach(v => {

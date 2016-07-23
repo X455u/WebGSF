@@ -12,6 +12,8 @@ const RELOAD_TIME = 0.25; // seconds
 const Z_AXIS = new THREE.Vector3(0, 0, 1);
 const X_AXIS = new THREE.Vector3(1, 0, 0);
 
+export const SHIP_MATERIAL = new CANNON.Material('shipMaterial');
+
 let texLoader = new THREE.TextureLoader();
 let thrusterParticleMap;
 texLoader.load('./media/particle2.png', function(map) {
@@ -56,7 +58,7 @@ class Ship extends THREE.Mesh {
     let sphereBody = new CANNON.Body({
       mass: 1,
       shape: sphereShape,
-      material: physics.shipMaterial,
+      material: SHIP_MATERIAL,
       linearDamping: 0.9
     });
     physics.add(sphereBody);
