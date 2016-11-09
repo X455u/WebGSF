@@ -1,9 +1,9 @@
 import THREE from 'three';
 import CANNON from 'cannon';
 import GameObject from './GameObject';
-import LaserShot from './LaserShot';
+// import LaserShot from './LaserShot';
 
-const RELOAD_TIME = 1; // seconds
+// const RELOAD_TIME = 1; // seconds
 
 class BasicTurret extends GameObject {
 
