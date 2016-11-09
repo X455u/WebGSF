@@ -2,6 +2,14 @@ import THREE from 'three';
 
 const RELOAD_TIME = 0.5;
 
+function toThreeVector3(cannonVector) {
+  return new THREE.Vector3(
+    cannonVector.x,
+    cannonVector.y,
+    cannonVector.z
+  );
+}
+
 class GameObject {
 
   constructor(game, visual, physical) {
@@ -38,18 +46,16 @@ class GameObject {
     this.mesh.lookAt(target.position);
   }
 
-  // Acceleration or new distance to target after travel time not taken in account
   aimAdvance(target) { // target should be Ship for now
-    let distance = this.physical.position.distanceTo(target.physicsBody.position);
-    let shotVelocity = 300;
-    let shotTravelTime = distance / shotVelocity;
-    let targetNewPosition = target.physicsBody.position.clone();
-    targetNewPosition.vadd(target.physicsBody.velocity.scale(shotTravelTime), targetNewPosition);
-    this.visual.lookAt(new THREE.Vector3(
-      targetNewPosition.x,
-      targetNewPosition.y,
-      targetNewPosition.z
-    ));
+    let thisToTarget = toThreeVector3(target.physicsBody.position.vsub(this.physical.position));
+    let targetVelocity = toThreeVector3(target.physicsBody.velocity);
+    let targetMoveAngle = thisToTarget.angleTo(targetVelocity); // 0 or PI when paralell to vector from this to target.
+    let shotSpeed = 300;
+    let aimAdvanceAngle = Math.asin(Math.sin(targetMoveAngle) * targetVelocity.length() / shotSpeed);
+    let aimAdvanceAxis = (new THREE.Vector3()).crossVectors(thisToTarget, targetVelocity).normalize();
+    let aimAdvanceVector = thisToTarget.applyAxisAngle(aimAdvanceAxis, aimAdvanceAngle);
+
+    this.visual.lookAt((new THREE.Vector3()).addVectors(this.visual.position, aimAdvanceVector));
   }
 
   shoot() {
