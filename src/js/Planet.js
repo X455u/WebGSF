@@ -36,7 +36,7 @@ class Planet extends THREE.Mesh {
     geometry.uvsNeedUpdate = true;
 
     let material = new THREE.MeshPhongMaterial({
-      color: 0x652a2a,
+      color: 0x222222,
       shininess: 20
     });
 
