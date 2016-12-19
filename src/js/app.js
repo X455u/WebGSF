@@ -1,10 +1,14 @@
 import THREE from 'three';
+import CANNON from 'cannon';
+import keymaster from 'keymaster';
 
 import Ship from './Ship';
 import Planet from './Planet';
-import ShotController from './ShotController';
+import Shots from './Shots';
 import ParticleSystem from './ParticleSystem';
 import Crosshair from './Crosshair';
+import Physics from './Physics';
+import GameObjects from './GameObjects';
 
 const DEBUG = false;
 
@@ -30,7 +34,7 @@ renderer.domElement.focus();
 
 let ambientLight = new THREE.AmbientLight(0x444444, 0.1);
 let light = new THREE.DirectionalLight(0xffffff, 1);
-let spotlight = new THREE.SpotLight(0xffffff, 3, 1000);
+let spotlight = new THREE.SpotLight(0xbbbbff, 3, 1000);
 light.position.copy(LIGHT_VECTOR);
 
 if (SHADOWS) {
@@ -50,16 +54,32 @@ if (DEBUG) {
   scene.add(new THREE.CameraHelper(spotlight.shadow.camera));
 }
 
+let physics = new Physics();
+let shots = new Shots(scene, physics);
+let game = {
+  scene: scene,
+  physics: physics,
+  shots: shots
+};
+
 scene.add(ambientLight);
 scene.add(spotlight);
 scene.add(light);
 camera.position.z = CAMERA_DISTANCE;
 
+
+let objects = new GameObjects(game);
+game.objects = objects;
+
+let turrets = [];
+for (var i = 0; i < 50; i++) {
+  turrets[i] = objects.create('groundTurret');
+}
+
 // prepare loader and load the model
 let loader = new THREE.JSONLoader();
 let texLoader = new THREE.TextureLoader();
 let ship;
-let shotController = new ShotController(scene);
 let particleSystem = new ParticleSystem(scene);
 let crosshair;
 let loadPromise = new Promise(done => {
@@ -72,13 +92,16 @@ let loadPromise = new Promise(done => {
         });
         geometry.scale(0.5, 0.5, 0.5);
         let mesh = new THREE.Mesh(geometry, material);
-        ship = new Ship(mesh, shotController, particleSystem);
+        ship = new Ship(mesh, shots, particleSystem, physics);
         if (SHADOWS) {
           ship.receiveShadow = true;
         }
         light.target = ship;
         scene.add(ship);
         crosshair = new Crosshair(scene, camera, ship);
+        for (let turret of turrets) {
+          turret.target = ship;
+        }
         done();
       });
     });
@@ -86,12 +109,25 @@ let loadPromise = new Promise(done => {
 });
 
 // Planet testing
-let planet = new Planet(500);
-planet.position.y = -550;
+let planet = new Planet(400, physics);
+planet.position.y = -500;
 if (SHADOWS) {
   planet.castShadow = true;
 }
 scene.add(planet);
+
+// Place turrets randomly on planet
+for (let turret of turrets) {
+  turret.physical.position.copy(planet.geometry.vertices[
+    Math.floor(Math.random() * planet.geometry.vertices.length)
+  ]);
+  turret.physical.position.vadd(planet.physical.position);
+  let offset = new CANNON.Vec3();
+  offset = turret.physical.position.clone().vsub(planet.physical.position);
+  offset.normalize();
+  offset = offset.scale(1);
+  turret.physical.position.vadd(offset);
+}
 
 // Format debugging text
 let text;
@@ -111,25 +147,32 @@ function render() {
   previousTime = time;
 
   ship.update(delta);
-  particleSystem.update(delta);
+  particleSystem.update(delta, (keymaster.isPressed('space') ? 5 : 1));
   crosshair.update([planet]);
+  physics.update(delta);
+  objects.update(delta);
 
   // light/shadow map follow
   light.position.copy(ship.position.clone().add(LIGHT_VECTOR));
 
   // Camera follow
-  let direction = CAMERA_DIRECTION.clone();
-  direction.applyQuaternion(ship.quaternion).setLength(CAMERA_DISTANCE);
-  let cameraTargetPosition = ship.position.clone().add(direction);
-  camera.position.lerp(cameraTargetPosition, CAMERA_VELOCITY * delta);
+  let directionV = CAMERA_DIRECTION.clone();
+  let directionQ = camera.quaternion.clone();
+  directionQ.slerp(ship.quaternion, CAMERA_VELOCITY * delta);
+  let cameraDistance = (new THREE.Vector3()).subVectors(camera.position, ship.position).length();
+  let cameraDistanceModifier = 0.1 * ship.physicsBody.velocity.length();
+  cameraDistance = CAMERA_DISTANCE + cameraDistanceModifier;
+  directionV.applyQuaternion(directionQ).setLength(cameraDistance);
+  let cameraTargetPosition = ship.position.clone().add(directionV);
+  camera.position.copy(cameraTargetPosition);
   camera.quaternion.slerp(ship.quaternion, CAMERA_VELOCITY * delta);
 
   // update spotlight position and direction
-  direction = SPOTLIGHT_VECTOR.clone();
-  direction.applyQuaternion(ship.quaternion);
+  let spotLightDirection = SPOTLIGHT_VECTOR.clone();
+  spotLightDirection.applyQuaternion(ship.quaternion);
   spotlight.position.copy(ship.position);
   spotlight.target.quaternion.copy(ship.quaternion).inverse();
-  spotlight.target.position.copy(ship.position.clone().add(direction));
+  spotlight.target.position.copy(ship.position.clone().add(spotLightDirection));
   spotlight.target.updateMatrixWorld();
 
   renderer.render(scene, camera);

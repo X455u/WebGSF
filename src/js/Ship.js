@@ -1,15 +1,18 @@
 import _ from 'lodash';
 import THREE from 'three';
+import CANNON from 'cannon';
 import keymaster from 'keymaster';
 
 const TURN_SPEED = Math.PI; // rad/s
-const MAX_VELOCITY = 50; // units/s
-const ACCELERATION = 40; // units/s^2
+// const MAX_VELOCITY = 50; // units/s
+const ENGINEPOWER = 250; // Newton?
 
 const RELOAD_TIME = 0.25; // seconds
 
 const Z_AXIS = new THREE.Vector3(0, 0, 1);
 const X_AXIS = new THREE.Vector3(1, 0, 0);
+
+export const SHIP_MATERIAL = new CANNON.Material('shipMaterial');
 
 let texLoader = new THREE.TextureLoader();
 let thrusterParticleMap;
@@ -28,7 +31,7 @@ function isAndroid() {
 
 class Ship extends THREE.Mesh {
 
-  constructor(ship, shotController, particleSystem) {
+  constructor(ship, shots, particleSystem, physics) {
     super();
     let skip = ['position', 'rotation', 'quaternion', 'scale'];
     Object.keys(ship).forEach(key => {
@@ -47,15 +50,26 @@ class Ship extends THREE.Mesh {
     if (isMobile()) {
       this.setMobileEventListeners();
     }
-    this.shotController = shotController;
+    this.shots = shots;
     this.reload = 0.0;
     this.activeGun = 1; // Bad initial solution
+
+    let sphereShape = new CANNON.Sphere(2);
+    let sphereBody = new CANNON.Body({
+      mass: 1,
+      shape: sphereShape,
+      material: SHIP_MATERIAL,
+      linearDamping: 0.9
+    });
+    physics.add(sphereBody);
+    this.physicsBody = sphereBody;
+
     // Thruster particles
     let thrusters = [
-      new THREE.Vector3(-0.8, 0.25, 0.9), // Up-left
-      new THREE.Vector3(0.8, 0.25, 0.9), // Up-right
-      new THREE.Vector3(-0.8, -0.25, 0.9), // Down-left
-      new THREE.Vector3(0.8, -0.25, 0.9) // Down-right
+      new THREE.Vector3(-0.8, 0.3, 0.9), // Up-left
+      new THREE.Vector3(0.8, 0.3, 0.9), // Up-right
+      new THREE.Vector3(-0.8, -0.3, 0.9), // Down-left
+      new THREE.Vector3(0.8, -0.3, 0.9) // Down-right
     ];
     // texLoader.load('./media/particle2.png', function(map) {
     thrusters.forEach(t => {
@@ -73,6 +87,8 @@ class Ship extends THREE.Mesh {
       });
     });
     // });
+    this.enginesOn = false;
+
   }
 
   update(delta) {
@@ -84,25 +100,34 @@ class Ship extends THREE.Mesh {
         ).sum()]
       ).object().value();
       // Ship acceleration
-      this.acceleration = ACCELERATION * (keymaster.isPressed('space') ? 1 : -1);
+      this.enginesOn = keymaster.isPressed('space');
     }
     let turnQuaternion = new THREE.Quaternion();
     turnQuaternion.setFromAxisAngle(Z_AXIS, delta * TURN_SPEED * this.turnParameters.z);
     this.targetQuaternion.multiply(turnQuaternion).normalize();
     turnQuaternion.setFromAxisAngle(X_AXIS, delta * TURN_SPEED * this.turnParameters.x);
     this.targetQuaternion.multiply(turnQuaternion).normalize();
-
-    this.velocity = Math.max(0, Math.min(MAX_VELOCITY, this.velocity + this.acceleration * delta));
     this.quaternion.slerp(this.targetQuaternion, delta * 10);
-    this.translateZ(-this.velocity * delta);
+
+    if (this.enginesOn) {
+      let vector = new THREE.Vector3(0, 0, -1);
+      vector.applyQuaternion(this.quaternion);
+      let forceVector = new CANNON.Vec3(vector.x, vector.y, vector.z);
+      let forcePoint = forceVector.clone().negate();
+      forcePoint.vadd(new CANNON.Vec3(this.position.x, this.position.y, this.position.z));
+      this.physicsBody.applyImpulse(forceVector.scale(ENGINEPOWER * delta), forcePoint);
+    }
+
+    let physicalPosition = new THREE.Vector3(this.physicsBody.position.x, this.physicsBody.position.y, this.physicsBody.position.z);
+    this.position.copy(physicalPosition);
 
     // Ship reloading and shooting
     this.reload = Math.max(0.0, this.reload - delta);
     if ((keymaster.isPressed('x') || this.shooting) && this.reload === 0.0) {
       this.reload = RELOAD_TIME;
-      this.shotController.shootLaserShot(this);
+      this.shots.shootLaserShot(this);
     }
-    this.shotController.update(delta);
+    this.shots.update(delta);
   }
 
   setMobileEventListeners() {
@@ -123,9 +148,9 @@ class Ship extends THREE.Mesh {
       let halfWidth = window.innerWidth / 2;
       let touches = event.touches;
       if (_.range(touches.length).some(i => touches.item(i).pageX > halfWidth)) {
-        this.acceleration = ACCELERATION;
+        this.enginesOn = true;
       } else {
-        this.acceleration = -ACCELERATION;
+        this.enginesOn = false;
       }
       if (_.range(touches.length).some(i => touches.item(i).pageX < halfWidth)) {
         this.shooting = true;
