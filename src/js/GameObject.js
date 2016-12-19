@@ -35,34 +35,19 @@ class GameObject {
       this.physical.position.y,
       this.physical.position.z
     );
-    if (this.target !== null) {
-      this.aimAdvance(this.target);
-      this.shoot();
-    }
     this.reload = Math.max(0, this.reload - delta);
   }
 
-  aim(target) {
-    this.mesh.lookAt(target.position);
-  }
-
-  aimAdvance(target) { // target should be Ship for now
+  getAimVec(target, shotSpeed) { // target should be Ship for now
     let thisToTarget = toThreeVector3(target.physicsBody.position.vsub(this.physical.position));
     let targetVelocity = toThreeVector3(target.physicsBody.velocity);
     let targetMoveAngle = thisToTarget.angleTo(targetVelocity); // 0 or PI when paralell to vector from this to target.
-    let shotSpeed = 300;
+    // let shotSpeed = 300;
     let aimAdvanceAngle = Math.asin(Math.sin(targetMoveAngle) * targetVelocity.length() / shotSpeed);
     let aimAdvanceAxis = (new THREE.Vector3()).crossVectors(thisToTarget, targetVelocity).normalize();
     let aimAdvanceVector = thisToTarget.applyAxisAngle(aimAdvanceAxis, aimAdvanceAngle);
-
-    this.visual.lookAt((new THREE.Vector3()).addVectors(this.visual.position, aimAdvanceVector));
-  }
-
-  shoot() {
-    if (this.reload === 0) {
-      this.reload = RELOAD_TIME;
-      this.shots.shootTurretShot(this.visual);
-    }
+    return aimAdvanceVector;
+    // this.visual.lookAt((new THREE.Vector3()).addVectors(this.visual.position, aimAdvanceVector));
   }
 
   damage(damage) {

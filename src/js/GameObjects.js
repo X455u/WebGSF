@@ -2,6 +2,7 @@ import THREE from 'three';
 import CANNON from 'cannon';
 
 import GameObject from './GameObject';
+import GroundTurret from './GroundTurret';
 
 function turretBasicVisual() {
   let object = new THREE.Object3D();
@@ -66,6 +67,12 @@ class GameObjects {
     if (name === 'turretBasic') {
       let turretContactMaterial = this.physics.planetMaterial;
       newObject = this.createObject(turretBasicVisual(), turretBasicPhysical(turretContactMaterial));
+    } else if (name == 'groundTurret') {
+      newObject = new GroundTurret(this.game);
+      newObject.physical.material = this.physics.planetMaterial;
+      this.objects.push(newObject);
+      this.scene.add(newObject.visual);
+      this.physics.add(newObject.physical);
     }
     return newObject;
   }

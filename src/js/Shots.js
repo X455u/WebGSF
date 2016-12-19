@@ -38,6 +38,11 @@ class Shots {
     this.scene.add(shot);
   }
 
+  addShot(shot) {
+    this.shots.push(shot);
+    this.scene.add(shot);
+  }
+
 }
 
 export default Shots;

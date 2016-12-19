@@ -33,7 +33,7 @@ renderer.domElement.focus();
 
 let ambientLight = new THREE.AmbientLight(0x444444, 0.1);
 let light = new THREE.DirectionalLight(0xffffff, 1);
-let spotlight = new THREE.SpotLight(0xffffff, 3, 1000);
+let spotlight = new THREE.SpotLight(0xbbbbff, 3, 1000);
 light.position.copy(LIGHT_VECTOR);
 
 if (SHADOWS) {
@@ -70,14 +70,9 @@ camera.position.z = CAMERA_DISTANCE;
 let objects = new GameObjects(game);
 game.objects = objects;
 
-let turret1 = objects.create('turretBasic');
-turret1.physical.position.z = -50;
-let turret2 = objects.create('turretBasic');
-turret2.physical.position.z = -50;
-turret2.physical.position.x = -50;
-let turret3 = objects.create('turretBasic');
-turret3.physical.position.z = -50;
-turret3.physical.position.x = 50;
+let turret = objects.create('groundTurret');
+turret.physical.position.z = -50;
+turret.physical.position.y = -50;
 
 // prepare loader and load the model
 let loader = new THREE.JSONLoader();
@@ -102,9 +97,7 @@ let loadPromise = new Promise(done => {
         light.target = ship;
         scene.add(ship);
         crosshair = new Crosshair(scene, camera, ship);
-        turret1.target = ship;
-        turret2.target = ship;
-        turret3.target = ship;
+        turret.target = ship;
         done();
       });
     });
