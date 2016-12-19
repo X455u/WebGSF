@@ -65,6 +65,7 @@ class Planet extends THREE.Mesh {
     physics.add(planetBody);
 
     super(geometry, material);
+    this.physical = planetBody;
   }
 }
 

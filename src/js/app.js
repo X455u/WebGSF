@@ -1,4 +1,5 @@
 import THREE from 'three';
+import CANNON from 'cannon';
 import keymaster from 'keymaster';
 
 import Ship from './Ship';
@@ -70,9 +71,10 @@ camera.position.z = CAMERA_DISTANCE;
 let objects = new GameObjects(game);
 game.objects = objects;
 
-let turret = objects.create('groundTurret');
-turret.physical.position.z = -50;
-turret.physical.position.y = -50;
+let turrets = [];
+for (var i = 0; i < 50; i++) {
+  turrets[i] = objects.create('groundTurret');
+}
 
 // prepare loader and load the model
 let loader = new THREE.JSONLoader();
@@ -97,7 +99,9 @@ let loadPromise = new Promise(done => {
         light.target = ship;
         scene.add(ship);
         crosshair = new Crosshair(scene, camera, ship);
-        turret.target = ship;
+        for (let turret of turrets) {
+          turret.target = ship;
+        }
         done();
       });
     });
@@ -111,6 +115,19 @@ if (SHADOWS) {
   planet.castShadow = true;
 }
 scene.add(planet);
+
+// Place turrets randomly on planet
+for (let turret of turrets) {
+  turret.physical.position.copy(planet.geometry.vertices[
+    Math.floor(Math.random() * planet.geometry.vertices.length)
+  ]);
+  turret.physical.position.vadd(planet.physical.position);
+  let offset = new CANNON.Vec3();
+  offset = turret.physical.position.clone().vsub(planet.physical.position);
+  offset.normalize();
+  offset = offset.scale(1);
+  turret.physical.position.vadd(offset);
+}
 
 // Format debugging text
 let text;
