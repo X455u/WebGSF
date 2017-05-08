@@ -8242,6 +8242,10 @@
 
 	var _GameObjects2 = _interopRequireDefault(_GameObjects);
 
+	var _HUD = __webpack_require__(432);
+
+	var _HUD2 = _interopRequireDefault(_HUD);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	var DEBUG = false;
@@ -8257,11 +8261,18 @@
 
 	var MAX_DELTA = 0.1; // s
 
+	var sound = new Audio('media/main_theme.mp3'); // GSF theme music
+	sound.load();
+	sound.loop = true;
+	sound.volume = 0.4;
+	sound.play();
+
 	var scene = new _three2.default.Scene();
 	var aspect = window.innerWidth / window.innerHeight;
 	var camera = new _three2.default.PerspectiveCamera(75, aspect, 0.1, 10000);
 	var renderer = new _three2.default.WebGLRenderer();
 	renderer.setSize(window.innerWidth, window.innerHeight);
+	renderer.autoClear = false;
 	document.body.appendChild(renderer.domElement);
 	renderer.domElement.setAttribute('tabIndex', '0');
 	renderer.domElement.focus();
@@ -8423,6 +8434,10 @@
 	  document.body.appendChild(text);
 	}
 
+	// HUD
+	var hud = new _HUD2.default(window);
+	hud.createBasicHUD();
+
 	// Game Loop
 	var previousTime = void 0;
 	function render() {
@@ -8460,6 +8475,7 @@
 	  spotlight.target.updateMatrixWorld();
 
 	  renderer.render(scene, camera);
+	  renderer.render(hud.scene, hud.camera);
 
 	  //Update debugging text
 	  if (DEBUG) {
@@ -60243,8 +60259,6 @@
 	      }
 	    });
 	    _this.targetQuaternion = _this.quaternion.clone();
-	    _this.acceleration = 0;
-	    _this.velocity = 0;
 	    _this.turnParameters = {
 	      x: 0,
 	      z: 0
@@ -60256,6 +60270,11 @@
 	    _this.shots = shots;
 	    _this.reload = 0.0;
 	    _this.activeGun = 1; // Bad initial solution
+
+	    _this.hull = 100;
+	    _this.shieldMax = 50;
+	    _this.shield = 50;
+	    _this.shieldRegen = 10;
 
 	    var sphereShape = new _cannon2.default.Sphere(2);
 	    var sphereBody = new _cannon2.default.Body({
@@ -60333,6 +60352,11 @@
 	        this.shots.shootLaserShot(this);
 	      }
 	      this.shots.update(delta);
+
+	      // Shield regeneration
+	      if (this.shield < this.shieldMax) {
+	        this.shield = Math.min(this.shieldMax, this.shield + this.shieldRegen * delta);
+	      }
 	    }
 	  }, {
 	    key: 'setMobileEventListeners',
@@ -74822,7 +74846,7 @@
 	    value: function update(delta) {
 	      (0, _get3.default)(GroundTurret.prototype.__proto__ || (0, _getPrototypeOf2.default)(GroundTurret.prototype), 'update', this).call(this, delta);
 	      this.aim(this.target);
-	      if (Math.random() > 0.5) this.shoot();
+	      if (Math.random() > 0.8) this.shoot();
 	    }
 	  }]);
 	  return GroundTurret;
@@ -74902,6 +74926,121 @@
 	    return $getOwnPropertyDescriptor(toIObject(it), key);
 	  };
 	});
+
+/***/ },
+/* 432 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _classCallCheck2 = __webpack_require__(378);
+
+	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+	var _createClass2 = __webpack_require__(379);
+
+	var _createClass3 = _interopRequireDefault(_createClass2);
+
+	var _three = __webpack_require__(367);
+
+	var _three2 = _interopRequireDefault(_three);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function fromBottom(HUD, y) {
+	  return -HUD.height / 2 + y;
+	}
+
+	function fromLeft(HUD, x) {
+	  return -HUD.width / 2 + x;
+	}
+
+	var HUD = function () {
+	  function HUD(window) {
+	    (0, _classCallCheck3.default)(this, HUD);
+
+
+	    this.window = window;
+
+	    this.width = this.window.innerWidth;
+	    this.height = this.window.innerHeight;
+
+	    this.camera = new _three2.default.OrthographicCamera(-this.width / 2, this.width / 2, this.height / 2, -this.height / 2, -10000, 10000);
+	    this.camera.position.z = 10;
+
+	    this.scene = new _three2.default.Scene();
+	  }
+
+	  (0, _createClass3.default)(HUD, [{
+	    key: 'createBasicHUD',
+	    value: function createBasicHUD(hitpoints, shield) {
+
+	      this.hitpoints = hitpoints;
+	      this.shield = shield;
+
+	      var hpBarGeometry = new _three2.default.CylinderGeometry(50, 50, 200, 16);
+	      var hpBarMaterial = new _three2.default.MeshBasicMaterial({
+	        color: 0xff0000,
+	        transparent: true,
+	        opacity: 0.5
+	      });
+	      var hpBarMesh = new _three2.default.Mesh(hpBarGeometry, hpBarMaterial);
+	      this.scene.add(hpBarMesh);
+
+	      var hpContainerGeometry = hpBarGeometry.clone();
+	      var hpContainerMaterial = new _three2.default.MeshBasicMaterial({
+	        color: 0xff0000,
+	        transparent: true,
+	        opacity: 0.5,
+	        wireframe: true
+	      });
+	      var hpContainerMesh = new _three2.default.Mesh(hpContainerGeometry, hpContainerMaterial);
+	      this.scene.add(hpContainerMesh);
+
+	      hpBarMesh.rotateX(0.2 * Math.PI);
+	      hpBarMesh.position.set(fromLeft(this, 100), fromBottom(this, 150), 0);
+	      hpContainerMesh.rotateX(0.2 * Math.PI);
+	      hpContainerMesh.position.set(hpBarMesh.position.x, hpBarMesh.position.y, hpBarMesh.position.z);
+
+	      var ballGeometry = new _three2.default.SphereGeometry(75, 32, 32);
+	      var ballMaterial = new _three2.default.MeshBasicMaterial({
+	        color: 0x0000ff,
+	        transparent: true,
+	        opacity: 0.5
+	      });
+	      var ballMesh = new _three2.default.Mesh(ballGeometry, ballMaterial);
+	      this.scene.add(ballMesh);
+
+	      var ballShellGeometry = new _three2.default.SphereGeometry(75, 32, 32);
+	      var ballShellMaterial = new _three2.default.MeshBasicMaterial({
+	        color: 0x0000ff,
+	        transparent: true,
+	        opacity: 0.5,
+	        wireframe: true
+	      });
+	      var ballShellMesh = new _three2.default.Mesh(ballShellGeometry, ballShellMaterial);
+	      this.scene.add(ballShellMesh);
+
+	      ballMesh.rotateX(0.2 * Math.PI);
+	      ballMesh.position.set(fromLeft(this, 250), fromBottom(this, 150), 0);
+	      ballShellMesh.rotateX(0.2 * Math.PI);
+	      ballShellMesh.position.set(ballMesh.position.x, ballMesh.position.y, ballMesh.position.z);
+	    }
+	  }, {
+	    key: 'update',
+	    value: function update(HPPercentage, shieldPercentage) {
+	      hpBarGeometry.scale(1, HPPercentage, 1);
+	      ballMesh.scale(shieldPercentage, shieldPercentage, shieldPercentage);
+	    }
+	  }]);
+	  return HUD;
+	}();
+
+	exports.default = HUD;
 
 /***/ }
 /******/ ]);
