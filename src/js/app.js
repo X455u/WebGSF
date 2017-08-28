@@ -10,10 +10,10 @@ const DEBUG = false;
 
 const CAMERA_DISTANCE = 5;
 const CAMERA_VELOCITY = 5;
-const CAMERA_DIRECTION = new THREE.Vector3(0, 0.5, 1).normalize();
+const CAMERA_DIRECTION = new THREE.Vector3(0, 0.5, -1).normalize();
 
 const LIGHT_VECTOR = new THREE.Vector3(0, 1000, 0);
-const SPOTLIGHT_VECTOR = new THREE.Vector3(0, 0, -300);
+const SPOTLIGHT_VECTOR = new THREE.Vector3(0, 0, 300);
 
 const SHADOWS = true;
 
@@ -53,7 +53,8 @@ if (DEBUG) {
 scene.add(ambientLight);
 scene.add(spotlight);
 scene.add(light);
-camera.position.z = CAMERA_DISTANCE;
+camera.position.z = -CAMERA_DISTANCE;
+camera.rotateOnAxis(camera.up, Math.PI);
 
 // prepare loader and load the model
 let loader = new THREE.JSONLoader();
@@ -71,6 +72,7 @@ let loadPromise = new Promise(done => {
           normalMap: normalMap
         });
         geometry.scale(0.5, 0.5, 0.5);
+        geometry.rotateY(Math.PI);
         let mesh = new THREE.Mesh(geometry, material);
         ship = new Ship(mesh, shotController, particleSystem);
         if (SHADOWS) {
@@ -122,13 +124,14 @@ function render() {
   direction.applyQuaternion(ship.quaternion).setLength(CAMERA_DISTANCE);
   let cameraTargetPosition = ship.position.clone().add(direction);
   camera.position.lerp(cameraTargetPosition, CAMERA_VELOCITY * delta);
-  camera.quaternion.slerp(ship.quaternion, CAMERA_VELOCITY * delta);
+  let quaternion = (new THREE.Quaternion()).setFromAxisAngle(new THREE.Vector3(0, 1, 0), Math.PI);
+  quaternion.multiplyQuaternions(ship.quaternion, quaternion);
+  camera.quaternion.slerp(quaternion, CAMERA_VELOCITY * delta);
 
   // update spotlight position and direction
   direction = SPOTLIGHT_VECTOR.clone();
   direction.applyQuaternion(ship.quaternion);
   spotlight.position.copy(ship.position);
-  spotlight.target.quaternion.copy(ship.quaternion).inverse();
   spotlight.target.position.copy(ship.position.clone().add(direction));
   spotlight.target.updateMatrixWorld();
 

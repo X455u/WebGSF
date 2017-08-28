@@ -32,7 +32,7 @@ class LaserShot extends THREE.Object3D {
 
   update(delta) {
     this.lifetimeLeft -= delta;
-    this.translateZ(-VELOCITY * delta);
+    this.translateZ(VELOCITY * delta);
   }
 
 }

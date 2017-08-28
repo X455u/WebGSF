@@ -29,7 +29,7 @@ class Crosshair {
   }
 
   update(objects) {
-    let direction = new THREE.Vector3(0, 0, -1);
+    let direction = new THREE.Vector3(0, 0, 1);
     direction.applyQuaternion(this.source.quaternion);
     this.raycaster.set(this.source.position, direction);
     let intersections = this.raycaster.intersectObjects(objects);

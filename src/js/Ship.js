@@ -52,10 +52,10 @@ class Ship extends THREE.Mesh {
     this.activeGun = 1; // Bad initial solution
     // Thruster particles
     let thrusters = [
-      new THREE.Vector3(-0.8, 0.25, 0.9), // Up-left
-      new THREE.Vector3(0.8, 0.25, 0.9), // Up-right
-      new THREE.Vector3(-0.8, -0.25, 0.9), // Down-left
-      new THREE.Vector3(0.8, -0.25, 0.9) // Down-right
+      new THREE.Vector3(0.8, 0.25, -0.9), // Up-left
+      new THREE.Vector3(-0.8, 0.25, -0.9), // Up-right
+      new THREE.Vector3(0.8, -0.25, -0.9), // Down-left
+      new THREE.Vector3(-0.8, -0.25, -0.9) // Down-right
     ];
     // texLoader.load('./media/particle2.png', function(map) {
     thrusters.forEach(t => {
@@ -80,7 +80,7 @@ class Ship extends THREE.Mesh {
       // Ship steering
       this.turnParameters = _({x: ['down', 'up'], z: ['left', 'right']}).map(
         (keys, k) => [k, _(keys).map(
-          (key, index) => (keymaster.isPressed(key) ? 1 : 0) * (index === 0 ? 1 : -1)
+          (key, index) => (keymaster.isPressed(key) ? 1 : 0) * (index === 0 ? -1 : 1)
         ).sum()]
       ).object().value();
       // Ship acceleration
@@ -94,7 +94,7 @@ class Ship extends THREE.Mesh {
 
     this.velocity = Math.max(0, Math.min(MAX_VELOCITY, this.velocity + this.acceleration * delta));
     this.quaternion.slerp(this.targetQuaternion, delta * 10);
-    this.translateZ(-this.velocity * delta);
+    this.translateZ(this.velocity * delta);
 
     // Ship reloading and shooting
     this.reload = Math.max(0.0, this.reload - delta);
