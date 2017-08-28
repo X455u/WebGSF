@@ -33,7 +33,10 @@ class HUD {
 
   createBasicHUD() {
 
+    let scale = Math.min(this.width / 1200, this.height / 800);
+
     let hpBarGeometry = new THREE.CylinderGeometry(50, 50, 200, 16);
+    hpBarGeometry.scale(scale, scale, scale);
     let hpBarMaterial = new THREE.MeshBasicMaterial({
       color: 0xff0000,
       transparent: true,
@@ -43,6 +46,7 @@ class HUD {
     this.scene.add(hpBarMesh);
 
     let hpContainerGeometry = hpBarGeometry.clone();
+    hpContainerGeometry.scale(scale, scale, scale);
     let hpContainerMaterial = new THREE.MeshBasicMaterial({
       color: 0xff0000,
       transparent: true,
@@ -53,12 +57,13 @@ class HUD {
     this.scene.add(hpContainerMesh);
 
     hpBarMesh.rotateX(0.2 * Math.PI);
-    hpBarMesh.position.set(fromLeft(this, 100), fromBottom(this, 150), 0);
+    hpBarMesh.position.set(fromLeft(this, 0.1 * this.width), fromBottom(this, 0.15 * this.height), 0);
     hpContainerMesh.rotateX(0.2 * Math.PI);
     hpContainerMesh.position.set(hpBarMesh.position.x, hpBarMesh.position.y, hpBarMesh.position.z);
 
 
     let ballGeometry = new THREE.SphereGeometry(75, 32, 32);
+    ballGeometry.scale(scale, scale, scale);
     let ballMaterial = new THREE.MeshBasicMaterial({
       color: 0x0000ff,
       transparent: true,
@@ -67,7 +72,8 @@ class HUD {
     let ballMesh = new THREE.Mesh(ballGeometry, ballMaterial);
     this.scene.add(ballMesh);
 
-    let ballShellGeometry = new THREE.SphereGeometry(75, 32, 32);
+    let ballShellGeometry = ballGeometry.clone();
+    ballShellGeometry.scale(scale, scale, scale);
     let ballShellMaterial = new THREE.MeshBasicMaterial({
       color: 0x0000ff,
       transparent: true,
@@ -78,7 +84,7 @@ class HUD {
     this.scene.add(ballShellMesh);
 
     ballMesh.rotateX(0.2 * Math.PI);
-    ballMesh.position.set(fromLeft(this, 250), fromBottom(this, 150), 0);
+    ballMesh.position.set(fromLeft(this, 0.25 * this.width), fromBottom(this, 0.15 * this.height), 0);
     ballShellMesh.rotateX(0.2 * Math.PI);
     ballShellMesh.position.set(ballMesh.position.x, ballMesh.position.y, ballMesh.position.z);
   }
