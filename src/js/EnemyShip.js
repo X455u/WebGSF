@@ -5,6 +5,9 @@ const TURN_SPEED = 0.25; // radians/s
 
 const RELOAD_TIME = 0.25; // seconds
 
+const CLOSE_DISTANCE = 50;
+const FAR_DISTANCE = 200;
+
 let texLoader = new THREE.TextureLoader();
 let thrusterParticleMap;
 texLoader.load('./media/particle2.png', function(map) {
@@ -18,7 +21,7 @@ class EnemyShip extends THREE.Mesh {
     this.shotController = shotController;
     this.reload = 0.0;
     this.activeGun = 1; // Bad initial solution
-    this.shooting = true;
+    this.attacking = true;
     // Thruster particles
     let thrusters = [
       new THREE.Vector3(0.8, 0.25, -0.9), // Up-left
@@ -43,12 +46,24 @@ class EnemyShip extends THREE.Mesh {
   }
 
   update(delta) {
-    this.turnTowards(this.target.position, delta);
+    if (this.attacking) {
+      this.turnTowards(this.target.position, delta);
+      if (this.position.distanceTo(this.target.position) < CLOSE_DISTANCE) {
+        this.attacking = false;
+      }
+    } else {
+      let away = (new THREE.Vector3()).subVectors(this.position, this.target.position);
+      away.add(this.position);
+      this.turnTowards(away, delta);
+      if (this.position.distanceTo(this.target.position) > FAR_DISTANCE) {
+        this.attacking = true;
+      }
+    }
     this.translateZ(VELOCITY * delta);
 
     // Ship reloading and shooting
     this.reload = Math.max(0.0, this.reload - delta);
-    if (this.shooting && this.reload === 0.0) {
+    if (this.attacking && this.reload === 0.0) {
       this.reload = RELOAD_TIME;
       this.shotController.shootLaserShot(this);
     }
