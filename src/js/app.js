@@ -29,7 +29,7 @@ sound.play();
 
 let scene = new THREE.Scene();
 let aspect = window.innerWidth / window.innerHeight;
-let camera = new THREE.PerspectiveCamera(75, aspect, 0.1, 10000);
+let camera = new THREE.PerspectiveCamera(75, aspect, 1, 1000);
 let renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.autoClear = false;
@@ -88,6 +88,8 @@ let loadPromise = new Promise(done => {
         shipGeometry = geometry;
         shipMaterial = material;
         ship = new Ship(mesh, shotController, particleSystem);
+        ship.isPlayer = true;
+        shotController.addHitbox(ship);
         if (SHADOWS) {
           ship.receiveShadow = true;
         }
@@ -107,6 +109,7 @@ if (SHADOWS) {
   planet.castShadow = true;
 }
 scene.add(planet);
+shotController.addHitbox(planet);
 
 // Format debugging text
 let text;
@@ -129,6 +132,7 @@ function initEnemies() {
     enemy.target = ship;
     scene.add(enemy);
     enemies.push(enemy);
+    shotController.addHitbox(enemy);
   }
 }
 
