@@ -106,9 +106,9 @@ class Ship extends THREE.Mesh {
 
   setMobileEventListeners() {
     this.motionControlled = true;
-    let invertCoefficient = -1;
+    let invertCoefficient = 1;
     if (isAndroid()) {
-      invertCoefficient = 1;
+      invertCoefficient = -1;
     }
     // Accelerometer
     window.ondevicemotion = (event) => {
