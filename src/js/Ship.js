@@ -3,8 +3,8 @@ import THREE from 'three';
 import keymaster from 'keymaster';
 
 const TURN_SPEED = Math.PI; // rad/s
-const MAX_VELOCITY = 50; // units/s
-const ACCELERATION = 40; // units/s^2
+const MAX_VELOCITY = 75; // units/s
+const ACCELERATION = 80; // units/s^2
 
 const RELOAD_TIME = 0.25; // seconds
 
@@ -102,7 +102,6 @@ class Ship extends THREE.Mesh {
       this.reload = RELOAD_TIME;
       this.shotController.shootLaserShot(this);
     }
-    this.shotController.update(delta);
   }
 
   setMobileEventListeners() {

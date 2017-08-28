@@ -5,6 +5,7 @@ import Planet from './Planet';
 import ShotController from './ShotController';
 import ParticleSystem from './ParticleSystem';
 import Crosshair from './Crosshair';
+import EnemyShip from './EnemyShip';
 
 const DEBUG = false;
 
@@ -60,6 +61,8 @@ camera.rotateOnAxis(camera.up, Math.PI);
 let loader = new THREE.JSONLoader();
 let texLoader = new THREE.TextureLoader();
 let ship;
+let shipGeometry;
+let shipMaterial;
 let shotController = new ShotController(scene);
 let particleSystem = new ParticleSystem(scene);
 let crosshair;
@@ -74,6 +77,8 @@ let loadPromise = new Promise(done => {
         geometry.scale(0.5, 0.5, 0.5);
         geometry.rotateY(Math.PI);
         let mesh = new THREE.Mesh(geometry, material);
+        shipGeometry = geometry;
+        shipMaterial = material;
         ship = new Ship(mesh, shotController, particleSystem);
         if (SHADOWS) {
           ship.receiveShadow = true;
@@ -103,6 +108,20 @@ if (DEBUG) {
   text.className = 'debug';
   text.innerHTML = 'Loading...';
   document.body.appendChild(text);
+}
+
+// Enemies
+let enemies = [];
+function initEnemies() {
+  for (let i = 0; i < 5; i++) {
+    let enemy = new EnemyShip(shipGeometry, shipMaterial, shotController, particleSystem);
+    let offset = new THREE.Vector3(Math.random(), Math.random(), Math.random());
+    offset.multiplyScalar(i * 5);
+    enemy.position.add(offset);
+    enemy.target = ship;
+    scene.add(enemy);
+    enemies.push(enemy);
+  }
 }
 
 // Game Loop
@@ -135,6 +154,13 @@ function render() {
   spotlight.target.position.copy(ship.position.clone().add(direction));
   spotlight.target.updateMatrixWorld();
 
+  // Enemies
+  for (let enemy of enemies) {
+    enemy.update(delta);
+  }
+
+  shotController.update(delta);
+
   renderer.render(scene, camera);
 
   //Update debugging text
@@ -149,6 +175,7 @@ function render() {
 }
 
 loadPromise.then(() => {
+  initEnemies();
   previousTime = new Date().getTime();
   render();
 });
