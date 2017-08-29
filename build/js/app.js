@@ -8226,11 +8226,11 @@
 
 	var _Crosshair2 = _interopRequireDefault(_Crosshair);
 
-	var _EnemyShip = __webpack_require__(424);
+	var _EnemyShip = __webpack_require__(423);
 
 	var _EnemyShip2 = _interopRequireDefault(_EnemyShip);
 
-	var _HUD = __webpack_require__(425);
+	var _HUD = __webpack_require__(424);
 
 	var _HUD2 = _interopRequireDefault(_HUD);
 
@@ -8257,7 +8257,7 @@
 
 	var scene = new _three2.default.Scene();
 	var aspect = window.innerWidth / window.innerHeight;
-	var camera = new _three2.default.PerspectiveCamera(75, aspect, 0.1, 10000);
+	var camera = new _three2.default.PerspectiveCamera(75, aspect, 1, 1000);
 	var renderer = new _three2.default.WebGLRenderer();
 	renderer.setSize(window.innerWidth, window.innerHeight);
 	renderer.autoClear = false;
@@ -8316,6 +8316,8 @@
 	        shipGeometry = geometry;
 	        shipMaterial = material;
 	        ship = new _Ship2.default(mesh, shotController, particleSystem);
+	        ship.isPlayer = true;
+	        shotController.addHitbox(ship);
 	        if (SHADOWS) {
 	          ship.receiveShadow = true;
 	        }
@@ -8335,6 +8337,7 @@
 	  planet.castShadow = true;
 	}
 	scene.add(planet);
+	shotController.addHitbox(planet);
 
 	// Format debugging text
 	var text = void 0;
@@ -8357,6 +8360,7 @@
 	    enemy.target = ship;
 	    scene.add(enemy);
 	    enemies.push(enemy);
+	    shotController.addHitbox(enemy);
 	  }
 	}
 
@@ -46281,9 +46285,9 @@
 	      var _this2 = this;
 
 	      this.motionControlled = true;
-	      var invertCoefficient = -1;
+	      var invertCoefficient = 1;
 	      if (isAndroid()) {
-	        invertCoefficient = 1;
+	        invertCoefficient = -1;
 	      }
 	      // Accelerometer
 	      window.ondevicemotion = function (event) {
@@ -46311,11 +46315,18 @@
 	          _this2.shooting = false;
 	        }
 	      };
-	      document.body.addEventListener('touchstart', updateMobileState);
-	      document.body.addEventListener('touchend', updateMobileState);
+	      document.body.addEventListener('touchstart', updateMobileState, false);
+	      document.body.addEventListener('touchend', updateMobileState, false);
 	      document.body.addEventListener('touchmove', function (event) {
 	        return event.preventDefault();
-	      });
+	      }, false);
+	    }
+	  }, {
+	    key: 'getVelocityVec',
+	    value: function getVelocityVec() {
+	      var direction = new _three2.default.Vector3(0, 0, 1).applyQuaternion(this.quaternion);
+	      var velocityVec = direction.clone().multiplyScalar(this.velocity);
+	      return velocityVec;
 	    }
 	  }]);
 	  return Ship;
@@ -60161,6 +60172,10 @@
 	  value: true
 	});
 
+	var _getIterator2 = __webpack_require__(299);
+
+	var _getIterator3 = _interopRequireDefault(_getIterator2);
+
 	var _classCallCheck2 = __webpack_require__(376);
 
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
@@ -60173,7 +60188,15 @@
 
 	var _LaserShot2 = _interopRequireDefault(_LaserShot);
 
+	var _three = __webpack_require__(367);
+
+	var _three2 = _interopRequireDefault(_three);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var RAYCASTER = new _three2.default.Raycaster();
+	var NEAR = 0;
+	var FAR = 300;
 
 	var ShotController = function () {
 	  function ShotController(scene) {
@@ -60181,6 +60204,10 @@
 
 	    this.shots = [];
 	    this.scene = scene;
+	    this.hitboxes = [];
+
+	    RAYCASTER.near = NEAR;
+	    this.hitCounter = 0;
 	  }
 
 	  (0, _createClass3.default)(ShotController, [{
@@ -60188,11 +60215,49 @@
 	    value: function update(delta) {
 	      var _this = this;
 
+	      RAYCASTER.far = FAR * delta;
 	      this.shots.forEach(function (shot) {
 	        shot.update(delta);
 	        if (shot.lifetimeLeft <= 0.0) {
 	          _this.scene.remove(shot);
 	          _this.shots.splice(_this.shots.indexOf(shot), 1);
+	        }
+
+	        var _iteratorNormalCompletion = true;
+	        var _didIteratorError = false;
+	        var _iteratorError = undefined;
+
+	        try {
+	          for (var _iterator = (0, _getIterator3.default)(_this.hitboxes), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	            var hitbox = _step.value;
+
+	            if (shot.position.distanceTo(hitbox.position) < 10) {
+	              var direction = new _three2.default.Vector3(0, 0, 1);
+	              direction.applyQuaternion(shot.quaternion);
+	              RAYCASTER.set(shot.position, direction);
+	              var intersections = RAYCASTER.intersectObject(hitbox);
+	              if (intersections.length !== 0) {
+	                _this.scene.remove(shot);
+	                _this.shots.splice(_this.shots.indexOf(shot), 1);
+	                if (intersections[0].object.isPlayer) {
+	                  console.log('HIT: ' + ++_this.hitCounter);
+	                }
+	              }
+	            }
+	          }
+	        } catch (err) {
+	          _didIteratorError = true;
+	          _iteratorError = err;
+	        } finally {
+	          try {
+	            if (!_iteratorNormalCompletion && _iterator.return) {
+	              _iterator.return();
+	            }
+	          } finally {
+	            if (_didIteratorError) {
+	              throw _iteratorError;
+	            }
+	          }
 	        }
 	      });
 	    }
@@ -60206,6 +60271,11 @@
 	      ship.activeGun *= -1; // Bad initial solution
 	      this.shots.push(shot);
 	      this.scene.add(shot);
+	    }
+	  }, {
+	    key: 'addHitbox',
+	    value: function addHitbox(mesh) {
+	      this.hitboxes.push(mesh);
 	    }
 	  }]);
 	  return ShotController;
@@ -60222,6 +60292,7 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
+	exports.VELOCITY = undefined;
 
 	var _getPrototypeOf = __webpack_require__(373);
 
@@ -60253,7 +60324,7 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	var VELOCITY = 300; // units/s
+	var VELOCITY = exports.VELOCITY = 300; // units/s
 	var LIFETIME = 5.0; // seconds
 
 	var shotGeometry = new _three2.default.CylinderGeometry(0.05, 0.05, 5, 8, 1);
@@ -60611,8 +60682,7 @@
 	exports.default = Crosshair;
 
 /***/ },
-/* 423 */,
-/* 424 */
+/* 423 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -60644,6 +60714,8 @@
 	var _three = __webpack_require__(367);
 
 	var _three2 = _interopRequireDefault(_three);
+
+	var _LaserShot = __webpack_require__(415);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -60700,7 +60772,8 @@
 	    key: 'update',
 	    value: function update(delta) {
 	      if (this.attacking) {
-	        this.turnTowards(this.target.position, delta);
+	        var aimTarget = this.getAimTarget(this.target.position, this.target.getVelocityVec(), _LaserShot.VELOCITY);
+	        this.turnTowards(aimTarget, delta);
 	        if (this.position.distanceTo(this.target.position) < CLOSE_DISTANCE) {
 	          this.attacking = false;
 	        }
@@ -60743,6 +60816,21 @@
 
 	      this.quaternion.slerp(quaternion, TURN_SPEED * delta * 2 * Math.PI / angle);
 	    }
+	  }, {
+	    key: 'getAimTarget',
+	    value: function getAimTarget(targetPosition, targetVelocity, shotSpeed) {
+	      var thisToTarget = targetPosition.clone().sub(this.position);
+	      var targetMoveAngle = thisToTarget.angleTo(targetVelocity); // 0 or PI when paralell to vector from this to target.
+	      var aimAdvanceAngle = Math.asin(Math.sin(targetMoveAngle) * targetVelocity.length() / shotSpeed);
+	      var aimAdvanceAxis = new _three2.default.Vector3().crossVectors(thisToTarget, targetVelocity).normalize();
+	      var aimAdvanceVector = thisToTarget.applyAxisAngle(aimAdvanceAxis, aimAdvanceAngle);
+	      var aimTarget = new _three2.default.Vector3().addVectors(this.position, aimAdvanceVector);
+	      if (!aimTarget.x || !aimTarget.y || !aimTarget.z) {
+	        return targetPosition;
+	      } else {
+	        return aimTarget;
+	      }
+	    }
 	  }]);
 	  return EnemyShip;
 	}(_three2.default.Mesh);
@@ -60750,7 +60838,7 @@
 	exports.default = EnemyShip;
 
 /***/ },
-/* 425 */
+/* 424 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
