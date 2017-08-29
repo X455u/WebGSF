@@ -46285,9 +46285,9 @@
 	      var _this2 = this;
 
 	      this.motionControlled = true;
-	      var invertCoefficient = 1;
+	      var invertCoefficient = -1;
 	      if (isAndroid()) {
-	        invertCoefficient = -1;
+	        invertCoefficient = 1;
 	      }
 	      // Accelerometer
 	      window.ondevicemotion = function (event) {
