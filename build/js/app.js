@@ -46292,8 +46292,8 @@
 	      // Accelerometer
 	      window.ondevicemotion = function (event) {
 	        _this2.turnParameters = {
-	          x: -invertCoefficient * event.accelerationIncludingGravity.z / 6 - Math.PI / 2,
-	          z: invertCoefficient * event.accelerationIncludingGravity.x / 6
+	          x: -invertCoefficient * event.accelerationIncludingGravity.z / 6,
+	          z: invertCoefficient * event.accelerationIncludingGravity.x / 6 - Math.PI / 2
 	        };
 	      };
 	      // Touch events
