@@ -1,4 +1,5 @@
 import THREE from 'three';
+import {VELOCITY as SHOTSPEED} from './LaserShot';
 
 const VELOCITY = 50; // units/s
 const TURN_SPEED = 0.25; // radians/s
@@ -47,7 +48,8 @@ class EnemyShip extends THREE.Mesh {
 
   update(delta) {
     if (this.attacking) {
-      this.turnTowards(this.target.position, delta);
+      let aimTarget = this.getAimTarget(this.target.position, this.target.getVelocityVec(), SHOTSPEED);
+      this.turnTowards(aimTarget, delta);
       if (this.position.distanceTo(this.target.position) < CLOSE_DISTANCE) {
         this.attacking = false;
       }
@@ -88,6 +90,20 @@ class EnemyShip extends THREE.Mesh {
     let angle = direction.angleTo(targetDirection);
 
     this.quaternion.slerp(quaternion, TURN_SPEED * delta * 2 * Math.PI / angle);
+  }
+
+  getAimTarget(targetPosition, targetVelocity, shotSpeed) {
+    let thisToTarget = targetPosition.clone().sub(this.position);
+    let targetMoveAngle = thisToTarget.angleTo(targetVelocity); // 0 or PI when paralell to vector from this to target.
+    let aimAdvanceAngle = Math.asin(Math.sin(targetMoveAngle) * targetVelocity.length() / shotSpeed);
+    let aimAdvanceAxis = (new THREE.Vector3()).crossVectors(thisToTarget, targetVelocity).normalize();
+    let aimAdvanceVector = thisToTarget.applyAxisAngle(aimAdvanceAxis, aimAdvanceAngle);
+    let aimTarget = (new THREE.Vector3()).addVectors(this.position, aimAdvanceVector);
+    if (!aimTarget.x || !aimTarget.y || !aimTarget.z) {
+      return targetPosition;
+    } else {
+      return aimTarget;
+    }
   }
 
 }

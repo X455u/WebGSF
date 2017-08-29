@@ -136,6 +136,12 @@ class Ship extends THREE.Mesh {
     document.body.addEventListener('touchend', updateMobileState, false);
     document.body.addEventListener('touchmove', event => event.preventDefault(), false);
   }
+
+  getVelocityVec() {
+    let direction = (new THREE.Vector3(0, 0, 1)).applyQuaternion(this.quaternion);
+    let velocityVec = direction.clone().multiplyScalar(this.velocity);
+    return velocityVec;
+  }
 }
 
 export default Ship;
