@@ -46293,7 +46293,7 @@
 	      window.ondevicemotion = function (event) {
 	        _this2.turnParameters = {
 	          x: -invertCoefficient * event.accelerationIncludingGravity.z / 6,
-	          z: invertCoefficient * event.accelerationIncludingGravity.x / 6 - Math.PI / 2
+	          z: invertCoefficient * event.accelerationIncludingGravity.y / 6
 	        };
 	      };
 	      // Touch events
