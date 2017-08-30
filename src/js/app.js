@@ -37,7 +37,7 @@ document.body.appendChild(renderer.domElement);
 renderer.domElement.setAttribute('tabIndex', '0');
 renderer.domElement.focus();
 
-let ambientLight = new THREE.AmbientLight(0x444444, 0.1);
+let ambientLight = new THREE.AmbientLight(0x222222, 0.1);
 let light = new THREE.DirectionalLight(0xffffff, 1);
 let spotlight = new THREE.SpotLight(0xffffff, 3, 1000);
 light.position.copy(LIGHT_VECTOR);
@@ -80,7 +80,7 @@ let loadPromise = new Promise(done => {
       let material = new THREE.MeshBasicMaterial({
         map: backgroundTexture,
         side: THREE.BackSide,
-        color: '#888'
+        color: 0x555555
       });
       let geometry = new THREE.SphereGeometry(100000, 32, 32);
       let stars = new THREE.Mesh(geometry, material);

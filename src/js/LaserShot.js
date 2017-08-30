@@ -16,7 +16,7 @@ let shotMaterial = new THREE.MeshPhongMaterial({
   emissive: 0xff0000,
   shininess: 0,
   shading: THREE.SmoothShading,
-  opacity: 0.9,
+  opacity: 0.5,
   transparent: true
 });
 let shotMesh = new THREE.Mesh(shotGeometry, shotMaterial);

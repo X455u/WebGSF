@@ -3,8 +3,8 @@ import THREE from 'three';
 import SubdivisionModifier from './SubdivisionModifier';
 
 const DETAIL = 3;
-const NOISE = 0.16;
-const SMOOTHNESS = 2.3;
+const NOISE = 0.3;
+const SMOOTHNESS = 2;
 
 class Planet extends THREE.Mesh {
   constructor(radius) {
@@ -32,8 +32,8 @@ class Planet extends THREE.Mesh {
     geometry.uvsNeedUpdate = true;
 
     let material = new THREE.MeshPhongMaterial({
-      color: 0x652a2a,
-      shininess: 20
+      color: 0x111111,
+      shininess: 1
     });
 
     let texLoader = new THREE.TextureLoader();
