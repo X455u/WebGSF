@@ -29,7 +29,7 @@ sound.play();
 
 let scene = new THREE.Scene();
 let aspect = window.innerWidth / window.innerHeight;
-let camera = new THREE.PerspectiveCamera(75, aspect, 1, 1000);
+let camera = new THREE.PerspectiveCamera(75, aspect, 1, 1000000);
 let renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.autoClear = false;
@@ -75,6 +75,19 @@ let shotController = new ShotController(scene);
 let particleSystem = new ParticleSystem(scene);
 let crosshair;
 let loadPromise = new Promise(done => {
+  function next() {
+    texLoader.load('./media/background.jpg', (backgroundTexture) => {
+      let material = new THREE.MeshBasicMaterial({
+        map: backgroundTexture,
+        side: THREE.BackSide,
+        color: '#888'
+      });
+      let geometry = new THREE.SphereGeometry(100000, 32, 32);
+      let stars = new THREE.Mesh(geometry, material);
+      scene.add(stars);
+      done();
+    });
+  }
   texLoader.load('./media/spaceship_comp.png', function(texture) {
     texLoader.load('./media/spaceship_nor.png', function(normalMap) {
       loader.load('./media/nicce_fighter.json', function(geometry) {
@@ -96,9 +109,9 @@ let loadPromise = new Promise(done => {
         light.target = ship;
         scene.add(ship);
         crosshair = new Crosshair(scene, camera, ship);
-        done();
       });
     });
+    next();
   });
 });
 
