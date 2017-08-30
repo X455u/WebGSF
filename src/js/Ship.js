@@ -106,15 +106,15 @@ class Ship extends THREE.Mesh {
 
   setMobileEventListeners() {
     this.motionControlled = true;
-    let invertCoefficient = 1;
+    let invertCoefficient = -1;
     if (isAndroid()) {
-      invertCoefficient = -1;
+      invertCoefficient = 1;
     }
     // Accelerometer
     window.ondevicemotion = (event) => {
       this.turnParameters = {
-        x: -invertCoefficient * event.accelerationIncludingGravity.z / 6,
-        z: invertCoefficient * event.accelerationIncludingGravity.x / 6
+        x: invertCoefficient * event.accelerationIncludingGravity.z / 6,
+        z: invertCoefficient * event.accelerationIncludingGravity.y / 6
       };
     };
     // Touch events
