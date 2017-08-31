@@ -8234,6 +8234,10 @@
 
 	var _HUD2 = _interopRequireDefault(_HUD);
 
+	var _Sun = __webpack_require__(425);
+
+	var _Sun2 = _interopRequireDefault(_Sun);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	var DEBUG = false;
@@ -8242,10 +8246,7 @@
 	var CAMERA_VELOCITY = 5;
 	var CAMERA_DIRECTION = new _three2.default.Vector3(0, 0.5, -1).normalize();
 
-	var LIGHT_VECTOR = new _three2.default.Vector3(0, 1000, 0);
 	var SPOTLIGHT_VECTOR = new _three2.default.Vector3(0, 0, 300);
-
-	var SHADOWS = true;
 
 	var MAX_DELTA = 0.1; // s
 
@@ -8257,39 +8258,19 @@
 
 	var scene = new _three2.default.Scene();
 	var aspect = window.innerWidth / window.innerHeight;
-	var camera = new _three2.default.PerspectiveCamera(75, aspect, 1, 1000);
-	var renderer = new _three2.default.WebGLRenderer();
+	var camera = new _three2.default.PerspectiveCamera(75, aspect, 1, 1000000);
+	var renderer = new _three2.default.WebGLRenderer({ antialias: true, alpha: true });
 	renderer.setSize(window.innerWidth, window.innerHeight);
 	renderer.autoClear = false;
 	document.body.appendChild(renderer.domElement);
 	renderer.domElement.setAttribute('tabIndex', '0');
 	renderer.domElement.focus();
 
-	var ambientLight = new _three2.default.AmbientLight(0x444444, 0.1);
-	var light = new _three2.default.DirectionalLight(0xffffff, 1);
+	var ambientLight = new _three2.default.AmbientLight(0x222222, 0.1);
 	var spotlight = new _three2.default.SpotLight(0xffffff, 3, 1000);
-	light.position.copy(LIGHT_VECTOR);
-
-	if (SHADOWS) {
-	  renderer.shadowMap.enabled = true;
-	  renderer.shadowMap.type = _three2.default.PCFShadowMap;
-	  light.castShadow = true;
-	  light.shadowCameraNear = 10;
-	  light.shadowCameraFar = 2000;
-	  light.shadowCameraLeft = 100;
-	  light.shadowCameraRight = -100;
-	  light.shadowCameraTop = 100;
-	  light.shadowCameraBottom = -100;
-	  light.shadowBias = -0.001;
-	}
-	if (DEBUG) {
-	  scene.add(new _three2.default.CameraHelper(light.shadow.camera));
-	  scene.add(new _three2.default.CameraHelper(spotlight.shadow.camera));
-	}
 
 	scene.add(ambientLight);
 	scene.add(spotlight);
-	scene.add(light);
 	camera.position.z = -CAMERA_DISTANCE;
 	camera.rotateOnAxis(camera.up, Math.PI);
 
@@ -8303,6 +8284,19 @@
 	var particleSystem = new _ParticleSystem2.default(scene);
 	var crosshair = void 0;
 	var loadPromise = new _promise2.default(function (done) {
+	  function next() {
+	    texLoader.load('./media/background.jpg', function (backgroundTexture) {
+	      var material = new _three2.default.MeshBasicMaterial({
+	        map: backgroundTexture,
+	        side: _three2.default.BackSide,
+	        color: 0x555555
+	      });
+	      var geometry = new _three2.default.SphereGeometry(100000, 32, 32);
+	      var stars = new _three2.default.Mesh(geometry, material);
+	      scene.add(stars);
+	      done();
+	    });
+	  }
 	  texLoader.load('./media/spaceship_comp.png', function (texture) {
 	    texLoader.load('./media/spaceship_nor.png', function (normalMap) {
 	      loader.load('./media/nicce_fighter.json', function (geometry) {
@@ -8318,26 +8312,24 @@
 	        ship = new _Ship2.default(mesh, shotController, particleSystem);
 	        ship.isPlayer = true;
 	        shotController.addHitbox(ship);
-	        if (SHADOWS) {
-	          ship.receiveShadow = true;
-	        }
-	        light.target = ship;
 	        scene.add(ship);
 	        crosshair = new _Crosshair2.default(scene, camera, ship);
-	        done();
 	      });
 	    });
+	    next();
 	  });
 	});
 
 	// Planet testing
 	var planet = new _Planet2.default(500);
-	planet.position.y = -550;
-	if (SHADOWS) {
-	  planet.castShadow = true;
-	}
+	planet.position.y = -800;
 	scene.add(planet);
 	shotController.addHitbox(planet);
+
+	// Sun
+	var sun = new _Sun2.default();
+	sun.position.z = 10000;
+	scene.add(sun);
 
 	// Format debugging text
 	var text = void 0;
@@ -8377,10 +8369,7 @@
 
 	  ship.update(delta);
 	  particleSystem.update(delta);
-	  crosshair.update([planet]);
-
-	  // light/shadow map follow
-	  light.position.copy(ship.position.clone().add(LIGHT_VECTOR));
+	  crosshair.update([planet].concat(enemies));
 
 	  // Camera follow
 	  var direction = CAMERA_DIRECTION.clone();
@@ -46182,10 +46171,7 @@
 	var X_AXIS = new _three2.default.Vector3(1, 0, 0);
 
 	var texLoader = new _three2.default.TextureLoader();
-	var thrusterParticleMap = void 0;
-	texLoader.load('./media/particle2.png', function (map) {
-	  thrusterParticleMap = map;
-	});
+	var thrusterParticleMap = texLoader.load('./media/particle2.png');
 
 	function isMobile() {
 	  return window.DeviceMotionEvent !== undefined && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
@@ -59826,8 +59812,8 @@
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	var DETAIL = 3;
-	var NOISE = 0.16;
-	var SMOOTHNESS = 2.3;
+	var NOISE = 0.3;
+	var SMOOTHNESS = 2;
 
 	var Planet = function (_THREE$Mesh) {
 	  (0, _inherits3.default)(Planet, _THREE$Mesh);
@@ -59857,8 +59843,8 @@
 	    geometry.uvsNeedUpdate = true;
 
 	    var material = new _three2.default.MeshPhongMaterial({
-	      color: 0x652a2a,
-	      shininess: 20
+	      color: 0x111111,
+	      shininess: 1
 	    });
 
 	    var texLoader = new _three2.default.TextureLoader();
@@ -60339,7 +60325,7 @@
 	  emissive: 0xff0000,
 	  shininess: 0,
 	  shading: _three2.default.SmoothShading,
-	  opacity: 0.9,
+	  opacity: 0.5,
 	  transparent: true
 	});
 	var shotMesh = new _three2.default.Mesh(shotGeometry, shotMaterial);
@@ -60728,10 +60714,7 @@
 	var FAR_DISTANCE = 200;
 
 	var texLoader = new _three2.default.TextureLoader();
-	var thrusterParticleMap = void 0;
-	texLoader.load('./media/particle2.png', function (map) {
-	  thrusterParticleMap = map;
-	});
+	var thrusterParticleMap = texLoader.load('./media/particle2.png');
 
 	var EnemyShip = function (_THREE$Mesh) {
 	  (0, _inherits3.default)(EnemyShip, _THREE$Mesh);
@@ -60948,6 +60931,85 @@
 	}();
 
 	exports.default = HUD;
+
+/***/ },
+/* 425 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _getPrototypeOf = __webpack_require__(373);
+
+	var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
+
+	var _classCallCheck2 = __webpack_require__(376);
+
+	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+	var _possibleConstructorReturn2 = __webpack_require__(381);
+
+	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+	var _inherits2 = __webpack_require__(401);
+
+	var _inherits3 = _interopRequireDefault(_inherits2);
+
+	var _three = __webpack_require__(367);
+
+	var _three2 = _interopRequireDefault(_three);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var TEX_LOADER = new _three2.default.TextureLoader();
+	var texFlare0 = TEX_LOADER.load('./media/lensflare/lensflare0.png');
+	var texFlare2 = TEX_LOADER.load('./media/lensflare/lensflare2.png');
+	var texFlare3 = TEX_LOADER.load('./media/lensflare/lensflare3.png');
+
+	function lensFlareUpdateCallback(object) {
+	  var f = void 0,
+	      fl = object.lensFlares.length;
+	  var flare = void 0;
+	  var vecX = -object.positionScreen.x * 2;
+	  var vecY = -object.positionScreen.y * 2;
+	  for (f = 0; f < fl; f++) {
+	    flare = object.lensFlares[f];
+	    flare.x = object.positionScreen.x + vecX * flare.distance;
+	    flare.y = object.positionScreen.y + vecY * flare.distance;
+	    flare.rotation = 0;
+	  }
+	  object.lensFlares[2].y += 0.025;
+	  object.lensFlares[3].rotation = object.positionScreen.x * 0.5 + _three2.default.Math.degToRad(45);
+	}
+
+	var Sun = function (_THREE$PointLight) {
+	  (0, _inherits3.default)(Sun, _THREE$PointLight);
+
+	  function Sun() {
+	    (0, _classCallCheck3.default)(this, Sun);
+
+	    var _this = (0, _possibleConstructorReturn3.default)(this, (Sun.__proto__ || (0, _getPrototypeOf2.default)(Sun)).call(this, 0xffffff, 3));
+
+	    var lensFlare = new _three2.default.LensFlare(texFlare0, 700, 0.0, _three2.default.AdditiveBlending, new _three2.default.Color(0xffffff));
+	    lensFlare.add(texFlare2, 512, 0.0, _three2.default.AdditiveBlending);
+	    lensFlare.add(texFlare2, 512, 0.0, _three2.default.AdditiveBlending);
+	    lensFlare.add(texFlare2, 512, 0.0, _three2.default.AdditiveBlending);
+	    lensFlare.add(texFlare3, 60, 0.6, _three2.default.AdditiveBlending);
+	    lensFlare.add(texFlare3, 70, 0.7, _three2.default.AdditiveBlending);
+	    lensFlare.add(texFlare3, 120, 0.9, _three2.default.AdditiveBlending);
+	    lensFlare.add(texFlare3, 70, 1.0, _three2.default.AdditiveBlending);
+	    lensFlare.customUpdateCallback = lensFlareUpdateCallback;
+	    _this.add(lensFlare);
+	    return _this;
+	  }
+
+	  return Sun;
+	}(_three2.default.PointLight);
+
+	exports.default = Sun;
 
 /***/ }
 /******/ ]);
