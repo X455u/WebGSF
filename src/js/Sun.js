@@ -1,46 +1,39 @@
 import THREE from 'three';
 
-const VERTEX_SHADER = `varying vec3 vNormal;
-void main()
-{
-    vNormal = normalize( normalMatrix * normal );
-    gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
-}`;
+const TEX_LOADER = new THREE.TextureLoader();
+const texFlare0 = TEX_LOADER.load('./media/lensflare/lensflare0.png');
+const texFlare2 = TEX_LOADER.load('./media/lensflare/lensflare2.png');
+const texFlare3 = TEX_LOADER.load('./media/lensflare/lensflare3.png');
 
-const FRAGMENT_SHADER = `uniform float c;
-uniform float p;
-varying vec3 vNormal;
-void main()
-{
-	float intensity = pow( c - dot( vNormal, vec3( 0.0, 0.0, 1.0 ) ), p );
-	gl_FragColor = vec4( 1.0, 1.0, 0.0, 1.0 ) * intensity;
-}`;
+function lensFlareUpdateCallback(object) {
+  let f, fl = object.lensFlares.length;
+  let flare;
+  let vecX = -object.positionScreen.x * 2;
+  let vecY = -object.positionScreen.y * 2;
+  for (f = 0; f < fl; f++) {
+    flare = object.lensFlares[ f ];
+    flare.x = object.positionScreen.x + vecX * flare.distance;
+    flare.y = object.positionScreen.y + vecY * flare.distance;
+    flare.rotation = 0;
+  }
+  object.lensFlares[2].y += 0.025;
+  object.lensFlares[3].rotation = object.positionScreen.x * 0.5 + THREE.Math.degToRad(45);
+}
 
-const HALO_MATERIAL = new THREE.ShaderMaterial({
-  uniforms: {
-    'c': {type: 'f', value: 0.5},
-    'p': {type: 'f', value: 3.0}
-  },
-  vertexShader: VERTEX_SHADER,
-  fragmentShader: FRAGMENT_SHADER
-});
-const HALO_SCALE = 1.5;
-
-const SUN_GEO = new THREE.SphereGeometry(100, 32, 16);
-const SUN_MAT = new THREE.MeshBasicMaterial({color: 0xffff00});
-
-class Sun extends THREE.Mesh {
+class Sun extends THREE.PointLight {
 
   constructor() {
-    super(SUN_GEO, SUN_MAT);
-
-    let halo = new THREE.Mesh(SUN_GEO.clone(), HALO_MATERIAL);
-    halo.material.side = THREE.BackSide;
-    halo.scale.x = halo.scale.y = halo.scale.z = HALO_SCALE;
-    this.add(halo);
-
-    this.light = new THREE.PointLight(0xffffff, 3);
-    this.add(this.light);
+    super(0xffffff, 3);
+    let lensFlare = new THREE.LensFlare(texFlare0, 700, 0.0, THREE.AdditiveBlending, new THREE.Color(0xffffff));
+    lensFlare.add(texFlare2, 512, 0.0, THREE.AdditiveBlending);
+    lensFlare.add(texFlare2, 512, 0.0, THREE.AdditiveBlending);
+    lensFlare.add(texFlare2, 512, 0.0, THREE.AdditiveBlending);
+    lensFlare.add(texFlare3, 60, 0.6, THREE.AdditiveBlending);
+    lensFlare.add(texFlare3, 70, 0.7, THREE.AdditiveBlending);
+    lensFlare.add(texFlare3, 120, 0.9, THREE.AdditiveBlending);
+    lensFlare.add(texFlare3, 70, 1.0, THREE.AdditiveBlending);
+    lensFlare.customUpdateCallback = lensFlareUpdateCallback;
+    this.add(lensFlare);
   }
 
 }
