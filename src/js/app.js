@@ -8,6 +8,7 @@ import Crosshair from './Crosshair';
 import EnemyShip from './EnemyShip';
 import HUD from './HUD';
 import Sun from './Sun';
+import {Howl} from 'howler';
 
 const DEBUG = false;
 
@@ -19,11 +20,12 @@ const SPOTLIGHT_VECTOR = new THREE.Vector3(0, 0, 300);
 
 const MAX_DELTA = 0.1; // s
 
-let sound = new Audio('media/main_theme.mp3'); // GSF theme music
-sound.load();
-sound.loop = true;
-sound.volume = 0.4;
-sound.play();
+let music = new Howl({
+  src: ['./media/main_theme2.mp3'],
+  loop: true,
+  volume: 0.5
+});
+music.play();
 
 let scene = new THREE.Scene();
 let aspect = window.innerWidth / window.innerHeight;
