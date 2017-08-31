@@ -140,7 +140,7 @@ function render() {
 
   ship.update(delta);
   particleSystem.update(delta);
-  crosshair.update([planet]);
+  crosshair.update([planet, ...enemies]);
 
   // Camera follow
   let direction = CAMERA_DIRECTION.clone();
