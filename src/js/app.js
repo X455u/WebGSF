@@ -7,6 +7,7 @@ import ParticleSystem from './ParticleSystem';
 import Crosshair from './Crosshair';
 import EnemyShip from './EnemyShip';
 import HUD from './HUD';
+import Sun from './Sun';
 
 const DEBUG = false;
 
@@ -14,7 +15,7 @@ const CAMERA_DISTANCE = 5;
 const CAMERA_VELOCITY = 5;
 const CAMERA_DIRECTION = new THREE.Vector3(0, 0.5, -1).normalize();
 
-const LIGHT_VECTOR = new THREE.Vector3(0, 1000, 0);
+// const LIGHT_VECTOR = new THREE.Vector3(0, 1000, 0);
 const SPOTLIGHT_VECTOR = new THREE.Vector3(0, 0, 300);
 
 const SHADOWS = true;
@@ -38,30 +39,13 @@ renderer.domElement.setAttribute('tabIndex', '0');
 renderer.domElement.focus();
 
 let ambientLight = new THREE.AmbientLight(0x222222, 0.1);
-let light = new THREE.DirectionalLight(0xffffff, 1);
+// let light = new THREE.DirectionalLight(0xffffff, 1);
 let spotlight = new THREE.SpotLight(0xffffff, 3, 1000);
-light.position.copy(LIGHT_VECTOR);
-
-if (SHADOWS) {
-  renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = THREE.PCFShadowMap;
-  light.castShadow = true;
-  light.shadowCameraNear = 10;
-  light.shadowCameraFar = 2000;
-  light.shadowCameraLeft = 100;
-  light.shadowCameraRight = -100;
-  light.shadowCameraTop = 100;
-  light.shadowCameraBottom = -100;
-  light.shadowBias = -0.001;
-}
-if (DEBUG) {
-  scene.add(new THREE.CameraHelper(light.shadow.camera));
-  scene.add(new THREE.CameraHelper(spotlight.shadow.camera));
-}
+// light.position.copy(LIGHT_VECTOR);
 
 scene.add(ambientLight);
 scene.add(spotlight);
-scene.add(light);
+// scene.add(light);
 camera.position.z = -CAMERA_DISTANCE;
 camera.rotateOnAxis(camera.up, Math.PI);
 
@@ -106,7 +90,6 @@ let loadPromise = new Promise(done => {
         if (SHADOWS) {
           ship.receiveShadow = true;
         }
-        light.target = ship;
         scene.add(ship);
         crosshair = new Crosshair(scene, camera, ship);
       });
@@ -117,12 +100,35 @@ let loadPromise = new Promise(done => {
 
 // Planet testing
 let planet = new Planet(500);
-planet.position.y = -550;
+planet.position.y = -800;
 if (SHADOWS) {
   planet.castShadow = true;
 }
 scene.add(planet);
 shotController.addHitbox(planet);
+
+// Sun
+let sun = new Sun();
+sun.position.z = 10000;
+scene.add(sun);
+
+// let light = sun.light;
+// if (SHADOWS) {
+//   renderer.shadowMap.enabled = true;
+//   renderer.shadowMap.type = THREE.PCFShadowMap;
+//   light.castShadow = true;
+//   light.shadowCameraNear = 5000;
+//   light.shadowCameraFar = 200000;
+//   light.shadowCameraLeft = 10000;
+//   light.shadowCameraRight = -10000;
+//   light.shadowCameraTop = 10000;
+//   light.shadowCameraBottom = -10000;
+//   light.shadowBias = -0.001;
+// }
+// if (DEBUG) {
+//   scene.add(new THREE.CameraHelper(light.shadow.camera));
+//   scene.add(new THREE.CameraHelper(spotlight.shadow.camera));
+// }
 
 // Format debugging text
 let text;
@@ -165,7 +171,7 @@ function render() {
   crosshair.update([planet]);
 
   // light/shadow map follow
-  light.position.copy(ship.position.clone().add(LIGHT_VECTOR));
+  // light.position.copy(ship.position.clone().add(LIGHT_VECTOR));
 
   // Camera follow
   let direction = CAMERA_DIRECTION.clone();
