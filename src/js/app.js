@@ -9,6 +9,7 @@ import EnemyShip from './EnemyShip';
 import HUD from './HUD';
 import Sun from './Sun';
 import {Howl} from 'howler';
+// import GSFLoader from './GSFLoader';
 
 const DEBUG = false;
 
@@ -19,6 +20,38 @@ const CAMERA_DIRECTION = new THREE.Vector3(0, 0.5, -1).normalize();
 const SPOTLIGHT_VECTOR = new THREE.Vector3(0, 0, 300);
 
 const MAX_DELTA = 0.1; // s
+
+
+// Loading
+// let i = 0;
+// let loadingText = document.createElement('div');
+// loadingText.className = 'loading';
+// loadingText.innerHTML = 'Loading...';
+// document.body.appendChild(loadingText);
+// let loadingProgress = document.createElement('div');
+// loadingProgress.style.display = 'flex';
+// loadingText.appendChild(loadingProgress);
+// let loadingProgressCount = document.createElement('div');
+// loadingProgress.innerHTML = i;
+// loadingProgress.appendChild(loadingProgressCount);
+// let loadingProgressTotal = document.createElement('div');
+// loadingProgressTotal.innerHTML = '/4';
+// loadingProgress.appendChild(loadingProgressTotal);
+//
+// let onStart = () => {
+//
+// };
+// let onProgress = () => {
+//   loadingProgress.innerHTML = ++i;
+// };
+// let onError = () => {
+//
+// };
+// let onLoad = () => {
+//
+// };
+// let loader = new GSFLoader(onStart, onProgress, onError, onLoad);
+// loader.load();
 
 let music = new Howl({
   src: ['./media/main_theme2.mp3'],
