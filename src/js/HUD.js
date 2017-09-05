@@ -45,15 +45,13 @@ class HUD {
     let hpBarMesh = new THREE.Mesh(hpBarGeometry, hpBarMaterial);
     this.scene.add(hpBarMesh);
 
-    let hpContainerGeometry = hpBarGeometry.clone();
-    hpContainerGeometry.scale(scale, scale, scale);
     let hpContainerMaterial = new THREE.MeshBasicMaterial({
       color: 0xff0000,
       transparent: true,
       opacity: 0.5,
       wireframe: true
     });
-    let hpContainerMesh = new THREE.Mesh(hpContainerGeometry, hpContainerMaterial);
+    let hpContainerMesh = new THREE.Mesh(hpBarGeometry, hpContainerMaterial);
     this.scene.add(hpContainerMesh);
 
     hpBarMesh.rotateX(0.2 * Math.PI);
@@ -72,15 +70,13 @@ class HUD {
     let ballMesh = new THREE.Mesh(ballGeometry, ballMaterial);
     this.scene.add(ballMesh);
 
-    let ballShellGeometry = ballGeometry.clone();
-    ballShellGeometry.scale(scale, scale, scale);
     let ballShellMaterial = new THREE.MeshBasicMaterial({
       color: 0x0000ff,
       transparent: true,
       opacity: 0.5,
       wireframe: true
     });
-    let ballShellMesh = new THREE.Mesh(ballShellGeometry, ballShellMaterial);
+    let ballShellMesh = new THREE.Mesh(ballGeometry, ballShellMaterial);
     this.scene.add(ballShellMesh);
 
     ballMesh.rotateX(0.2 * Math.PI);
