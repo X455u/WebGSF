@@ -66,8 +66,8 @@ function initGame() {
   renderer.domElement.setAttribute('tabIndex', '0');
   renderer.domElement.focus();
 
-  let ambientLight = new THREE.AmbientLight(0x222222, 0.1);
-  let spotlight = new THREE.SpotLight(0xffffff, 3, 1000);
+  let ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
+  let spotlight = new THREE.SpotLight(0xffffff, 3, 300, 0.9, 0.75, 1.5);
 
   scene.add(ambientLight);
   scene.add(spotlight);
