@@ -187,6 +187,7 @@ function initGame() {
 }
 
 loader.manager.onLoad = () => {
+  document.body.removeChild(loadingText);
   initGame();
 };
 loader.load();
