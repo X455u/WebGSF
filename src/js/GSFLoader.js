@@ -42,6 +42,9 @@ class GSFLoader {
     this.TEX_LOADER.load('./media/lensflare/lensflare3.png', (texture) => {
       this.assets['texFlare3'] = texture;
     });
+    this.TEX_LOADER.load('./media/crosshair.png', (texture) => {
+      this.assets['crosshair'] = texture;
+    });
     /* eslint-enable dot-notation */
   }
 }
