@@ -1,4 +1,4 @@
-import THREE from 'three';
+import * as THREE from 'three';
 import SubdivisionModifier from './SubdivisionModifier';
 
 export const VELOCITY = 300; // units/s

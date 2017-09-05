@@ -1,5 +1,5 @@
+import * as THREE from 'three';
 import _ from 'lodash';
-import THREE from 'three';
 import keymaster from 'keymaster';
 
 const TURN_SPEED = Math.PI; // rad/s

@@ -1,4 +1,4 @@
-import THREE from 'three';
+import * as THREE from 'three';
 import {VELOCITY as SHOTSPEED} from './LaserShot';
 
 const VELOCITY = 50; // units/s

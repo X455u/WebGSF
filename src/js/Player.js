@@ -1,3 +1,4 @@
+import * as THREE from 'three';
 import _ from 'lodash';
 import keymaster from 'keymaster';
 

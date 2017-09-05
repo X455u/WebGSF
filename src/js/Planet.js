@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import THREE from 'three';
+import * as THREE from 'three';
 import SubdivisionModifier from './SubdivisionModifier';
 
 const DETAIL = 3;

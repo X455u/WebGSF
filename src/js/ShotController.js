@@ -1,5 +1,5 @@
 import LaserShot from './LaserShot';
-import THREE from 'three';
+import * as THREE from 'three';
 
 const RAYCASTER = new THREE.Raycaster();
 const NEAR = 0;

@@ -1,4 +1,4 @@
-import THREE from 'three';
+import * as THREE from 'three';
 
 import Ship from './Ship';
 import Planet from './Planet';

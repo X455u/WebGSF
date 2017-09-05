@@ -1,4 +1,4 @@
-import THREE from 'three';
+import * as THREE from 'three';
 
 const TEX_LOADER = new THREE.TextureLoader();
 const texFlare0 = TEX_LOADER.load('./media/lensflare/lensflare0.png');

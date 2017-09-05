@@ -9,7 +9,7 @@
  *
  */
 
-import THREE from 'three';
+import * as THREE from 'three';
 
 const WARNINGS = !true; // Set to true for development
 const ABC = ['a', 'b', 'c'];

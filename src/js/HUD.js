@@ -1,4 +1,4 @@
-import THREE from 'three';
+import * as THREE from 'three';
 
 function fromBottom(HUD, y) {
   return -HUD.height / 2 + y;

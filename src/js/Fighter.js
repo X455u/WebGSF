@@ -1,4 +1,4 @@
-import THREE from 'three';
+import * as THREE from 'three';
 import GSFLoader from './GSFLoader';
 import Ship from './Ship';
 import SmallPulseLaser from './SmallPulseLaser';

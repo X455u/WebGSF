@@ -1,4 +1,4 @@
-import THREE from 'three';
+import * as THREE from 'three';
 
 let texLoader = new THREE.TextureLoader();
 let crosshairMaterial;
