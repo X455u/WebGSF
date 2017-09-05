@@ -9,7 +9,7 @@ import EnemyShip from './EnemyShip';
 import HUD from './HUD';
 import Sun from './Sun';
 import {Howl} from 'howler';
-import GSFLoader from './GSFLoader';
+import {loader} from './GSFLoader';
 
 const DEBUG = false;
 
@@ -34,18 +34,17 @@ loadingProgress.appendChild(loadingProgressCount);
 let loadingProgressTotal = document.createElement('div');
 loadingProgress.appendChild(loadingProgressTotal);
 
-let onStart = (url, itemsLoaded, itemsTotal) => {
+loader.manager.onStart = (url, itemsLoaded, itemsTotal) => {
   loadingProgressCount.innerHTML = itemsLoaded;
   loadingProgressTotal.innerHTML = '/' + itemsTotal;
 };
-let onProgress = (url, itemsLoaded, itemsTotal) => {
+loader.manager.onProgress = (url, itemsLoaded, itemsTotal) => {
   loadingProgressCount.innerHTML = itemsLoaded;
   loadingProgressTotal.innerHTML = '/' + itemsTotal;
 };
-let onError = (url) => {
+loader.manager.onError = (url) => {
   console.error('Error loading: ' + url);
 };
-let loader = new GSFLoader(onStart, onProgress, onError);
 
 function initGame() {
   console.log('Loading complete!');
@@ -80,7 +79,7 @@ function initGame() {
 
 
 
-// prepare loader and load the model
+// Load player ship
   let mesh = new THREE.Mesh(loader.get('fighterGeometry'), loader.get('fighterMaterial'));
   let ship = new Ship(mesh, shotController, particleSystem);
   ship.isPlayer = true;

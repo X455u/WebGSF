@@ -1,9 +1,8 @@
 import * as THREE from 'three';
 
-
 class GSFLoader {
-  constructor(onStart, onProgress, onError) {
-    this.manager = new THREE.LoadingManager(onStart, onProgress, onError);
+  constructor() {
+    this.manager = new THREE.LoadingManager();
     this.JSON_LOADER = new THREE.JSONLoader(this.manager);
     this.TEX_LOADER = new THREE.TextureLoader(this.manager);
     this.assets = {};
@@ -31,7 +30,10 @@ class GSFLoader {
     this.TEX_LOADER.load('./media/background.jpg', (texture) => {
       this.assets['backgroundTexture'] = texture;
     });
+    this.TEX_LOADER.load('./media/planet_nor.png', (normalMap) => {
+      this.assets['planetNormalMap'] = normalMap;
+    });
     /* eslint-enable dot-notation */
   }
 }
-export default GSFLoader;
+export const loader = new GSFLoader();

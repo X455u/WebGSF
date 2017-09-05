@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import * as THREE from 'three';
 import SubdivisionModifier from './SubdivisionModifier';
+import {loader} from './GSFLoader';
 
 const DETAIL = 3;
 const NOISE = 0.3;
@@ -33,12 +34,8 @@ class Planet extends THREE.Mesh {
 
     let material = new THREE.MeshPhongMaterial({
       color: 0x111111,
-      shininess: 1
-    });
-
-    let texLoader = new THREE.TextureLoader();
-    texLoader.load('./media/planet_nor.png', normalMap => {
-      material.normalMap = normalMap;
+      shininess: 1,
+      normalMap: loader.get('planetNormalMap')
     });
 
     super(geometry, material);
