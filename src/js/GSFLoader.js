@@ -33,6 +33,15 @@ class GSFLoader {
     this.TEX_LOADER.load('./media/planet_nor.png', (normalMap) => {
       this.assets['planetNormalMap'] = normalMap;
     });
+    this.TEX_LOADER.load('./media/lensflare/lensflare0.png', (texture) => {
+      this.assets['texFlare0'] = texture;
+    });
+    this.TEX_LOADER.load('./media/lensflare/lensflare2.png', (texture) => {
+      this.assets['texFlare2'] = texture;
+    });
+    this.TEX_LOADER.load('./media/lensflare/lensflare3.png', (texture) => {
+      this.assets['texFlare3'] = texture;
+    });
     /* eslint-enable dot-notation */
   }
 }

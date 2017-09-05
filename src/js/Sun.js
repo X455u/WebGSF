@@ -1,9 +1,5 @@
 import * as THREE from 'three';
-
-const TEX_LOADER = new THREE.TextureLoader();
-const texFlare0 = TEX_LOADER.load('./media/lensflare/lensflare0.png');
-const texFlare2 = TEX_LOADER.load('./media/lensflare/lensflare2.png');
-const texFlare3 = TEX_LOADER.load('./media/lensflare/lensflare3.png');
+import {loader} from './GSFLoader';
 
 function lensFlareUpdateCallback(object) {
   let f, fl = object.lensFlares.length;
@@ -24,6 +20,9 @@ class Sun extends THREE.PointLight {
 
   constructor() {
     super(0xffffff, 3);
+    let texFlare0 = loader.get('texFlare0');
+    let texFlare2 = loader.get('texFlare2');
+    let texFlare3 = loader.get('texFlare3');
     let lensFlare = new THREE.LensFlare(texFlare0, 700, 0.0, THREE.AdditiveBlending, new THREE.Color(0xffffff));
     lensFlare.add(texFlare2, 512, 0.0, THREE.AdditiveBlending);
     lensFlare.add(texFlare2, 512, 0.0, THREE.AdditiveBlending);
