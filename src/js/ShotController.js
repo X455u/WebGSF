@@ -1,5 +1,5 @@
-import LaserShot from './LaserShot';
 import * as THREE from 'three';
+import {SCENE} from './Game';
 
 const RAYCASTER = new THREE.Raycaster();
 const NEAR = 0;
@@ -7,9 +7,8 @@ const FAR = 300;
 
 class ShotController {
 
-  constructor(scene) {
+  constructor() {
     this.shots = [];
-    this.scene = scene;
     this.hitboxes = [];
 
     RAYCASTER.near = NEAR;
@@ -21,7 +20,7 @@ class ShotController {
     this.shots.forEach(shot => {
       shot.update(delta);
       if (shot.lifetimeLeft <= 0.0) {
-        this.scene.remove(shot);
+        SCENE.remove(shot);
         this.shots.splice(this.shots.indexOf(shot), 1);
       }
 
@@ -32,7 +31,7 @@ class ShotController {
           RAYCASTER.set(shot.position, direction);
           let intersections = RAYCASTER.intersectObject(hitbox);
           if (intersections.length !== 0) {
-            this.scene.remove(shot);
+            SCENE.remove(shot);
             this.shots.splice(this.shots.indexOf(shot), 1);
             if (intersections[0].object.isPlayer) {
               console.log('HIT: ' + ++this.hitCounter);
@@ -44,14 +43,9 @@ class ShotController {
     });
   }
 
-  shootLaserShot(ship) {
-    let shot = new LaserShot();
-    shot.position.copy(ship.position);
-    shot.quaternion.copy(ship.quaternion);
-    shot.translateX(0.7 * ship.activeGun); // Bad initial solution
-    ship.activeGun *= -1; // Bad initial solution
+  add(shot) {
+    SCENE.add(shot);
     this.shots.push(shot);
-    this.scene.add(shot);
   }
 
   addHitbox(mesh) {
@@ -59,5 +53,4 @@ class ShotController {
   }
 
 }
-
-export default ShotController;
+export const shotController = new ShotController();

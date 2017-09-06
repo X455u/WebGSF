@@ -1,9 +1,5 @@
-import * as THREE from 'three';
 import _ from 'lodash';
 import keymaster from 'keymaster';
-
-const Z_AXIS = new THREE.Vector3(0, 0, 1);
-const X_AXIS = new THREE.Vector3(1, 0, 0);
 
 function isMobile() {
   return window.DeviceMotionEvent !== undefined && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
@@ -23,9 +19,16 @@ class Player {
     if (isMobile()) {
       this.setMobileEventListeners();
     }
+    this.ship = null;
+  }
+
+  setShip(ship) {
+    this.ship = ship;
   }
 
   update() {
+    if (!this.ship) return;
+
     if (!this.motionControlled) {
       // Ship steering
       this.turnParameters = _({x: ['down', 'up'], z: ['left', 'right']}).map(
@@ -34,24 +37,12 @@ class Player {
         ).sum()]
       ).object().value();
       // Ship acceleration
-      this.acceleration = ACCELERATION * (keymaster.isPressed('space') ? 1 : -1);
+      if (keymaster.isPressed('space')) this.ship.thrust();
     }
-    let turnQuaternion = new THREE.Quaternion();
-    turnQuaternion.setFromAxisAngle(Z_AXIS, delta * TURN_SPEED * this.turnParameters.z);
-    this.targetQuaternion.multiply(turnQuaternion).normalize();
-    turnQuaternion.setFromAxisAngle(X_AXIS, delta * TURN_SPEED * this.turnParameters.x);
-    this.targetQuaternion.multiply(turnQuaternion).normalize();
 
-    this.velocity = Math.max(0, Math.min(MAX_VELOCITY, this.velocity + this.acceleration * delta));
-    this.quaternion.slerp(this.targetQuaternion, delta * 10);
-    this.translateZ(this.velocity * delta);
+    this.ship.turn(this.turnParameters.x, 0, this.turnParameters.z);
 
-    // Ship reloading and shooting
-    this.reload = Math.max(0.0, this.reload - delta);
-    if ((keymaster.isPressed('x') || this.shooting) && this.reload === 0.0) {
-      this.reload = RELOAD_TIME;
-      this.shotController.shootLaserShot(this);
-    }
+    if (keymaster.isPressed('x')) this.ship.shoot();
   }
 
   setMobileEventListeners() {
@@ -71,19 +62,12 @@ class Player {
     let updateMobileState = event => {
       let halfWidth = window.innerWidth / 2;
       let touches = event.touches;
-      if (_.range(touches.length).some(i => touches.item(i).pageX > halfWidth)) {
-        this.acceleration = ACCELERATION;
-      } else {
-        this.acceleration = -ACCELERATION;
-      }
-      if (_.range(touches.length).some(i => touches.item(i).pageX < halfWidth)) {
-        this.shooting = true;
-      } else {
-        this.shooting = false;
-      }
+      if (_.range(touches.length).some(i => touches.item(i).pageX > halfWidth)) this.ship.thrust();
+      if (_.range(touches.length).some(i => touches.item(i).pageX < halfWidth)) this.ship.shoot();
     };
     document.body.addEventListener('touchstart', updateMobileState, false);
     document.body.addEventListener('touchend', updateMobileState, false);
     document.body.addEventListener('touchmove', event => event.preventDefault(), false);
   }
 }
+export const player = new Player();

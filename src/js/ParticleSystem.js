@@ -1,10 +1,10 @@
 import ParticleEmitter from './ParticleEmitter';
+import {SCENE} from './Game';
 
 class ParticleSystem {
 
-  constructor(scene) {
+  constructor() {
     this.emitters = [];
-    this.scene = scene;
   }
 
   update(delta) {
@@ -16,7 +16,7 @@ class ParticleSystem {
   createEmitter(options) {
     let newEmitter = new ParticleEmitter(options);
     this.emitters.push(newEmitter);
-    this.scene.add(newEmitter);
+    SCENE.add(newEmitter);
   }
 
 }

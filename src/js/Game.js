@@ -10,7 +10,7 @@ class Game {
   }
 
   update(delta) {
-    // this.player.update(delta);
+    this.player.update(delta);
     for (const object of this.objects) {
       object.update(delta);
     }

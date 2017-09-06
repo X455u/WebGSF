@@ -1,15 +1,17 @@
 import * as THREE from 'three';
 
-import Ship from './Ship';
 import Planet from './Planet';
-import ShotController from './ShotController';
+import {shotController} from './ShotController';
 import ParticleSystem from './ParticleSystem';
 import Crosshair from './Crosshair';
-import EnemyShip from './EnemyShip';
 import HUD from './HUD';
 import Sun from './Sun';
+import Fighter from './Fighter';
+import {FIGHTER_AI} from './FighterAI';
+import {player} from './Player';
 import {Howl} from 'howler';
 import {loader} from './GSFLoader';
+import {SCENE} from './Game';
 
 const DEBUG = false;
 
@@ -55,8 +57,6 @@ function initGame() {
   });
   music.play();
 
-
-  let scene = new THREE.Scene();
   let aspect = window.innerWidth / window.innerHeight;
   let camera = new THREE.PerspectiveCamera(75, aspect, 1, 1000000);
   let renderer = new THREE.WebGLRenderer({antialias: true, alpha: true});
@@ -69,33 +69,32 @@ function initGame() {
   let ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
   let spotlight = new THREE.SpotLight(0xffffff, 3, 300, 0.9, 0.75, 1.5);
 
-  scene.add(ambientLight);
-  scene.add(spotlight);
+  SCENE.add(ambientLight);
+  SCENE.add(spotlight);
   camera.position.z = -CAMERA_DISTANCE;
   camera.rotateOnAxis(camera.up, Math.PI);
 
-  let shotController = new ShotController(scene);
-  let particleSystem = new ParticleSystem(scene);
+  let particleSystem = new ParticleSystem(SCENE);
 
 
 
 // Load player ship
-  let mesh = new THREE.Mesh(loader.get('fighterGeometry'), loader.get('fighterMaterial'));
-  let ship = new Ship(mesh, shotController, particleSystem);
-  ship.isPlayer = true;
-  shotController.addHitbox(ship);
-  scene.add(ship);
-  let crosshair = new Crosshair(scene, camera, ship);
+  let playerShip = new Fighter();
+  playerShip.isPlayer = true;
+  player.setShip(playerShip);
+  shotController.addHitbox(playerShip);
+  SCENE.add(playerShip);
+  let crosshair = new Crosshair(camera, playerShip);
 // Planet testing
   let planet = new Planet(500);
   planet.position.y = -800;
-  scene.add(planet);
+  SCENE.add(planet);
   shotController.addHitbox(planet);
 
 // Sun
   let sun = new Sun();
   sun.position.z = 10000;
-  scene.add(sun);
+  SCENE.add(sun);
 
 // Background
   let material = new THREE.MeshBasicMaterial({
@@ -105,7 +104,7 @@ function initGame() {
   });
   let geometry = new THREE.SphereGeometry(100000, 32, 32);
   let stars = new THREE.Mesh(geometry, material);
-  scene.add(stars);
+  SCENE.add(stars);
 
 // Format debugging text
   let text;
@@ -120,14 +119,15 @@ function initGame() {
 // Enemies
   let enemies = [];
   for (let i = 0; i < 5; i++) {
-    let enemy = new EnemyShip(loader.get('fighterGeometry'), loader.get('fighterMaterial'), shotController, particleSystem);
+    let enemyShip = new Fighter();
     let offset = new THREE.Vector3(Math.random(), Math.random(), Math.random());
     offset.multiplyScalar(i * 5);
-    enemy.position.add(offset);
-    enemy.target = ship;
-    scene.add(enemy);
-    enemies.push(enemy);
-    shotController.addHitbox(enemy);
+    enemyShip.position.add(offset);
+    enemyShip.target = playerShip;
+    enemyShip.ai = FIGHTER_AI;
+    SCENE.add(enemyShip);
+    enemies.push(enemyShip);
+    shotController.addHitbox(enemyShip);
   }
 
 // HUD
@@ -141,24 +141,25 @@ function initGame() {
     let delta = Math.min(MAX_DELTA, (time - previousTime) / 1000);
     previousTime = time;
 
-    ship.update(delta);
+    player.update();
+    playerShip.update(delta);
     particleSystem.update(delta);
     crosshair.update([planet, ...enemies]);
 
   // Camera follow
     let direction = CAMERA_DIRECTION.clone();
-    direction.applyQuaternion(ship.quaternion).setLength(CAMERA_DISTANCE);
-    let cameraTargetPosition = ship.position.clone().add(direction);
+    direction.applyQuaternion(playerShip.quaternion).setLength(CAMERA_DISTANCE);
+    let cameraTargetPosition = playerShip.position.clone().add(direction);
     camera.position.lerp(cameraTargetPosition, CAMERA_VELOCITY * delta);
     let quaternion = (new THREE.Quaternion()).setFromAxisAngle(new THREE.Vector3(0, 1, 0), Math.PI);
-    quaternion.multiplyQuaternions(ship.quaternion, quaternion);
+    quaternion.multiplyQuaternions(playerShip.quaternion, quaternion);
     camera.quaternion.slerp(quaternion, CAMERA_VELOCITY * delta);
 
   // update spotlight position and direction
     direction = SPOTLIGHT_VECTOR.clone();
-    direction.applyQuaternion(ship.quaternion);
-    spotlight.position.copy(ship.position);
-    spotlight.target.position.copy(ship.position.clone().add(direction));
+    direction.applyQuaternion(playerShip.quaternion);
+    spotlight.position.copy(playerShip.position);
+    spotlight.target.position.copy(playerShip.position.clone().add(direction));
     spotlight.target.updateMatrixWorld();
 
   // Enemies
@@ -168,12 +169,12 @@ function initGame() {
 
     shotController.update(delta);
 
-    renderer.render(scene, camera);
+    renderer.render(SCENE, camera);
     renderer.render(hud.scene, hud.camera);
 
   //Update debugging text
     if (DEBUG) {
-      text.innerHTML = ['x', 'y', 'z'].map(x => x + ': ' + ship.position[x]).join('<br/>');
+      text.innerHTML = ['x', 'y', 'z'].map(x => x + ': ' + playerShip.position[x]).join('<br/>');
       fps = fps * 9.0 / 10.0;
       fps += (1.0 / (Math.max(delta, 0.01) * 10));
       text.innerHTML += '<br/>fps: ' + fps;

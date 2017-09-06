@@ -1,12 +1,13 @@
 import * as THREE from 'three';
 import {loader} from './GSFLoader';
+import {SCENE} from './Game';
 
 const FARTHEST = 500;
 const SCALING_FACTOR = 10;
 
 class Crosshair {
 
-  constructor(scene, camera, source) {
+  constructor(camera, source) {
     this.camera = camera;
     this.source = source;
     this.raycaster = new THREE.Raycaster();
@@ -21,7 +22,7 @@ class Crosshair {
     });
     this.sprite = new THREE.Sprite(crosshairMaterial);
     this.sprite.renderDepth = 0;
-    scene.add(this.sprite);
+    SCENE.add(this.sprite);
   }
 
   update(objects) {
