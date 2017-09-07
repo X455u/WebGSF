@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import {SCENE} from './Game';
+import Ship from './Ship';
 
 const RAYCASTER = new THREE.Raycaster();
 const NEAR = 0;
@@ -32,15 +33,12 @@ class ShotController {
         let intersections = RAYCASTER.intersectObject(shootable);
         if (intersections.length !== 0) {
           shot.isDead = true;
-          if (intersections[0].object.isPlayer) {
-            console.log('PLAYER: ' + ++this.hitCounterPlayer);
-          } else if (intersections[0].object.isPlanet) {
-            console.log('PLANET: ' + ++this.hitCounterPlanet);
-          }
+          let hitObject = intersections[0].object;
+          if (hitObject instanceof Ship) hitObject.damage(shot.damage);
         }
       }
-
     });
+
     let i = 0;
     while (this.shots[i]) {
       let shot = this.shots[i];

@@ -9,6 +9,8 @@ class Ship extends THREE.Mesh {
     this.maxVelocity = stats.maxVelocity;
     this.acceleration = stats.acceleration;
     this.turnSpeed = stats.turnSpeed;
+    this.maxHp = stats.maxHp;
+    this.maxShield = stats.maxShield;
     if (stats.gun) {
       this.gun = stats.gun;
       this.add(stats.gun);
@@ -25,6 +27,8 @@ class Ship extends THREE.Mesh {
 
     // State
     this.velocity = 0.0;
+    this.hp = this.maxHp;
+    this.shield = this.maxShield;
 
     // AI
     this.ai = null;
@@ -46,6 +50,14 @@ class Ship extends THREE.Mesh {
     this.turnParameters.x = Math.min(Math.max(-1, x_), 1);
     this.turnParameters.y = Math.min(Math.max(-1, y_), 1);
     this.turnParameters.z = Math.min(Math.max(-1, z_), 1);
+  }
+
+  damage(damage) {
+    this.shield -= damage;
+    if (this.shield < 0) {
+      this.hp += this.shield;
+      this.shield = 0;
+    }
   }
 
   update(delta) {

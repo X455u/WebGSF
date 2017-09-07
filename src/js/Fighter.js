@@ -8,7 +8,9 @@ class Fighter extends Ship {
       maxVelocity: 50,
       acceleration: 80,
       turnSpeed: 0.25,
-      gun: new SmallPulseLaser()
+      gun: new SmallPulseLaser(),
+      maxHp: 100,
+      maxShield: 50
     });
   }
 }

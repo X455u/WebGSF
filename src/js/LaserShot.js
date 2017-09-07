@@ -25,6 +25,7 @@ class LaserShot extends THREE.Object3D {
     this.add(shotMesh.clone());
     this.lifetimeLeft = lifetime;
     this.velocity = velocity;
+    this.damage = 5;
   }
 
   update(delta) {
