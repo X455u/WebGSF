@@ -9,10 +9,11 @@ class ShotController {
 
   constructor() {
     this.shots = [];
-    this.hitboxes = [];
+    this.shootables = [];
 
     RAYCASTER.near = NEAR;
-    this.hitCounter = 0;
+    this.hitCounterPlayer = 0;
+    this.hitCounterPlanet = 0;
   }
 
   update(delta) {
@@ -24,23 +25,32 @@ class ShotController {
         this.shots.splice(this.shots.indexOf(shot), 1);
       }
 
-      for (let hitbox of this.hitboxes) {
-        if (shot.position.distanceTo(hitbox.position) < 10) {
-          let direction = new THREE.Vector3(0, 0, 1);
-          direction.applyQuaternion(shot.quaternion);
-          RAYCASTER.set(shot.position, direction);
-          let intersections = RAYCASTER.intersectObject(hitbox);
-          if (intersections.length !== 0) {
-            SCENE.remove(shot);
-            this.shots.splice(this.shots.indexOf(shot), 1);
-            if (intersections[0].object.isPlayer) {
-              console.log('HIT: ' + ++this.hitCounter);
-            }
+      for (let shootable of this.shootables) {
+        let direction = new THREE.Vector3(0, 0, 1);
+        direction.applyQuaternion(shot.quaternion);
+        RAYCASTER.set(shot.position, direction);
+        let intersections = RAYCASTER.intersectObject(shootable);
+        if (intersections.length !== 0) {
+          shot.isDead = true;
+          if (intersections[0].object.isPlayer) {
+            console.log('PLAYER: ' + ++this.hitCounterPlayer);
+          } else if (intersections[0].object.isPlanet) {
+            console.log('PLANET: ' + ++this.hitCounterPlanet);
           }
         }
       }
 
     });
+    let i = 0;
+    while (this.shots[i]) {
+      let shot = this.shots[i];
+      if (shot.isDead) {
+        SCENE.remove(shot);
+        this.shots.splice(this.shots.indexOf(shot), 1);
+      } else {
+        i++;
+      }
+    }
   }
 
   add(shot) {
@@ -48,8 +58,8 @@ class ShotController {
     this.shots.push(shot);
   }
 
-  addHitbox(mesh) {
-    this.hitboxes.push(mesh);
+  addShootable(mesh) {
+    this.shootables.push(mesh);
   }
 
 }

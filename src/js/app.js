@@ -80,14 +80,15 @@ function initGame() {
   let playerShip = new Fighter();
   playerShip.isPlayer = true;
   player.setShip(playerShip);
-  shotController.addHitbox(playerShip);
+  shotController.addShootable(playerShip);
   SCENE.add(playerShip);
   let crosshair = new Crosshair(camera, playerShip);
 // Planet testing
   let planet = new Planet(500);
+  planet.isPlanet = true;
   planet.position.y = -800;
   SCENE.add(planet);
-  shotController.addHitbox(planet);
+  shotController.addShootable(planet);
 
 // Sun
   let sun = new Sun();
@@ -125,7 +126,7 @@ function initGame() {
     enemyShip.ai = FIGHTER_AI;
     SCENE.add(enemyShip);
     enemies.push(enemyShip);
-    shotController.addHitbox(enemyShip);
+    shotController.addShootable(enemyShip);
   }
 
 // HUD
