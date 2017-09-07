@@ -10,12 +10,9 @@ function fromLeft(HUD, x) {
 
 class HUD {
 
-  constructor(window) {
-
-    this.window = window;
-
-    this.width = this.window.innerWidth;
-    this.height = this.window.innerHeight;
+  constructor() {
+    this.width = window.innerWidth;
+    this.height = window.innerHeight;
 
     this.camera = new THREE.OrthographicCamera(
       -this.width / 2,
@@ -28,7 +25,6 @@ class HUD {
     this.camera.position.z = 10;
 
     this.scene = new THREE.Scene();
-
   }
 
   createBasicHUD() {

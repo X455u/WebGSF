@@ -128,7 +128,7 @@ function initGame() {
   }
 
   // HUD
-  let hud = new HUD(window);
+  let hud = new HUD();
   hud.createBasicHUD();
 
   // Game Loop
