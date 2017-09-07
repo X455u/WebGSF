@@ -76,6 +76,7 @@ function initGame() {
   // Load player ship
   let playerShip = new Fighter();
   playerShip.isPlayer = true;
+  playerShip.name = 'Player';
   player.setShip(playerShip);
   shotController.addShootable(playerShip);
   SCENE.add(playerShip);
@@ -125,6 +126,7 @@ function initGame() {
     SCENE.add(enemyShip);
     enemies.push(enemyShip);
     shotController.addShootable(enemyShip);
+    enemyShip.name = 'Enemy ' + i;
   }
 
   // HUD
