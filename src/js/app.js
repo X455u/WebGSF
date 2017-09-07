@@ -2,7 +2,6 @@ import * as THREE from 'three';
 
 import Planet from './Planet';
 import {shotController} from './ShotController';
-import ParticleSystem from './ParticleSystem';
 import Crosshair from './Crosshair';
 import HUD from './HUD';
 import Sun from './Sun';
@@ -74,7 +73,6 @@ function initGame() {
   camera.position.z = -CAMERA_DISTANCE;
   camera.rotateOnAxis(camera.up, Math.PI);
 
-  let particleSystem = new ParticleSystem(SCENE);
 
 
 
@@ -143,7 +141,6 @@ function initGame() {
 
     player.update();
     playerShip.update(delta);
-    particleSystem.update(delta);
     crosshair.update([planet, ...enemies]);
 
   // Camera follow
