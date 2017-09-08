@@ -131,7 +131,10 @@ function initGame() {
 
   // HUD
   let hud = new HUD();
-  hud.createBasicHUD();
+
+  playerShip.addEventListener('onDamage', () => {
+    hud.update(playerShip.hp / playerShip.maxHp, playerShip.shield / playerShip.maxShield);
+  });
 
   // Game Loop
   let previousTime;
