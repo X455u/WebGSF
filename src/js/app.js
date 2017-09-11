@@ -144,8 +144,13 @@ function initGame() {
     previousTime = time;
 
     player.update();
-    playerShip.update(delta);
+    playerShip.update(delta, camera.position);
     crosshair.update([planet, ...enemies]);
+
+    // Enemies
+    for (let enemy of enemies) {
+      enemy.update(delta, camera.position);
+    }
 
     // Camera follow
     let direction = CAMERA_DIRECTION.clone();
@@ -162,11 +167,6 @@ function initGame() {
     spotlight.position.copy(playerShip.position);
     spotlight.target.position.copy(playerShip.position.clone().add(direction));
     spotlight.target.updateMatrixWorld();
-
-    // Enemies
-    for (let enemy of enemies) {
-      enemy.update(delta);
-    }
 
     shotController.update(delta);
 
