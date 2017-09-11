@@ -15,9 +15,13 @@ class SmallPulseLaser extends THREE.Object3D {
     if (this.reload !== 0.0) return;
     let shot = new LaserShot(this.muzzleVelocity, this.shotLifetime);
     shotController.add(shot);
-    shot.position.copy(this.position);
-    shot.quaternion.copy(this.quaternion);
+    this.getWorldPosition(shot.position);
+    this.getWorldQuaternion(shot.quaternion);
     this.reload = this.reloadTime;
+    this.dispatchEvent({
+      type: 'onShoot',
+      shot: shot
+    });
   }
 
   update(delta) {

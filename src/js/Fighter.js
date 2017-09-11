@@ -12,6 +12,13 @@ class Fighter extends Ship {
       maxHp: 100,
       maxShield: 50
     });
+    this.weaponSide = 1;
+    this.gun.translateX(0.7 * this.weaponSide);
+
+    this.gun.addEventListener('onShoot', () => {
+      this.weaponSide *= -1;
+      this.gun.translateX(1.4 * this.weaponSide);
+    });
   }
 }
 export default Fighter;

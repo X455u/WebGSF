@@ -34,11 +34,6 @@ class Ship extends THREE.Mesh {
     this.ai = null;
     this.attacking = true;
     this.target = null;
-
-    // Debug
-    this.addEventListener('onDamage', (event) => {
-      console.log(`${this.name} takes ${event.damage} damage. HP: ${this.hp} | SHIELD: ${this.shield}`);
-    });
   }
 
   thrust() {
@@ -86,8 +81,6 @@ class Ship extends THREE.Mesh {
     this.translateZ(this.velocity * delta);
 
     if (this.gun) {
-      this.gun.position.copy(this.position);
-      this.gun.quaternion.copy(this.quaternion);
       this.gun.update(delta);
       if (this.isShooting) {
         this.gun.shoot();
