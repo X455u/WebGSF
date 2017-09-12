@@ -52,8 +52,6 @@ class Fighter extends Ship {
 
   update(delta, cameraPosition) {
     super.update(delta);
-    if (this.tick < 0) this.tick = 0;
-    this.tick += delta;
 
     let rotatedThrusters = [];
     for (let thruster of this.thrusters) {
@@ -65,13 +63,22 @@ class Fighter extends Ship {
     velocity.applyQuaternion(this.quaternion);
     this.options.velocity = velocity;
     this.options.distanceToCamera = cameraPosition.distanceTo(this.position);
-    for (let x = 0; x < this.spawnerOptions.spawnRate * delta; x++) {
+    let offsetSinceLastFrame = new THREE.Vector3(0, 0, -1);
+    offsetSinceLastFrame.applyQuaternion(this.quaternion);
+    offsetSinceLastFrame.multiplyScalar(this.velocity * delta);
+    let particlesToSpawn = this.spawnerOptions.spawnRate * delta;
+    for (let x = 0; x < particlesToSpawn; x++) {
       for (let rotatedThruster of rotatedThrusters) {
         this.options.position.addVectors(this.position, rotatedThruster);
+        let offset = offsetSinceLastFrame.clone();
+        offset.multiplyScalar(x / particlesToSpawn);
+        this.options.position.add(offset);
         this.particleSystem.spawnParticle(this.options);
       }
     }
 
+    if (this.tick < 0) this.tick = 0;
+    this.tick += delta;
     this.particleSystem.update(this.tick);
   }
 }
