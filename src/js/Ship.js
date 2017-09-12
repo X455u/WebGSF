@@ -1,4 +1,7 @@
 import * as THREE from 'three';
+import {PLANETS} from './Game';
+
+const RAYCASTER = new THREE.Raycaster();
 
 class Ship extends THREE.Mesh {
 
@@ -86,6 +89,16 @@ class Ship extends THREE.Mesh {
         this.gun.shoot();
         this.isShooting = false;
       }
+    }
+
+    RAYCASTER.near = 0;
+    RAYCASTER.far = this.velocity * delta;
+    let direction = new THREE.Vector3(0, 0, 1);
+    direction.applyQuaternion(this.quaternion);
+    RAYCASTER.set(this.position, direction);
+    let intersections = RAYCASTER.intersectObjects(PLANETS);
+    if (intersections.length !== 0) {
+      this.damage(1000);
     }
   }
 

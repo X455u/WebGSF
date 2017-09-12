@@ -10,7 +10,7 @@ import {FIGHTER_AI} from './FighterAI';
 import {player} from './Player';
 import {Howl} from 'howler';
 import {loader} from './GSFLoader';
-import {SCENE} from './Game';
+import {SCENE, PLANETS} from './Game';
 
 const DEBUG = false;
 
@@ -88,6 +88,7 @@ function initGame() {
   planet.position.y = -800;
   SCENE.add(planet);
   shotController.addShootable(planet);
+  PLANETS.push(planet);
 
   // Sun
   let sun = new Sun();

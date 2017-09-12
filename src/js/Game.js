@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 
 export const SCENE = new THREE.Scene();
+export const PLANETS = [];
 
 class Game {
 
