@@ -33,15 +33,15 @@ class Fighter extends Ship {
     SCENE.add(this.particleSystem);
     this.options = {
       position: new THREE.Vector3(),
-      positionRandomness: 0.3,
+      positionRandomness: 0.2,
       velocity: new THREE.Vector3(),
-      velocityRandomness: 0.1,
-      color: 0xaa88ff,
-      colorRandomness: 0.2,
+      velocityRandomness: 0.2,
+      color: 0xffffaa,
+      colorRandomness: 0.0,
       turbulence: 0.0,
-      lifetime: 2,
-      size: 300,
-      sizeRandomness: 1,
+      lifetime: 0.2,
+      size: 800,
+      sizeRandomness: 0,
       distanceToCamera: 10
     };
     this.spawnerOptions = {
