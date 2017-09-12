@@ -88,10 +88,10 @@ class HUD {
   }
 
   update(hpPercent, shieldPercent) {
-    this.hpMesh.scale.y = Math.max(0, hpPercent);
+    this.hpMesh.scale.y = Math.max(Number.EPSILON, hpPercent);
     this.hpMesh.position.y = Math.max(this.hpBarPositionMin, this.hpBarPosition - 2 * (1 - hpPercent) * this.hpBarHeight);
     let shieldScale = this.shieldMesh.scale;
-    shieldScale.x = shieldScale.y = shieldScale.z = shieldPercent;
+    shieldScale.x = shieldScale.y = shieldScale.z = Math.max(Number.EPSILON, shieldPercent);
   }
 
 }
