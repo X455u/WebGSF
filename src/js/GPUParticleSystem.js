@@ -2,6 +2,7 @@
 /*
  * GPU Particle System
  * @author flimshaw - Charlie Hoey - http://charliehoey.com
+ * @edited N1cc3 - Niclas Lindgren https://github.com/N1cc3
  *
  * A simple to use, general purpose GPU system. Particles are spawn-and-forget with
  * several options available, and do not require monitoring or cleanup after spawning.
@@ -183,7 +184,7 @@ class GPUParticleSystem extends THREE.Object3D {
   				value: 0.0
   			},
   			'uScale': {
-  				value: 1.0
+  				value: Math.pow(window.innerHeight / 1200, 2)
   			},
   			'tNoise': {
   				value: this.particleNoiseTex
