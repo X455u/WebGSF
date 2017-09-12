@@ -8907,11 +8907,11 @@
 
 	var _Fighter2 = _interopRequireDefault(_Fighter);
 
-	var _FighterAI = __webpack_require__(436);
+	var _FighterAI = __webpack_require__(437);
 
-	var _Player = __webpack_require__(437);
+	var _Player = __webpack_require__(438);
 
-	var _howler = __webpack_require__(439);
+	var _howler = __webpack_require__(440);
 
 	var _GSFLoader = __webpack_require__(422);
 
@@ -68586,7 +68586,7 @@
 
 	var _SmallPulseLaser2 = _interopRequireDefault(_SmallPulseLaser);
 
-	var _GPUParticleSystem = __webpack_require__(440);
+	var _GPUParticleSystem = __webpack_require__(436);
 
 	var _GPUParticleSystem2 = _interopRequireDefault(_GPUParticleSystem);
 
@@ -68628,15 +68628,15 @@
 	    _Game.SCENE.add(_this.particleSystem);
 	    _this.options = {
 	      position: new THREE.Vector3(),
-	      positionRandomness: 0.3,
+	      positionRandomness: 0.2,
 	      velocity: new THREE.Vector3(),
-	      velocityRandomness: 0.1,
-	      color: 0xaa88ff,
-	      colorRandomness: 0.2,
+	      velocityRandomness: 0.2,
+	      color: 0xffffaa,
+	      colorRandomness: 0.0,
 	      turbulence: 0.0,
-	      lifetime: 2,
-	      size: 300,
-	      sizeRandomness: 1,
+	      lifetime: 0.2,
+	      size: 800,
+	      sizeRandomness: 0,
 	      distanceToCamera: 10
 	    };
 	    _this.spawnerOptions = {
@@ -68650,8 +68650,6 @@
 	    key: 'update',
 	    value: function update(delta, cameraPosition) {
 	      (0, _get3.default)(Fighter.prototype.__proto__ || (0, _getPrototypeOf2.default)(Fighter.prototype), 'update', this).call(this, delta);
-	      if (this.tick < 0) this.tick = 0;
-	      this.tick += delta;
 
 	      var rotatedThrusters = [];
 	      var _iteratorNormalCompletion = true;
@@ -68685,7 +68683,11 @@
 	      velocity.applyQuaternion(this.quaternion);
 	      this.options.velocity = velocity;
 	      this.options.distanceToCamera = cameraPosition.distanceTo(this.position);
-	      for (var x = 0; x < this.spawnerOptions.spawnRate * delta; x++) {
+	      var offsetSinceLastFrame = new THREE.Vector3(0, 0, -1);
+	      offsetSinceLastFrame.applyQuaternion(this.quaternion);
+	      offsetSinceLastFrame.multiplyScalar(this.velocity * delta);
+	      var particlesToSpawn = this.spawnerOptions.spawnRate * delta;
+	      for (var x = 0; x < particlesToSpawn; x++) {
 	        var _iteratorNormalCompletion2 = true;
 	        var _didIteratorError2 = false;
 	        var _iteratorError2 = undefined;
@@ -68695,6 +68697,9 @@
 	            var rotatedThruster = _step2.value;
 
 	            this.options.position.addVectors(this.position, rotatedThruster);
+	            var offset = offsetSinceLastFrame.clone();
+	            offset.multiplyScalar(x / particlesToSpawn);
+	            this.options.position.add(offset);
 	            this.particleSystem.spawnParticle(this.options);
 	          }
 	        } catch (err) {
@@ -68713,6 +68718,8 @@
 	        }
 	      }
 
+	      if (this.tick < 0) this.tick = 0;
+	      this.tick += delta;
 	      this.particleSystem.update(this.tick);
 	    }
 	  }]);
@@ -68973,6 +68980,458 @@
 	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+
+	var _getPrototypeOf = __webpack_require__(382);
+
+	var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
+
+	var _classCallCheck2 = __webpack_require__(386);
+
+	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+	var _createClass2 = __webpack_require__(418);
+
+	var _createClass3 = _interopRequireDefault(_createClass2);
+
+	var _possibleConstructorReturn2 = __webpack_require__(387);
+
+	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+	var _inherits2 = __webpack_require__(407);
+
+	var _inherits3 = _interopRequireDefault(_inherits2);
+
+	var _three = __webpack_require__(380);
+
+	var THREE = _interopRequireWildcard(_three);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var GPUParticleSystem = function (_THREE$Object3D) {
+		(0, _inherits3.default)(GPUParticleSystem, _THREE$Object3D);
+
+		function GPUParticleSystem(options) {
+			(0, _classCallCheck3.default)(this, GPUParticleSystem);
+
+			var _this = (0, _possibleConstructorReturn3.default)(this, (GPUParticleSystem.__proto__ || (0, _getPrototypeOf2.default)(GPUParticleSystem)).call(this));
+
+			options = options || {};
+
+			// parse options and use defaults
+
+			_this.PARTICLE_COUNT = options.maxParticles || 1000000;
+			_this.PARTICLE_CONTAINERS = options.containerCount || 1;
+
+			_this.PARTICLE_NOISE_TEXTURE = options.particleNoiseTex || null;
+			_this.PARTICLE_SPRITE_TEXTURE = options.particleSpriteTex || null;
+
+			_this.PARTICLES_PER_CONTAINER = Math.ceil(_this.PARTICLE_COUNT / _this.PARTICLE_CONTAINERS);
+			_this.PARTICLE_CURSOR = 0;
+			_this.time = 0;
+			_this.particleContainers = [];
+			_this.rand = [];
+
+			// custom vertex and fragement shader
+
+			var GPUParticleShader = {
+
+				vertexShader: ['uniform float uTime;', 'uniform float uScale;', 'uniform sampler2D tNoise;', 'attribute vec3 positionStart;', 'attribute float startTime;', 'attribute vec3 velocity;', 'attribute float turbulence;', 'attribute vec3 color;', 'attribute float size;', 'attribute float lifeTime;', 'attribute float distanceToCamera;', 'varying vec4 vColor;', 'varying float lifeLeft;', 'void main() {',
+
+				// unpack things from our attributes'
+
+				'	vColor = vec4( color, 1.0 );',
+
+				// convert our velocity back into a value we can use'
+
+				'	vec3 newPosition;', '	vec3 v;', '	float timeElapsed = uTime - startTime;', '	lifeLeft = 1.0 - ( timeElapsed / lifeTime );', '	gl_PointSize = ( uScale * size / distanceToCamera ) * lifeLeft;', '	v.x = ( velocity.x - 0.5 ) * 3.0;', '	v.y = ( velocity.y - 0.5 ) * 3.0;', '	v.z = ( velocity.z - 0.5 ) * 3.0;', '	newPosition = positionStart + ( v * 10.0 ) * timeElapsed;', '	vec3 noise = texture2D( tNoise, vec2( newPosition.x * 0.015 + ( uTime * 0.05 ), newPosition.y * 0.02 + ( uTime * 0.015 ) ) ).rgb;', '	vec3 noiseVel = ( noise.rgb - 0.5 ) * 30.0;', '	newPosition = mix( newPosition, newPosition + vec3( noiseVel * ( turbulence * 5.0 ) ), ( timeElapsed / lifeTime ) );', '	if( v.y > 0. && v.y < .05 ) {', '		lifeLeft = 0.0;', '	}', '	if( v.x < - 1.45 ) {', '		lifeLeft = 0.0;', '	}', '	if( timeElapsed > 0.0 ) {', '		gl_Position = projectionMatrix * modelViewMatrix * vec4( newPosition, 1.0 );', '	} else {', '		gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );', '		lifeLeft = 0.0;', '		gl_PointSize = 0.;', '	}', '}'].join('\n'),
+
+				fragmentShader: ['float scaleLinear( float value, vec2 valueDomain ) {', '	return ( value - valueDomain.x ) / ( valueDomain.y - valueDomain.x );', '}', 'float scaleLinear( float value, vec2 valueDomain, vec2 valueRange ) {', '	return mix( valueRange.x, valueRange.y, scaleLinear( value, valueDomain ) );', '}', 'varying vec4 vColor;', 'varying float lifeLeft;', 'uniform sampler2D tSprite;', 'void main() {', '	float alpha = 0.;', '	if( lifeLeft > 0.995 ) {', '		alpha = scaleLinear( lifeLeft, vec2( 1.0, 0.995 ), vec2( 0.0, 1.0 ) );', '	} else {', '		alpha = lifeLeft * 0.75;', '	}', '	vec4 tex = texture2D( tSprite, gl_PointCoord );', '	gl_FragColor = vec4( vColor.rgb * tex.a, alpha * tex.a );', '}'].join('\n')
+
+			};
+
+			// preload a million random numbers
+
+			_this.i = 0;
+
+			for (var i = 1e5; i > 0; i--) {
+
+				_this.rand.push(Math.random() - 0.5);
+			}
+
+			var textureLoader = new THREE.TextureLoader();
+
+			_this.particleNoiseTex = _this.PARTICLE_NOISE_TEXTURE || textureLoader.load('./media/perlin-512.png');
+			_this.particleNoiseTex.wrapS = _this.particleNoiseTex.wrapT = THREE.RepeatWrapping;
+
+			_this.particleSpriteTex = _this.PARTICLE_SPRITE_TEXTURE || textureLoader.load('./media/particle2.png');
+			_this.particleSpriteTex.wrapS = _this.particleSpriteTex.wrapT = THREE.RepeatWrapping;
+
+			_this.particleShaderMat = new THREE.ShaderMaterial({
+				transparent: true,
+				depthWrite: false,
+				uniforms: {
+					'uTime': {
+						value: 0.0
+					},
+					'uScale': {
+						value: Math.pow(window.innerHeight / 1200, 2)
+					},
+					'tNoise': {
+						value: _this.particleNoiseTex
+					},
+					'tSprite': {
+						value: _this.particleSpriteTex
+					}
+				},
+				blending: THREE.AdditiveBlending,
+				vertexShader: GPUParticleShader.vertexShader,
+				fragmentShader: GPUParticleShader.fragmentShader
+			});
+
+			// define defaults for all values
+
+			_this.particleShaderMat.defaultAttributeValues.particlePositionsStartTime = [0, 0, 0, 0];
+			_this.particleShaderMat.defaultAttributeValues.particleVelColSizeLife = [0, 0, 0, 0];
+
+			_this.init();
+			return _this;
+		}
+
+		(0, _createClass3.default)(GPUParticleSystem, [{
+			key: 'random',
+			value: function random() {
+
+				return ++this.i >= this.rand.length ? this.rand[this.i = 1] : this.rand[this.i];
+			}
+		}, {
+			key: 'init',
+			value: function init() {
+
+				for (var i = 0; i < this.PARTICLE_CONTAINERS; i++) {
+
+					var c = new GPUParticleContainer(this.PARTICLES_PER_CONTAINER, this);
+					this.particleContainers.push(c);
+					this.add(c);
+				}
+			}
+		}, {
+			key: 'spawnParticle',
+			value: function spawnParticle(options) {
+
+				this.PARTICLE_CURSOR++;
+
+				if (this.PARTICLE_CURSOR >= this.PARTICLE_COUNT) {
+
+					this.PARTICLE_CURSOR = 1;
+				}
+
+				var currentContainer = this.particleContainers[Math.floor(this.PARTICLE_CURSOR / this.PARTICLES_PER_CONTAINER)];
+
+				currentContainer.spawnParticle(options);
+			}
+		}, {
+			key: 'update',
+			value: function update(time) {
+
+				for (var i = 0; i < this.PARTICLE_CONTAINERS; i++) {
+
+					this.particleContainers[i].update(time);
+				}
+			}
+		}, {
+			key: 'dispose',
+			value: function dispose() {
+
+				this.particleShaderMat.dispose();
+				this.particleNoiseTex.dispose();
+				this.particleSpriteTex.dispose();
+
+				for (var i = 0; i < this.PARTICLE_CONTAINERS; i++) {
+
+					this.particleContainers[i].dispose();
+				}
+			}
+		}]);
+		return GPUParticleSystem;
+	}(THREE.Object3D);
+
+	// Subclass for particle containers, allows for very large arrays to be spread out
+
+	/* eslint-disable */
+	/*
+	 * GPU Particle System
+	 * @author flimshaw - Charlie Hoey - http://charliehoey.com
+	 * @edited N1cc3 - Niclas Lindgren https://github.com/N1cc3
+	 *
+	 * A simple to use, general purpose GPU system. Particles are spawn-and-forget with
+	 * several options available, and do not require monitoring or cleanup after spawning.
+	 * Because the paths of all particles are completely deterministic once spawned, the scale
+	 * and direction of time is also variable.
+	 *
+	 * Currently uses a static wrapping perlin noise texture for turbulence, and a small png texture for
+	 * particles, but adding support for a particle texture atlas or changing to a different type of turbulence
+	 * would be a fairly light day's work.
+	 *
+	 * Shader and javascript packing code derrived from several Stack Overflow examples.
+	 *
+	 */
+
+
+	var GPUParticleContainer = function (_THREE$Object3D2) {
+		(0, _inherits3.default)(GPUParticleContainer, _THREE$Object3D2);
+
+		function GPUParticleContainer(maxParticles, particleSystem) {
+			(0, _classCallCheck3.default)(this, GPUParticleContainer);
+
+			var _this2 = (0, _possibleConstructorReturn3.default)(this, (GPUParticleContainer.__proto__ || (0, _getPrototypeOf2.default)(GPUParticleContainer)).call(this));
+
+			_this2.PARTICLE_COUNT = maxParticles || 100000;
+			_this2.PARTICLE_CURSOR = 0;
+			_this2.time = 0;
+			_this2.offset = 0;
+			_this2.count = 0;
+			_this2.DPR = window.devicePixelRatio;
+			_this2.GPUParticleSystem = particleSystem;
+			_this2.particleUpdate = false;
+
+			// geometry
+
+			_this2.particleShaderGeo = new THREE.BufferGeometry();
+
+			_this2.particleShaderGeo.addAttribute('position', new THREE.BufferAttribute(new Float32Array(_this2.PARTICLE_COUNT * 3), 3).setDynamic(true));
+			_this2.particleShaderGeo.addAttribute('positionStart', new THREE.BufferAttribute(new Float32Array(_this2.PARTICLE_COUNT * 3), 3).setDynamic(true));
+			_this2.particleShaderGeo.addAttribute('startTime', new THREE.BufferAttribute(new Float32Array(_this2.PARTICLE_COUNT), 1).setDynamic(true));
+			_this2.particleShaderGeo.addAttribute('velocity', new THREE.BufferAttribute(new Float32Array(_this2.PARTICLE_COUNT * 3), 3).setDynamic(true));
+			_this2.particleShaderGeo.addAttribute('turbulence', new THREE.BufferAttribute(new Float32Array(_this2.PARTICLE_COUNT), 1).setDynamic(true));
+			_this2.particleShaderGeo.addAttribute('color', new THREE.BufferAttribute(new Float32Array(_this2.PARTICLE_COUNT * 3), 3).setDynamic(true));
+			_this2.particleShaderGeo.addAttribute('size', new THREE.BufferAttribute(new Float32Array(_this2.PARTICLE_COUNT), 1).setDynamic(true));
+			_this2.particleShaderGeo.addAttribute('lifeTime', new THREE.BufferAttribute(new Float32Array(_this2.PARTICLE_COUNT), 1).setDynamic(true));
+			_this2.particleShaderGeo.addAttribute('distanceToCamera', new THREE.BufferAttribute(new Float32Array(_this2.PARTICLE_COUNT), 1).setDynamic(true));
+
+			// material
+
+			_this2.particleShaderMat = _this2.GPUParticleSystem.particleShaderMat;
+
+			_this2.init();
+			return _this2;
+		}
+
+		(0, _createClass3.default)(GPUParticleContainer, [{
+			key: 'spawnParticle',
+			value: function spawnParticle(options) {
+
+				var positionStartAttribute = this.particleShaderGeo.getAttribute('positionStart');
+				var startTimeAttribute = this.particleShaderGeo.getAttribute('startTime');
+				var velocityAttribute = this.particleShaderGeo.getAttribute('velocity');
+				var turbulenceAttribute = this.particleShaderGeo.getAttribute('turbulence');
+				var colorAttribute = this.particleShaderGeo.getAttribute('color');
+				var sizeAttribute = this.particleShaderGeo.getAttribute('size');
+				var lifeTimeAttribute = this.particleShaderGeo.getAttribute('lifeTime');
+				var distanceToCameraAttribute = this.particleShaderGeo.getAttribute('distanceToCamera');
+
+				options = options || {};
+
+				// setup reasonable default values for all arguments
+
+				var position = new THREE.Vector3();
+				var velocity = new THREE.Vector3();
+				var color = new THREE.Color();
+
+				position = options.position !== undefined ? position.copy(options.position) : position.set(0, 0, 0);
+				velocity = options.velocity !== undefined ? velocity.copy(options.velocity) : velocity.set(0, 0, 0);
+				color = options.color !== undefined ? color.set(options.color) : color.set(0xffffff);
+
+				var positionRandomness = options.positionRandomness !== undefined ? options.positionRandomness : 0;
+				var velocityRandomness = options.velocityRandomness !== undefined ? options.velocityRandomness : 0;
+				var colorRandomness = options.colorRandomness !== undefined ? options.colorRandomness : 1;
+				var turbulence = options.turbulence !== undefined ? options.turbulence : 1;
+				var lifetime = options.lifetime !== undefined ? options.lifetime : 5;
+				var size = options.size !== undefined ? options.size : 10;
+				var sizeRandomness = options.sizeRandomness !== undefined ? options.sizeRandomness : 0;
+				var smoothPosition = options.smoothPosition !== undefined ? options.smoothPosition : false;
+				var distanceToCamera = options.distanceToCamera !== undefined ? options.distanceToCamera : 0;
+
+				if (this.DPR !== undefined) size *= this.DPR;
+
+				var i = this.PARTICLE_CURSOR;
+
+				// position
+
+				positionStartAttribute.array[i * 3 + 0] = position.x + this.GPUParticleSystem.random() * positionRandomness;
+				positionStartAttribute.array[i * 3 + 1] = position.y + this.GPUParticleSystem.random() * positionRandomness;
+				positionStartAttribute.array[i * 3 + 2] = position.z + this.GPUParticleSystem.random() * positionRandomness;
+
+				if (smoothPosition === true) {
+
+					positionStartAttribute.array[i * 3 + 0] += -(velocity.x * this.GPUParticleSystem.random());
+					positionStartAttribute.array[i * 3 + 1] += -(velocity.y * this.GPUParticleSystem.random());
+					positionStartAttribute.array[i * 3 + 2] += -(velocity.z * this.GPUParticleSystem.random());
+				}
+
+				// velocity
+
+				var maxVel = 2;
+
+				var velX = velocity.x + this.GPUParticleSystem.random() * velocityRandomness;
+				var velY = velocity.y + this.GPUParticleSystem.random() * velocityRandomness;
+				var velZ = velocity.z + this.GPUParticleSystem.random() * velocityRandomness;
+
+				velX = THREE.Math.clamp((velX - -maxVel) / (maxVel - -maxVel), 0, 1);
+				velY = THREE.Math.clamp((velY - -maxVel) / (maxVel - -maxVel), 0, 1);
+				velZ = THREE.Math.clamp((velZ - -maxVel) / (maxVel - -maxVel), 0, 1);
+
+				velocityAttribute.array[i * 3 + 0] = velX;
+				velocityAttribute.array[i * 3 + 1] = velY;
+				velocityAttribute.array[i * 3 + 2] = velZ;
+
+				// color
+
+				color.r = THREE.Math.clamp(color.r + this.GPUParticleSystem.random() * colorRandomness, 0, 1);
+				color.g = THREE.Math.clamp(color.g + this.GPUParticleSystem.random() * colorRandomness, 0, 1);
+				color.b = THREE.Math.clamp(color.b + this.GPUParticleSystem.random() * colorRandomness, 0, 1);
+
+				colorAttribute.array[i * 3 + 0] = color.r;
+				colorAttribute.array[i * 3 + 1] = color.g;
+				colorAttribute.array[i * 3 + 2] = color.b;
+
+				// turbulence, size, lifetime and starttime
+
+				turbulenceAttribute.array[i] = turbulence;
+				sizeAttribute.array[i] = size + this.GPUParticleSystem.random() * sizeRandomness;
+				lifeTimeAttribute.array[i] = lifetime;
+				startTimeAttribute.array[i] = this.time + this.GPUParticleSystem.random() * 2e-2;
+				distanceToCameraAttribute.array[i] = distanceToCamera;
+
+				// offset
+
+				if (this.offset === 0) {
+
+					this.offset = this.PARTICLE_CURSOR;
+				}
+
+				// counter and cursor
+
+				this.count++;
+				this.PARTICLE_CURSOR++;
+
+				if (this.PARTICLE_CURSOR >= this.PARTICLE_COUNT) {
+
+					this.PARTICLE_CURSOR = 0;
+				}
+
+				this.particleUpdate = true;
+			}
+		}, {
+			key: 'init',
+			value: function init() {
+
+				var particleSystem = new THREE.Points(this.particleShaderGeo, this.particleShaderMat);
+				particleSystem.frustumCulled = false;
+				this.add(particleSystem);
+			}
+		}, {
+			key: 'update',
+			value: function update(time) {
+
+				this.time = time;
+				this.particleShaderMat.uniforms.uTime.value = time;
+
+				this.geometryUpdate();
+			}
+		}, {
+			key: 'geometryUpdate',
+			value: function geometryUpdate() {
+
+				if (this.particleUpdate === true) {
+
+					this.particleUpdate = false;
+
+					var positionStartAttribute = this.particleShaderGeo.getAttribute('positionStart');
+					var startTimeAttribute = this.particleShaderGeo.getAttribute('startTime');
+					var velocityAttribute = this.particleShaderGeo.getAttribute('velocity');
+					var turbulenceAttribute = this.particleShaderGeo.getAttribute('turbulence');
+					var colorAttribute = this.particleShaderGeo.getAttribute('color');
+					var sizeAttribute = this.particleShaderGeo.getAttribute('size');
+					var lifeTimeAttribute = this.particleShaderGeo.getAttribute('lifeTime');
+					var distanceToCameraAttribute = this.particleShaderGeo.getAttribute('distanceToCamera');
+
+					if (this.offset + this.count < this.PARTICLE_COUNT) {
+
+						positionStartAttribute.updateRange.offset = this.offset * positionStartAttribute.itemSize;
+						startTimeAttribute.updateRange.offset = this.offset * startTimeAttribute.itemSize;
+						velocityAttribute.updateRange.offset = this.offset * velocityAttribute.itemSize;
+						turbulenceAttribute.updateRange.offset = this.offset * turbulenceAttribute.itemSize;
+						colorAttribute.updateRange.offset = this.offset * colorAttribute.itemSize;
+						sizeAttribute.updateRange.offset = this.offset * sizeAttribute.itemSize;
+						lifeTimeAttribute.updateRange.offset = this.offset * lifeTimeAttribute.itemSize;
+						distanceToCameraAttribute.updateRange.offset = this.offset * distanceToCameraAttribute.itemSize;
+
+						positionStartAttribute.updateRange.count = this.count * positionStartAttribute.itemSize;
+						startTimeAttribute.updateRange.count = this.count * startTimeAttribute.itemSize;
+						velocityAttribute.updateRange.count = this.count * velocityAttribute.itemSize;
+						turbulenceAttribute.updateRange.count = this.count * turbulenceAttribute.itemSize;
+						colorAttribute.updateRange.count = this.count * colorAttribute.itemSize;
+						sizeAttribute.updateRange.count = this.count * sizeAttribute.itemSize;
+						lifeTimeAttribute.updateRange.count = this.count * lifeTimeAttribute.itemSize;
+						distanceToCameraAttribute.updateRange.count = this.count * distanceToCameraAttribute.itemSize;
+					} else {
+
+						positionStartAttribute.updateRange.offset = 0;
+						startTimeAttribute.updateRange.offset = 0;
+						velocityAttribute.updateRange.offset = 0;
+						turbulenceAttribute.updateRange.offset = 0;
+						colorAttribute.updateRange.offset = 0;
+						sizeAttribute.updateRange.offset = 0;
+						lifeTimeAttribute.updateRange.offset = 0;
+						distanceToCameraAttribute.updateRange.offset = 0;
+
+						// Use -1 to update the entire buffer, see #11476
+						positionStartAttribute.updateRange.count = -1;
+						startTimeAttribute.updateRange.count = -1;
+						velocityAttribute.updateRange.count = -1;
+						turbulenceAttribute.updateRange.count = -1;
+						colorAttribute.updateRange.count = -1;
+						sizeAttribute.updateRange.count = -1;
+						lifeTimeAttribute.updateRange.count = -1;
+						distanceToCameraAttribute.updateRange.count = -1;
+					}
+
+					positionStartAttribute.needsUpdate = true;
+					startTimeAttribute.needsUpdate = true;
+					velocityAttribute.needsUpdate = true;
+					turbulenceAttribute.needsUpdate = true;
+					colorAttribute.needsUpdate = true;
+					sizeAttribute.needsUpdate = true;
+					lifeTimeAttribute.needsUpdate = true;
+					distanceToCameraAttribute.needsUpdate = true;
+
+					this.offset = 0;
+					this.count = 0;
+				}
+			}
+		}, {
+			key: 'dispose',
+			value: function dispose() {
+
+				this.particleShaderGeo.dispose();
+			}
+		}]);
+		return GPUParticleContainer;
+	}(THREE.Object3D);
+
+	exports.default = GPUParticleSystem;
+
+/***/ }),
+/* 437 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
 	exports.FIGHTER_AI = undefined;
@@ -69043,7 +69502,7 @@
 	var FIGHTER_AI = exports.FIGHTER_AI = new FighterAI();
 
 /***/ }),
-/* 437 */
+/* 438 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -69065,7 +69524,7 @@
 
 	var _lodash2 = _interopRequireDefault(_lodash);
 
-	var _keymaster = __webpack_require__(438);
+	var _keymaster = __webpack_require__(439);
 
 	var _keymaster2 = _interopRequireDefault(_keymaster);
 
@@ -69114,11 +69573,13 @@
 	        }).object().value();
 	        // Ship acceleration
 	        if (_keymaster2.default.isPressed('space')) this.ship.thrust();
+	        if (_keymaster2.default.isPressed('x')) this.ship.shoot();
+	      } else {
+	        if (this.isThrusting) this.ship.thrust();
+	        if (this.isShooting) this.ship.shoot();
 	      }
 
 	      this.ship.turn(this.turnParameters.x, 0, this.turnParameters.z);
-
-	      if (_keymaster2.default.isPressed('x')) this.ship.shoot();
 	    }
 	  }, {
 	    key: 'setMobileEventListeners',
@@ -69141,12 +69602,12 @@
 	      var updateMobileState = function updateMobileState(event) {
 	        var halfWidth = window.innerWidth / 2;
 	        var touches = event.touches;
-	        if (_lodash2.default.range(touches.length).some(function (i) {
+	        _this.isThrusting = _lodash2.default.range(touches.length).some(function (i) {
 	          return touches.item(i).pageX > halfWidth;
-	        })) _this.ship.thrust();
-	        if (_lodash2.default.range(touches.length).some(function (i) {
+	        });
+	        _this.isShooting = _lodash2.default.range(touches.length).some(function (i) {
 	          return touches.item(i).pageX < halfWidth;
-	        })) _this.ship.shoot();
+	        });
 	      };
 	      document.body.addEventListener('touchstart', updateMobileState, false);
 	      document.body.addEventListener('touchend', updateMobileState, false);
@@ -69161,7 +69622,7 @@
 	var player = exports.player = new Player();
 
 /***/ }),
-/* 438 */
+/* 439 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	//     keymaster.js
@@ -69463,7 +69924,7 @@
 
 
 /***/ }),
-/* 439 */
+/* 440 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(global) {/*!
@@ -72269,457 +72730,6 @@
 	})();
 
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
-
-/***/ }),
-/* 440 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-		value: true
-	});
-
-	var _getPrototypeOf = __webpack_require__(382);
-
-	var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
-
-	var _classCallCheck2 = __webpack_require__(386);
-
-	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
-
-	var _createClass2 = __webpack_require__(418);
-
-	var _createClass3 = _interopRequireDefault(_createClass2);
-
-	var _possibleConstructorReturn2 = __webpack_require__(387);
-
-	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
-
-	var _inherits2 = __webpack_require__(407);
-
-	var _inherits3 = _interopRequireDefault(_inherits2);
-
-	var _three = __webpack_require__(380);
-
-	var THREE = _interopRequireWildcard(_three);
-
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	var GPUParticleSystem = function (_THREE$Object3D) {
-		(0, _inherits3.default)(GPUParticleSystem, _THREE$Object3D);
-
-		function GPUParticleSystem(options) {
-			(0, _classCallCheck3.default)(this, GPUParticleSystem);
-
-			var _this = (0, _possibleConstructorReturn3.default)(this, (GPUParticleSystem.__proto__ || (0, _getPrototypeOf2.default)(GPUParticleSystem)).call(this));
-
-			options = options || {};
-
-			// parse options and use defaults
-
-			_this.PARTICLE_COUNT = options.maxParticles || 1000000;
-			_this.PARTICLE_CONTAINERS = options.containerCount || 1;
-
-			_this.PARTICLE_NOISE_TEXTURE = options.particleNoiseTex || null;
-			_this.PARTICLE_SPRITE_TEXTURE = options.particleSpriteTex || null;
-
-			_this.PARTICLES_PER_CONTAINER = Math.ceil(_this.PARTICLE_COUNT / _this.PARTICLE_CONTAINERS);
-			_this.PARTICLE_CURSOR = 0;
-			_this.time = 0;
-			_this.particleContainers = [];
-			_this.rand = [];
-
-			// custom vertex and fragement shader
-
-			var GPUParticleShader = {
-
-				vertexShader: ['uniform float uTime;', 'uniform float uScale;', 'uniform sampler2D tNoise;', 'attribute vec3 positionStart;', 'attribute float startTime;', 'attribute vec3 velocity;', 'attribute float turbulence;', 'attribute vec3 color;', 'attribute float size;', 'attribute float lifeTime;', 'attribute float distanceToCamera;', 'varying vec4 vColor;', 'varying float lifeLeft;', 'void main() {',
-
-				// unpack things from our attributes'
-
-				'	vColor = vec4( color, 1.0 );',
-
-				// convert our velocity back into a value we can use'
-
-				'	vec3 newPosition;', '	vec3 v;', '	float timeElapsed = uTime - startTime;', '	lifeLeft = 1.0 - ( timeElapsed / lifeTime );', '	gl_PointSize = ( uScale * size / distanceToCamera ) * lifeLeft;', '	v.x = ( velocity.x - 0.5 ) * 3.0;', '	v.y = ( velocity.y - 0.5 ) * 3.0;', '	v.z = ( velocity.z - 0.5 ) * 3.0;', '	newPosition = positionStart + ( v * 10.0 ) * timeElapsed;', '	vec3 noise = texture2D( tNoise, vec2( newPosition.x * 0.015 + ( uTime * 0.05 ), newPosition.y * 0.02 + ( uTime * 0.015 ) ) ).rgb;', '	vec3 noiseVel = ( noise.rgb - 0.5 ) * 30.0;', '	newPosition = mix( newPosition, newPosition + vec3( noiseVel * ( turbulence * 5.0 ) ), ( timeElapsed / lifeTime ) );', '	if( v.y > 0. && v.y < .05 ) {', '		lifeLeft = 0.0;', '	}', '	if( v.x < - 1.45 ) {', '		lifeLeft = 0.0;', '	}', '	if( timeElapsed > 0.0 ) {', '		gl_Position = projectionMatrix * modelViewMatrix * vec4( newPosition, 1.0 );', '	} else {', '		gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );', '		lifeLeft = 0.0;', '		gl_PointSize = 0.;', '	}', '}'].join('\n'),
-
-				fragmentShader: ['float scaleLinear( float value, vec2 valueDomain ) {', '	return ( value - valueDomain.x ) / ( valueDomain.y - valueDomain.x );', '}', 'float scaleLinear( float value, vec2 valueDomain, vec2 valueRange ) {', '	return mix( valueRange.x, valueRange.y, scaleLinear( value, valueDomain ) );', '}', 'varying vec4 vColor;', 'varying float lifeLeft;', 'uniform sampler2D tSprite;', 'void main() {', '	float alpha = 0.;', '	if( lifeLeft > 0.995 ) {', '		alpha = scaleLinear( lifeLeft, vec2( 1.0, 0.995 ), vec2( 0.0, 1.0 ) );', '	} else {', '		alpha = lifeLeft * 0.75;', '	}', '	vec4 tex = texture2D( tSprite, gl_PointCoord );', '	gl_FragColor = vec4( vColor.rgb * tex.a, alpha * tex.a );', '}'].join('\n')
-
-			};
-
-			// preload a million random numbers
-
-			_this.i = 0;
-
-			for (var i = 1e5; i > 0; i--) {
-
-				_this.rand.push(Math.random() - 0.5);
-			}
-
-			var textureLoader = new THREE.TextureLoader();
-
-			_this.particleNoiseTex = _this.PARTICLE_NOISE_TEXTURE || textureLoader.load('./media/perlin-512.png');
-			_this.particleNoiseTex.wrapS = _this.particleNoiseTex.wrapT = THREE.RepeatWrapping;
-
-			_this.particleSpriteTex = _this.PARTICLE_SPRITE_TEXTURE || textureLoader.load('./media/particle2.png');
-			_this.particleSpriteTex.wrapS = _this.particleSpriteTex.wrapT = THREE.RepeatWrapping;
-
-			_this.particleShaderMat = new THREE.ShaderMaterial({
-				transparent: true,
-				depthWrite: false,
-				uniforms: {
-					'uTime': {
-						value: 0.0
-					},
-					'uScale': {
-						value: 1.0
-					},
-					'tNoise': {
-						value: _this.particleNoiseTex
-					},
-					'tSprite': {
-						value: _this.particleSpriteTex
-					}
-				},
-				blending: THREE.AdditiveBlending,
-				vertexShader: GPUParticleShader.vertexShader,
-				fragmentShader: GPUParticleShader.fragmentShader
-			});
-
-			// define defaults for all values
-
-			_this.particleShaderMat.defaultAttributeValues.particlePositionsStartTime = [0, 0, 0, 0];
-			_this.particleShaderMat.defaultAttributeValues.particleVelColSizeLife = [0, 0, 0, 0];
-
-			_this.init();
-			return _this;
-		}
-
-		(0, _createClass3.default)(GPUParticleSystem, [{
-			key: 'random',
-			value: function random() {
-
-				return ++this.i >= this.rand.length ? this.rand[this.i = 1] : this.rand[this.i];
-			}
-		}, {
-			key: 'init',
-			value: function init() {
-
-				for (var i = 0; i < this.PARTICLE_CONTAINERS; i++) {
-
-					var c = new GPUParticleContainer(this.PARTICLES_PER_CONTAINER, this);
-					this.particleContainers.push(c);
-					this.add(c);
-				}
-			}
-		}, {
-			key: 'spawnParticle',
-			value: function spawnParticle(options) {
-
-				this.PARTICLE_CURSOR++;
-
-				if (this.PARTICLE_CURSOR >= this.PARTICLE_COUNT) {
-
-					this.PARTICLE_CURSOR = 1;
-				}
-
-				var currentContainer = this.particleContainers[Math.floor(this.PARTICLE_CURSOR / this.PARTICLES_PER_CONTAINER)];
-
-				currentContainer.spawnParticle(options);
-			}
-		}, {
-			key: 'update',
-			value: function update(time) {
-
-				for (var i = 0; i < this.PARTICLE_CONTAINERS; i++) {
-
-					this.particleContainers[i].update(time);
-				}
-			}
-		}, {
-			key: 'dispose',
-			value: function dispose() {
-
-				this.particleShaderMat.dispose();
-				this.particleNoiseTex.dispose();
-				this.particleSpriteTex.dispose();
-
-				for (var i = 0; i < this.PARTICLE_CONTAINERS; i++) {
-
-					this.particleContainers[i].dispose();
-				}
-			}
-		}]);
-		return GPUParticleSystem;
-	}(THREE.Object3D);
-
-	// Subclass for particle containers, allows for very large arrays to be spread out
-
-	/* eslint-disable */
-	/*
-	 * GPU Particle System
-	 * @author flimshaw - Charlie Hoey - http://charliehoey.com
-	 *
-	 * A simple to use, general purpose GPU system. Particles are spawn-and-forget with
-	 * several options available, and do not require monitoring or cleanup after spawning.
-	 * Because the paths of all particles are completely deterministic once spawned, the scale
-	 * and direction of time is also variable.
-	 *
-	 * Currently uses a static wrapping perlin noise texture for turbulence, and a small png texture for
-	 * particles, but adding support for a particle texture atlas or changing to a different type of turbulence
-	 * would be a fairly light day's work.
-	 *
-	 * Shader and javascript packing code derrived from several Stack Overflow examples.
-	 *
-	 */
-
-
-	var GPUParticleContainer = function (_THREE$Object3D2) {
-		(0, _inherits3.default)(GPUParticleContainer, _THREE$Object3D2);
-
-		function GPUParticleContainer(maxParticles, particleSystem) {
-			(0, _classCallCheck3.default)(this, GPUParticleContainer);
-
-			var _this2 = (0, _possibleConstructorReturn3.default)(this, (GPUParticleContainer.__proto__ || (0, _getPrototypeOf2.default)(GPUParticleContainer)).call(this));
-
-			_this2.PARTICLE_COUNT = maxParticles || 100000;
-			_this2.PARTICLE_CURSOR = 0;
-			_this2.time = 0;
-			_this2.offset = 0;
-			_this2.count = 0;
-			_this2.DPR = window.devicePixelRatio;
-			_this2.GPUParticleSystem = particleSystem;
-			_this2.particleUpdate = false;
-
-			// geometry
-
-			_this2.particleShaderGeo = new THREE.BufferGeometry();
-
-			_this2.particleShaderGeo.addAttribute('position', new THREE.BufferAttribute(new Float32Array(_this2.PARTICLE_COUNT * 3), 3).setDynamic(true));
-			_this2.particleShaderGeo.addAttribute('positionStart', new THREE.BufferAttribute(new Float32Array(_this2.PARTICLE_COUNT * 3), 3).setDynamic(true));
-			_this2.particleShaderGeo.addAttribute('startTime', new THREE.BufferAttribute(new Float32Array(_this2.PARTICLE_COUNT), 1).setDynamic(true));
-			_this2.particleShaderGeo.addAttribute('velocity', new THREE.BufferAttribute(new Float32Array(_this2.PARTICLE_COUNT * 3), 3).setDynamic(true));
-			_this2.particleShaderGeo.addAttribute('turbulence', new THREE.BufferAttribute(new Float32Array(_this2.PARTICLE_COUNT), 1).setDynamic(true));
-			_this2.particleShaderGeo.addAttribute('color', new THREE.BufferAttribute(new Float32Array(_this2.PARTICLE_COUNT * 3), 3).setDynamic(true));
-			_this2.particleShaderGeo.addAttribute('size', new THREE.BufferAttribute(new Float32Array(_this2.PARTICLE_COUNT), 1).setDynamic(true));
-			_this2.particleShaderGeo.addAttribute('lifeTime', new THREE.BufferAttribute(new Float32Array(_this2.PARTICLE_COUNT), 1).setDynamic(true));
-			_this2.particleShaderGeo.addAttribute('distanceToCamera', new THREE.BufferAttribute(new Float32Array(_this2.PARTICLE_COUNT), 1).setDynamic(true));
-
-			// material
-
-			_this2.particleShaderMat = _this2.GPUParticleSystem.particleShaderMat;
-
-			_this2.init();
-			return _this2;
-		}
-
-		(0, _createClass3.default)(GPUParticleContainer, [{
-			key: 'spawnParticle',
-			value: function spawnParticle(options) {
-
-				var positionStartAttribute = this.particleShaderGeo.getAttribute('positionStart');
-				var startTimeAttribute = this.particleShaderGeo.getAttribute('startTime');
-				var velocityAttribute = this.particleShaderGeo.getAttribute('velocity');
-				var turbulenceAttribute = this.particleShaderGeo.getAttribute('turbulence');
-				var colorAttribute = this.particleShaderGeo.getAttribute('color');
-				var sizeAttribute = this.particleShaderGeo.getAttribute('size');
-				var lifeTimeAttribute = this.particleShaderGeo.getAttribute('lifeTime');
-				var distanceToCameraAttribute = this.particleShaderGeo.getAttribute('distanceToCamera');
-
-				options = options || {};
-
-				// setup reasonable default values for all arguments
-
-				var position = new THREE.Vector3();
-				var velocity = new THREE.Vector3();
-				var color = new THREE.Color();
-
-				position = options.position !== undefined ? position.copy(options.position) : position.set(0, 0, 0);
-				velocity = options.velocity !== undefined ? velocity.copy(options.velocity) : velocity.set(0, 0, 0);
-				color = options.color !== undefined ? color.set(options.color) : color.set(0xffffff);
-
-				var positionRandomness = options.positionRandomness !== undefined ? options.positionRandomness : 0;
-				var velocityRandomness = options.velocityRandomness !== undefined ? options.velocityRandomness : 0;
-				var colorRandomness = options.colorRandomness !== undefined ? options.colorRandomness : 1;
-				var turbulence = options.turbulence !== undefined ? options.turbulence : 1;
-				var lifetime = options.lifetime !== undefined ? options.lifetime : 5;
-				var size = options.size !== undefined ? options.size : 10;
-				var sizeRandomness = options.sizeRandomness !== undefined ? options.sizeRandomness : 0;
-				var smoothPosition = options.smoothPosition !== undefined ? options.smoothPosition : false;
-				var distanceToCamera = options.distanceToCamera !== undefined ? options.distanceToCamera : 0;
-
-				if (this.DPR !== undefined) size *= this.DPR;
-
-				var i = this.PARTICLE_CURSOR;
-
-				// position
-
-				positionStartAttribute.array[i * 3 + 0] = position.x + this.GPUParticleSystem.random() * positionRandomness;
-				positionStartAttribute.array[i * 3 + 1] = position.y + this.GPUParticleSystem.random() * positionRandomness;
-				positionStartAttribute.array[i * 3 + 2] = position.z + this.GPUParticleSystem.random() * positionRandomness;
-
-				if (smoothPosition === true) {
-
-					positionStartAttribute.array[i * 3 + 0] += -(velocity.x * this.GPUParticleSystem.random());
-					positionStartAttribute.array[i * 3 + 1] += -(velocity.y * this.GPUParticleSystem.random());
-					positionStartAttribute.array[i * 3 + 2] += -(velocity.z * this.GPUParticleSystem.random());
-				}
-
-				// velocity
-
-				var maxVel = 2;
-
-				var velX = velocity.x + this.GPUParticleSystem.random() * velocityRandomness;
-				var velY = velocity.y + this.GPUParticleSystem.random() * velocityRandomness;
-				var velZ = velocity.z + this.GPUParticleSystem.random() * velocityRandomness;
-
-				velX = THREE.Math.clamp((velX - -maxVel) / (maxVel - -maxVel), 0, 1);
-				velY = THREE.Math.clamp((velY - -maxVel) / (maxVel - -maxVel), 0, 1);
-				velZ = THREE.Math.clamp((velZ - -maxVel) / (maxVel - -maxVel), 0, 1);
-
-				velocityAttribute.array[i * 3 + 0] = velX;
-				velocityAttribute.array[i * 3 + 1] = velY;
-				velocityAttribute.array[i * 3 + 2] = velZ;
-
-				// color
-
-				color.r = THREE.Math.clamp(color.r + this.GPUParticleSystem.random() * colorRandomness, 0, 1);
-				color.g = THREE.Math.clamp(color.g + this.GPUParticleSystem.random() * colorRandomness, 0, 1);
-				color.b = THREE.Math.clamp(color.b + this.GPUParticleSystem.random() * colorRandomness, 0, 1);
-
-				colorAttribute.array[i * 3 + 0] = color.r;
-				colorAttribute.array[i * 3 + 1] = color.g;
-				colorAttribute.array[i * 3 + 2] = color.b;
-
-				// turbulence, size, lifetime and starttime
-
-				turbulenceAttribute.array[i] = turbulence;
-				sizeAttribute.array[i] = size + this.GPUParticleSystem.random() * sizeRandomness;
-				lifeTimeAttribute.array[i] = lifetime;
-				startTimeAttribute.array[i] = this.time + this.GPUParticleSystem.random() * 2e-2;
-				distanceToCameraAttribute.array[i] = distanceToCamera;
-
-				// offset
-
-				if (this.offset === 0) {
-
-					this.offset = this.PARTICLE_CURSOR;
-				}
-
-				// counter and cursor
-
-				this.count++;
-				this.PARTICLE_CURSOR++;
-
-				if (this.PARTICLE_CURSOR >= this.PARTICLE_COUNT) {
-
-					this.PARTICLE_CURSOR = 0;
-				}
-
-				this.particleUpdate = true;
-			}
-		}, {
-			key: 'init',
-			value: function init() {
-
-				var particleSystem = new THREE.Points(this.particleShaderGeo, this.particleShaderMat);
-				particleSystem.frustumCulled = false;
-				this.add(particleSystem);
-			}
-		}, {
-			key: 'update',
-			value: function update(time) {
-
-				this.time = time;
-				this.particleShaderMat.uniforms.uTime.value = time;
-
-				this.geometryUpdate();
-			}
-		}, {
-			key: 'geometryUpdate',
-			value: function geometryUpdate() {
-
-				if (this.particleUpdate === true) {
-
-					this.particleUpdate = false;
-
-					var positionStartAttribute = this.particleShaderGeo.getAttribute('positionStart');
-					var startTimeAttribute = this.particleShaderGeo.getAttribute('startTime');
-					var velocityAttribute = this.particleShaderGeo.getAttribute('velocity');
-					var turbulenceAttribute = this.particleShaderGeo.getAttribute('turbulence');
-					var colorAttribute = this.particleShaderGeo.getAttribute('color');
-					var sizeAttribute = this.particleShaderGeo.getAttribute('size');
-					var lifeTimeAttribute = this.particleShaderGeo.getAttribute('lifeTime');
-					var distanceToCameraAttribute = this.particleShaderGeo.getAttribute('distanceToCamera');
-
-					if (this.offset + this.count < this.PARTICLE_COUNT) {
-
-						positionStartAttribute.updateRange.offset = this.offset * positionStartAttribute.itemSize;
-						startTimeAttribute.updateRange.offset = this.offset * startTimeAttribute.itemSize;
-						velocityAttribute.updateRange.offset = this.offset * velocityAttribute.itemSize;
-						turbulenceAttribute.updateRange.offset = this.offset * turbulenceAttribute.itemSize;
-						colorAttribute.updateRange.offset = this.offset * colorAttribute.itemSize;
-						sizeAttribute.updateRange.offset = this.offset * sizeAttribute.itemSize;
-						lifeTimeAttribute.updateRange.offset = this.offset * lifeTimeAttribute.itemSize;
-						distanceToCameraAttribute.updateRange.offset = this.offset * distanceToCameraAttribute.itemSize;
-
-						positionStartAttribute.updateRange.count = this.count * positionStartAttribute.itemSize;
-						startTimeAttribute.updateRange.count = this.count * startTimeAttribute.itemSize;
-						velocityAttribute.updateRange.count = this.count * velocityAttribute.itemSize;
-						turbulenceAttribute.updateRange.count = this.count * turbulenceAttribute.itemSize;
-						colorAttribute.updateRange.count = this.count * colorAttribute.itemSize;
-						sizeAttribute.updateRange.count = this.count * sizeAttribute.itemSize;
-						lifeTimeAttribute.updateRange.count = this.count * lifeTimeAttribute.itemSize;
-						distanceToCameraAttribute.updateRange.count = this.count * distanceToCameraAttribute.itemSize;
-					} else {
-
-						positionStartAttribute.updateRange.offset = 0;
-						startTimeAttribute.updateRange.offset = 0;
-						velocityAttribute.updateRange.offset = 0;
-						turbulenceAttribute.updateRange.offset = 0;
-						colorAttribute.updateRange.offset = 0;
-						sizeAttribute.updateRange.offset = 0;
-						lifeTimeAttribute.updateRange.offset = 0;
-						distanceToCameraAttribute.updateRange.offset = 0;
-
-						// Use -1 to update the entire buffer, see #11476
-						positionStartAttribute.updateRange.count = -1;
-						startTimeAttribute.updateRange.count = -1;
-						velocityAttribute.updateRange.count = -1;
-						turbulenceAttribute.updateRange.count = -1;
-						colorAttribute.updateRange.count = -1;
-						sizeAttribute.updateRange.count = -1;
-						lifeTimeAttribute.updateRange.count = -1;
-						distanceToCameraAttribute.updateRange.count = -1;
-					}
-
-					positionStartAttribute.needsUpdate = true;
-					startTimeAttribute.needsUpdate = true;
-					velocityAttribute.needsUpdate = true;
-					turbulenceAttribute.needsUpdate = true;
-					colorAttribute.needsUpdate = true;
-					sizeAttribute.needsUpdate = true;
-					lifeTimeAttribute.needsUpdate = true;
-					distanceToCameraAttribute.needsUpdate = true;
-
-					this.offset = 0;
-					this.count = 0;
-				}
-			}
-		}, {
-			key: 'dispose',
-			value: function dispose() {
-
-				this.particleShaderGeo.dispose();
-			}
-		}]);
-		return GPUParticleContainer;
-	}(THREE.Object3D);
-
-	exports.default = GPUParticleSystem;
 
 /***/ })
 /******/ ]);
