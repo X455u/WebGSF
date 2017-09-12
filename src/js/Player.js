@@ -38,11 +38,14 @@ class Player {
       ).object().value();
       // Ship acceleration
       if (keymaster.isPressed('space')) this.ship.thrust();
+      if (keymaster.isPressed('x')) this.ship.shoot();
+    } else {
+      if (this.isThrusting) this.ship.thrust();
+      if (this.isShooting) this.ship.shoot();
     }
 
     this.ship.turn(this.turnParameters.x, 0, this.turnParameters.z);
 
-    if (keymaster.isPressed('x')) this.ship.shoot();
   }
 
   setMobileEventListeners() {
@@ -62,8 +65,8 @@ class Player {
     let updateMobileState = event => {
       let halfWidth = window.innerWidth / 2;
       let touches = event.touches;
-      if (_.range(touches.length).some(i => touches.item(i).pageX > halfWidth)) this.ship.thrust();
-      if (_.range(touches.length).some(i => touches.item(i).pageX < halfWidth)) this.ship.shoot();
+      this.isThrusting = _.range(touches.length).some(i => touches.item(i).pageX > halfWidth);
+      this.isShooting = _.range(touches.length).some(i => touches.item(i).pageX < halfWidth);
     };
     document.body.addEventListener('touchstart', updateMobileState, false);
     document.body.addEventListener('touchend', updateMobileState, false);
