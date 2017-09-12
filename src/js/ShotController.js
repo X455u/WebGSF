@@ -26,16 +26,14 @@ class ShotController {
         this.shots.splice(this.shots.indexOf(shot), 1);
       }
 
-      for (let shootable of this.shootables) {
-        let direction = new THREE.Vector3(0, 0, 1);
-        direction.applyQuaternion(shot.quaternion);
-        RAYCASTER.set(shot.position, direction);
-        let intersections = RAYCASTER.intersectObject(shootable);
-        if (intersections.length !== 0) {
-          shot.isDead = true;
-          let hitObject = intersections[0].object;
-          if (hitObject instanceof Ship) hitObject.damage(shot.damage);
-        }
+      let direction = new THREE.Vector3(0, 0, 1);
+      direction.applyQuaternion(shot.quaternion);
+      RAYCASTER.set(shot.position, direction);
+      let intersections = RAYCASTER.intersectObjects(this.shootables);
+      if (intersections.length !== 0) {
+        shot.isDead = true;
+        let hitObject = intersections[0].object;
+        if (hitObject instanceof Ship) hitObject.damage(shot.damage);
       }
     });
 
