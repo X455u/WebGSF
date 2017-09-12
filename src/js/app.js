@@ -10,7 +10,8 @@ import {FIGHTER_AI} from './FighterAI';
 import {player} from './Player';
 import {Howl} from 'howler';
 import {loader} from './GSFLoader';
-import {SCENE, PLANETS} from './Game';
+import {GAME, SCENE, CAMERA, PLANETS} from './Game';
+import Explosion from './Explosion';
 
 const DEBUG = false;
 
@@ -56,8 +57,7 @@ function initGame() {
   });
   music.play();
 
-  let aspect = window.innerWidth / window.innerHeight;
-  let camera = new THREE.PerspectiveCamera(75, aspect, 1, 1000000);
+  let camera = CAMERA;
   let renderer = new THREE.WebGLRenderer({antialias: true, alpha: true});
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.autoClear = false;
@@ -137,6 +137,18 @@ function initGame() {
     hud.update(playerShip.hp / playerShip.maxHp, playerShip.shield / playerShip.maxShield);
   });
 
+  playerShip.addEventListener('onDamage', () => {
+    if (playerShip.hp === 0) {
+      let explosion = new Explosion();
+      GAME.addObject(explosion);
+      playerShip.traverse((object) => {
+        SCENE.remove(object);
+      });
+      SCENE.remove(playerShip);
+      player.ship = null;
+    }
+  });
+
   // Game Loop
   let previousTime;
   function render() {
@@ -152,6 +164,8 @@ function initGame() {
     for (let enemy of enemies) {
       enemy.update(delta, camera.position);
     }
+
+    GAME.update(delta);
 
     // Camera follow
     let direction = CAMERA_DIRECTION.clone();

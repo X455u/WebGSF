@@ -61,6 +61,7 @@ class Ship extends THREE.Mesh {
       this.hp += this.shield;
       this.shield = 0;
     }
+    if (this.hp < 0) this.hp = 0;
     this.dispatchEvent({
       type: 'onDamage',
       damage: damage
