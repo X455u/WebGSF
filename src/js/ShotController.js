@@ -58,5 +58,9 @@ class ShotController {
     this.shootables.push(mesh);
   }
 
+  removeShootable(mesh) {
+    this.shootables.splice(this.shootables.indexOf(mesh), 1);
+  }
+
 }
-export const shotController = new ShotController();
+export const SHOT_CONTROLLER = new ShotController();

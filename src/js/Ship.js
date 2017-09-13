@@ -1,9 +1,12 @@
 import * as THREE from 'three';
 import {PLANETS} from './Game';
+import GSFObject from './GSFObject';
+import Explosion from './Explosion';
+import {GAME} from './Game';
 
 const RAYCASTER = new THREE.Raycaster();
 
-class Ship extends THREE.Mesh {
+class Ship extends GSFObject {
 
   constructor(geometry, material, stats) {
     super(geometry, material);
@@ -37,6 +40,15 @@ class Ship extends THREE.Mesh {
     this.ai = null;
     this.attacking = true;
     this.target = null;
+
+    // Events
+    this.addEventListener('onDamage', () => {
+      if (this.hp === 0) {
+        let explosion = new Explosion({position: this.position});
+        GAME.addObject(explosion);
+        this.remove();
+      }
+    });
   }
 
   thrust() {

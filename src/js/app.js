@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 
 import Planet from './Planet';
-import {shotController} from './ShotController';
+import {SHOT_CONTROLLER} from './ShotController';
 import Crosshair from './Crosshair';
 import HUD from './HUD';
 import Sun from './Sun';
@@ -11,7 +11,6 @@ import {player} from './Player';
 import {Howl} from 'howler';
 import {loader} from './GSFLoader';
 import {GAME, SCENE, PLANETS} from './Game';
-import Explosion from './Explosion';
 import {CAMERA} from './GSFCamera';
 
 const DEBUG = false;
@@ -69,21 +68,16 @@ function initGame() {
 
   // Load player ship
   let playerShip = new Fighter();
-  playerShip.isPlayer = true;
-  playerShip.name = 'Player';
   player.setShip(playerShip);
-  shotController.addShootable(playerShip);
-  SCENE.add(playerShip);
+  GAME.addObject(playerShip);
   CAMERA.setTarget(playerShip);
 
   let crosshair = new Crosshair(CAMERA, playerShip);
 
   // Planet testing
   let planet = new Planet(500);
-  planet.isPlanet = true;
   planet.position.y = -800;
-  SCENE.add(planet);
-  shotController.addShootable(planet);
+  GAME.addStatic(planet);
   PLANETS.push(planet);
 
   // Sun
@@ -120,10 +114,7 @@ function initGame() {
     enemyShip.position.add(offset);
     enemyShip.target = playerShip;
     enemyShip.ai = FIGHTER_AI;
-    SCENE.add(enemyShip);
-    enemies.push(enemyShip);
-    shotController.addShootable(enemyShip);
-    enemyShip.name = 'Enemy ' + i;
+    GAME.addObject(enemyShip);
   }
 
   // HUD
@@ -131,15 +122,6 @@ function initGame() {
 
   playerShip.addEventListener('onDamage', () => {
     hud.update(playerShip.hp / playerShip.maxHp, playerShip.shield / playerShip.maxShield);
-  });
-
-  playerShip.addEventListener('onDamage', () => {
-    if (playerShip.hp === 0) {
-      let explosion = new Explosion();
-      GAME.addObject(explosion);
-      SCENE.remove(playerShip);
-      player.ship = null;
-    }
   });
 
   // Game Loop
@@ -150,13 +132,7 @@ function initGame() {
     previousTime = time;
 
     player.update();
-    playerShip.update(delta, CAMERA.position);
     crosshair.update([planet, ...enemies]);
-
-    // Enemies
-    for (let enemy of enemies) {
-      enemy.update(delta, CAMERA.position);
-    }
 
     GAME.update(delta);
 
@@ -172,7 +148,7 @@ function initGame() {
     spotlight.target.position.copy(playerShip.position.clone().add(direction));
     spotlight.target.updateMatrixWorld();
 
-    shotController.update(delta);
+    SHOT_CONTROLLER.update(delta);
 
     renderer.render(SCENE, CAMERA);
     renderer.render(hud.scene, hud.camera);

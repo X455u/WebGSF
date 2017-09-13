@@ -4,6 +4,7 @@ import Ship from './Ship';
 import SmallPulseLaser from './SmallPulseLaser';
 import GPUParticleSystem from './GPUParticleSystem';
 import {SCENE} from './Game';
+import {CAMERA} from './GSFCamera';
 
 class Fighter extends Ship {
   constructor() {
@@ -50,7 +51,7 @@ class Fighter extends Ship {
     this.tick = 0;
   }
 
-  update(delta, cameraPosition) {
+  update(delta) {
     super.update(delta);
 
     let rotatedThrusters = [];
@@ -62,7 +63,7 @@ class Fighter extends Ship {
     let velocity = new THREE.Vector3(0, 0, -0.2);
     velocity.applyQuaternion(this.quaternion);
     this.options.velocity = velocity;
-    this.options.distanceToCamera = cameraPosition.distanceTo(this.position);
+    this.options.distanceToCamera = CAMERA.position.distanceTo(this.position);
     let offsetSinceLastFrame = new THREE.Vector3(0, 0, -1);
     offsetSinceLastFrame.applyQuaternion(this.quaternion);
     offsetSinceLastFrame.multiplyScalar(this.velocity * delta);
