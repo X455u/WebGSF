@@ -10,14 +10,11 @@ import {FIGHTER_AI} from './FighterAI';
 import {player} from './Player';
 import {Howl} from 'howler';
 import {loader} from './GSFLoader';
-import {GAME, SCENE, CAMERA, PLANETS} from './Game';
+import {GAME, SCENE, PLANETS} from './Game';
 import Explosion from './Explosion';
+import {CAMERA} from './GSFCamera';
 
 const DEBUG = false;
-
-const CAMERA_DISTANCE = 5;
-const CAMERA_VELOCITY = 5;
-const CAMERA_DIRECTION = new THREE.Vector3(0, 0.5, -1).normalize();
 
 const SPOTLIGHT_VECTOR = new THREE.Vector3(0, 0, 300);
 
@@ -57,7 +54,6 @@ function initGame() {
   });
   music.play();
 
-  let camera = CAMERA;
   let renderer = new THREE.WebGLRenderer({antialias: true, alpha: true});
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.autoClear = false;
@@ -70,8 +66,6 @@ function initGame() {
 
   SCENE.add(ambientLight);
   SCENE.add(spotlight);
-  camera.position.z = -CAMERA_DISTANCE;
-  camera.rotateOnAxis(camera.up, Math.PI);
 
   // Load player ship
   let playerShip = new Fighter();
@@ -80,7 +74,9 @@ function initGame() {
   player.setShip(playerShip);
   shotController.addShootable(playerShip);
   SCENE.add(playerShip);
-  let crosshair = new Crosshair(camera, playerShip);
+  CAMERA.setTarget(playerShip);
+
+  let crosshair = new Crosshair(CAMERA, playerShip);
 
   // Planet testing
   let planet = new Planet(500);
@@ -141,9 +137,6 @@ function initGame() {
     if (playerShip.hp === 0) {
       let explosion = new Explosion();
       GAME.addObject(explosion);
-      playerShip.traverse((object) => {
-        SCENE.remove(object);
-      });
       SCENE.remove(playerShip);
       player.ship = null;
     }
@@ -157,27 +150,23 @@ function initGame() {
     previousTime = time;
 
     player.update();
-    playerShip.update(delta, camera.position);
+    playerShip.update(delta, CAMERA.position);
     crosshair.update([planet, ...enemies]);
 
     // Enemies
     for (let enemy of enemies) {
-      enemy.update(delta, camera.position);
+      enemy.update(delta, CAMERA.position);
     }
 
     GAME.update(delta);
 
     // Camera follow
-    let direction = CAMERA_DIRECTION.clone();
-    direction.applyQuaternion(playerShip.quaternion).setLength(CAMERA_DISTANCE);
-    let cameraTargetPosition = playerShip.position.clone().add(direction);
-    camera.position.lerp(cameraTargetPosition, CAMERA_VELOCITY * delta);
     let quaternion = (new THREE.Quaternion()).setFromAxisAngle(new THREE.Vector3(0, 1, 0), Math.PI);
     quaternion.multiplyQuaternions(playerShip.quaternion, quaternion);
-    camera.quaternion.slerp(quaternion, CAMERA_VELOCITY * delta);
+    CAMERA.update(delta);
 
     // update spotlight position and direction
-    direction = SPOTLIGHT_VECTOR.clone();
+    let direction = SPOTLIGHT_VECTOR.clone();
     direction.applyQuaternion(playerShip.quaternion);
     spotlight.position.copy(playerShip.position);
     spotlight.target.position.copy(playerShip.position.clone().add(direction));
@@ -185,7 +174,7 @@ function initGame() {
 
     shotController.update(delta);
 
-    renderer.render(SCENE, camera);
+    renderer.render(SCENE, CAMERA);
     renderer.render(hud.scene, hud.camera);
 
     //Update debugging text

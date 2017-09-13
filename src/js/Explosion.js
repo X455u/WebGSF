@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import GPUParticleSystem from './GPUParticleSystem';
-import {SCENE, CAMERA} from './Game';
+import {SCENE} from './Game';
+import {CAMERA} from './GSFCamera';
 
 class Explosion extends THREE.Object3D {
   constructor() {
