@@ -1,151 +1,210 @@
-import THREE from 'three';
+import * as THREE from 'three';
 
-import Ship from './Ship';
 import Planet from './Planet';
-import ShotController from './ShotController';
-import ParticleSystem from './ParticleSystem';
+import {shotController} from './ShotController';
 import Crosshair from './Crosshair';
+import HUD from './HUD';
+import Sun from './Sun';
+import Fighter from './Fighter';
+import {FIGHTER_AI} from './FighterAI';
+import {player} from './Player';
+import {Howl} from 'howler';
+import {loader} from './GSFLoader';
+import {GAME, SCENE, CAMERA, PLANETS} from './Game';
+import Explosion from './Explosion';
 
 const DEBUG = false;
 
 const CAMERA_DISTANCE = 5;
 const CAMERA_VELOCITY = 5;
-const CAMERA_DIRECTION = new THREE.Vector3(0, 0.5, 1).normalize();
+const CAMERA_DIRECTION = new THREE.Vector3(0, 0.5, -1).normalize();
 
-const LIGHT_VECTOR = new THREE.Vector3(0, 1000, 0);
-const SPOTLIGHT_VECTOR = new THREE.Vector3(0, 0, -300);
-
-const SHADOWS = true;
+const SPOTLIGHT_VECTOR = new THREE.Vector3(0, 0, 300);
 
 const MAX_DELTA = 0.1; // s
 
-let scene = new THREE.Scene();
-let aspect = window.innerWidth / window.innerHeight;
-let camera = new THREE.PerspectiveCamera(75, aspect, 0.1, 10000);
-let renderer = new THREE.WebGLRenderer();
-renderer.setSize(window.innerWidth, window.innerHeight);
-document.body.appendChild(renderer.domElement);
-renderer.domElement.setAttribute('tabIndex', '0');
-renderer.domElement.focus();
+// Loading
+let loadingText = document.createElement('div');
+loadingText.className = 'loading';
+loadingText.innerHTML = 'Loading...';
+document.body.appendChild(loadingText);
+let loadingProgress = document.createElement('div');
+loadingProgress.style.display = 'flex';
+loadingText.appendChild(loadingProgress);
+let loadingProgressCount = document.createElement('div');
+loadingProgress.appendChild(loadingProgressCount);
+let loadingProgressTotal = document.createElement('div');
+loadingProgress.appendChild(loadingProgressTotal);
 
-let ambientLight = new THREE.AmbientLight(0x444444, 0.1);
-let light = new THREE.DirectionalLight(0xffffff, 1);
-let spotlight = new THREE.SpotLight(0xffffff, 3, 1000);
-light.position.copy(LIGHT_VECTOR);
+loader.manager.onStart = (url, itemsLoaded, itemsTotal) => {
+  loadingProgressCount.innerHTML = itemsLoaded;
+  loadingProgressTotal.innerHTML = '/' + itemsTotal;
+};
+loader.manager.onProgress = (url, itemsLoaded, itemsTotal) => {
+  loadingProgressCount.innerHTML = itemsLoaded;
+  loadingProgressTotal.innerHTML = '/' + itemsTotal;
+};
+loader.manager.onError = (url) => {
+  console.error('Error loading: ' + url);
+};
 
-if (SHADOWS) {
-  renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = THREE.PCFShadowMap;
-  light.castShadow = true;
-  light.shadowCameraNear = 10;
-  light.shadowCameraFar = 2000;
-  light.shadowCameraLeft = 100;
-  light.shadowCameraRight = -100;
-  light.shadowCameraTop = 100;
-  light.shadowCameraBottom = -100;
-  light.shadowBias = -0.001;
-}
-if (DEBUG) {
-  scene.add(new THREE.CameraHelper(light.shadow.camera));
-  scene.add(new THREE.CameraHelper(spotlight.shadow.camera));
-}
-
-scene.add(ambientLight);
-scene.add(spotlight);
-scene.add(light);
-camera.position.z = CAMERA_DISTANCE;
-
-// prepare loader and load the model
-let loader = new THREE.JSONLoader();
-let texLoader = new THREE.TextureLoader();
-let ship;
-let shotController = new ShotController(scene);
-let particleSystem = new ParticleSystem(scene);
-let crosshair;
-let loadPromise = new Promise(done => {
-  texLoader.load('./media/spaceship_comp.png', function(texture) {
-    texLoader.load('./media/spaceship_nor.png', function(normalMap) {
-      loader.load('./media/nicce_fighter.json', function(geometry) {
-        let material = new THREE.MeshPhongMaterial({
-          map: texture,
-          normalMap: normalMap
-        });
-        geometry.scale(0.5, 0.5, 0.5);
-        let mesh = new THREE.Mesh(geometry, material);
-        ship = new Ship(mesh, shotController, particleSystem);
-        if (SHADOWS) {
-          ship.receiveShadow = true;
-        }
-        light.target = ship;
-        scene.add(ship);
-        crosshair = new Crosshair(scene, camera, ship);
-        done();
-      });
-    });
+function initGame() {
+  console.log('Loading complete!');
+  let music = new Howl({
+    src: ['./media/main_theme2.mp3'],
+    loop: true,
+    volume: 0.5
   });
-});
+  music.play();
 
-// Planet testing
-let planet = new Planet(500);
-planet.position.y = -550;
-if (SHADOWS) {
-  planet.castShadow = true;
-}
-scene.add(planet);
+  let camera = CAMERA;
+  let renderer = new THREE.WebGLRenderer({antialias: true, alpha: true});
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.autoClear = false;
+  document.body.appendChild(renderer.domElement);
+  renderer.domElement.setAttribute('tabIndex', '0');
+  renderer.domElement.focus();
 
-// Format debugging text
-let text;
-let fps = 60.0;
-if (DEBUG) {
-  text = document.createElement('div');
-  text.className = 'debug';
-  text.innerHTML = 'Loading...';
-  document.body.appendChild(text);
-}
+  let ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
+  let spotlight = new THREE.SpotLight(0xffffff, 3, 300, 0.9, 0.75, 1.5);
 
-// Game Loop
-let previousTime;
-function render() {
-  let time = new Date().getTime();
-  let delta = Math.min(MAX_DELTA, (time - previousTime) / 1000);
-  previousTime = time;
+  SCENE.add(ambientLight);
+  SCENE.add(spotlight);
+  camera.position.z = -CAMERA_DISTANCE;
+  camera.rotateOnAxis(camera.up, Math.PI);
 
-  ship.update(delta);
-  particleSystem.update(delta);
-  crosshair.update([planet]);
+  // Load player ship
+  let playerShip = new Fighter();
+  playerShip.isPlayer = true;
+  playerShip.name = 'Player';
+  player.setShip(playerShip);
+  shotController.addShootable(playerShip);
+  SCENE.add(playerShip);
+  let crosshair = new Crosshair(camera, playerShip);
 
-  // light/shadow map follow
-  light.position.copy(ship.position.clone().add(LIGHT_VECTOR));
+  // Planet testing
+  let planet = new Planet(500);
+  planet.isPlanet = true;
+  planet.position.y = -800;
+  SCENE.add(planet);
+  shotController.addShootable(planet);
+  PLANETS.push(planet);
 
-  // Camera follow
-  let direction = CAMERA_DIRECTION.clone();
-  direction.applyQuaternion(ship.quaternion).setLength(CAMERA_DISTANCE);
-  let cameraTargetPosition = ship.position.clone().add(direction);
-  camera.position.lerp(cameraTargetPosition, CAMERA_VELOCITY * delta);
-  camera.quaternion.slerp(ship.quaternion, CAMERA_VELOCITY * delta);
+  // Sun
+  let sun = new Sun();
+  sun.position.z = 10000;
+  SCENE.add(sun);
 
-  // update spotlight position and direction
-  direction = SPOTLIGHT_VECTOR.clone();
-  direction.applyQuaternion(ship.quaternion);
-  spotlight.position.copy(ship.position);
-  spotlight.target.quaternion.copy(ship.quaternion).inverse();
-  spotlight.target.position.copy(ship.position.clone().add(direction));
-  spotlight.target.updateMatrixWorld();
+  // Background
+  let material = new THREE.MeshBasicMaterial({
+    map: loader.get('backgroundTexture'),
+    side: THREE.BackSide,
+    color: 0x555555
+  });
+  let geometry = new THREE.SphereGeometry(100000, 32, 32);
+  let stars = new THREE.Mesh(geometry, material);
+  SCENE.add(stars);
 
-  renderer.render(scene, camera);
-
-  //Update debugging text
+  // Format debugging text
+  let text;
+  let fps = 60.0;
   if (DEBUG) {
-    text.innerHTML = ['x', 'y', 'z'].map(x => x + ': ' + ship.position[x]).join('<br/>');
-    fps = fps * 9.0 / 10.0;
-    fps += (1.0 / (Math.max(delta, 0.01) * 10));
-    text.innerHTML += '<br/>fps: ' + fps;
+    text = document.createElement('div');
+    text.className = 'debug';
+    text.innerHTML = 'Loading...';
+    document.body.appendChild(text);
   }
 
-  requestAnimationFrame(render);
-}
+  // Enemies
+  let enemies = [];
+  for (let i = 0; i < 5; i++) {
+    let enemyShip = new Fighter();
+    let offset = new THREE.Vector3(Math.random(), Math.random(), Math.random());
+    offset.multiplyScalar(i * 5);
+    enemyShip.position.add(offset);
+    enemyShip.target = playerShip;
+    enemyShip.ai = FIGHTER_AI;
+    SCENE.add(enemyShip);
+    enemies.push(enemyShip);
+    shotController.addShootable(enemyShip);
+    enemyShip.name = 'Enemy ' + i;
+  }
 
-loadPromise.then(() => {
+  // HUD
+  let hud = new HUD();
+
+  playerShip.addEventListener('onDamage', () => {
+    hud.update(playerShip.hp / playerShip.maxHp, playerShip.shield / playerShip.maxShield);
+  });
+
+  playerShip.addEventListener('onDamage', () => {
+    if (playerShip.hp === 0) {
+      let explosion = new Explosion();
+      GAME.addObject(explosion);
+      playerShip.traverse((object) => {
+        SCENE.remove(object);
+      });
+      SCENE.remove(playerShip);
+      player.ship = null;
+    }
+  });
+
+  // Game Loop
+  let previousTime;
+  function render() {
+    let time = new Date().getTime();
+    let delta = Math.min(MAX_DELTA, (time - previousTime) / 1000);
+    previousTime = time;
+
+    player.update();
+    playerShip.update(delta, camera.position);
+    crosshair.update([planet, ...enemies]);
+
+    // Enemies
+    for (let enemy of enemies) {
+      enemy.update(delta, camera.position);
+    }
+
+    GAME.update(delta);
+
+    // Camera follow
+    let direction = CAMERA_DIRECTION.clone();
+    direction.applyQuaternion(playerShip.quaternion).setLength(CAMERA_DISTANCE);
+    let cameraTargetPosition = playerShip.position.clone().add(direction);
+    camera.position.lerp(cameraTargetPosition, CAMERA_VELOCITY * delta);
+    let quaternion = (new THREE.Quaternion()).setFromAxisAngle(new THREE.Vector3(0, 1, 0), Math.PI);
+    quaternion.multiplyQuaternions(playerShip.quaternion, quaternion);
+    camera.quaternion.slerp(quaternion, CAMERA_VELOCITY * delta);
+
+    // update spotlight position and direction
+    direction = SPOTLIGHT_VECTOR.clone();
+    direction.applyQuaternion(playerShip.quaternion);
+    spotlight.position.copy(playerShip.position);
+    spotlight.target.position.copy(playerShip.position.clone().add(direction));
+    spotlight.target.updateMatrixWorld();
+
+    shotController.update(delta);
+
+    renderer.render(SCENE, camera);
+    renderer.render(hud.scene, hud.camera);
+
+    //Update debugging text
+    if (DEBUG) {
+      text.innerHTML = ['x', 'y', 'z'].map(x => x + ': ' + playerShip.position[x]).join('<br/>');
+      fps = fps * 9.0 / 10.0;
+      fps += (1.0 / (Math.max(delta, 0.01) * 10));
+      text.innerHTML += '<br/>fps: ' + fps;
+    }
+
+    requestAnimationFrame(render);
+  }
+
   previousTime = new Date().getTime();
   render();
-});
+}
+
+loader.manager.onLoad = () => {
+  document.body.removeChild(loadingText);
+  initGame();
+};
+loader.load();

@@ -1,35 +1,32 @@
-import THREE from 'three';
-
-let texLoader = new THREE.TextureLoader();
-let crosshairMaterial;
-texLoader.load('./media/crosshair.png', function(texture) {
-  crosshairMaterial = new THREE.SpriteMaterial({
-    color: 0x00ff00,
-    map: texture,
-    blending: THREE.NormalBlending,
-    depthWrite: false,
-    depthTest: false
-  });
-});
+import * as THREE from 'three';
+import {loader} from './GSFLoader';
+import {SCENE} from './Game';
 
 const FARTHEST = 500;
 const SCALING_FACTOR = 10;
 
 class Crosshair {
 
-  constructor(scene, camera, source) {
+  constructor(camera, source) {
     this.camera = camera;
     this.source = source;
     this.raycaster = new THREE.Raycaster();
     this.raycaster.far = FARTHEST;
 
+    let crosshairMaterial = new THREE.SpriteMaterial({
+      color: 0x00ff00,
+      map: loader.get('crosshair'),
+      blending: THREE.NormalBlending,
+      depthWrite: false,
+      depthTest: false
+    });
     this.sprite = new THREE.Sprite(crosshairMaterial);
     this.sprite.renderDepth = 0;
-    scene.add(this.sprite);
+    SCENE.add(this.sprite);
   }
 
   update(objects) {
-    let direction = new THREE.Vector3(0, 0, -1);
+    let direction = new THREE.Vector3(0, 0, 1);
     direction.applyQuaternion(this.source.quaternion);
     this.raycaster.set(this.source.position, direction);
     let intersections = this.raycaster.intersectObjects(objects);

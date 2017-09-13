@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import THREE from 'three';
+import * as THREE from 'three';
 
 function applyPointRandomness(r) {
   let p = new THREE.Vector3(

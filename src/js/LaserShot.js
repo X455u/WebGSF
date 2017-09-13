@@ -1,8 +1,5 @@
-import THREE from 'three';
+import * as THREE from 'three';
 import SubdivisionModifier from './SubdivisionModifier';
-
-const VELOCITY = 300; // units/s
-const LIFETIME = 5.0; // seconds
 
 let shotGeometry = new THREE.CylinderGeometry(0.05, 0.05, 5, 8, 1);
 shotGeometry.rotateX(Math.PI / 2);
@@ -15,24 +12,25 @@ let shotMaterial = new THREE.MeshPhongMaterial({
   specular: 0x666666,
   emissive: 0xff0000,
   shininess: 0,
-  shading: THREE.SmoothShading,
-  opacity: 0.9,
+  flatShading: false,
+  opacity: 0.75,
   transparent: true
 });
 let shotMesh = new THREE.Mesh(shotGeometry, shotMaterial);
 
 class LaserShot extends THREE.Object3D {
 
-  constructor() {
+  constructor(velocity, lifetime) {
     super();
-
     this.add(shotMesh.clone());
-    this.lifetimeLeft = LIFETIME;
+    this.lifetimeLeft = lifetime;
+    this.velocity = velocity;
+    this.damage = 5;
   }
 
   update(delta) {
     this.lifetimeLeft -= delta;
-    this.translateZ(-VELOCITY * delta);
+    this.translateZ(this.velocity * delta);
   }
 
 }

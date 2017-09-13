@@ -1,32 +1,62 @@
-import LaserShot from './LaserShot';
+import * as THREE from 'three';
+import {SCENE} from './Game';
+import Ship from './Ship';
+
+const RAYCASTER = new THREE.Raycaster();
+const NEAR = 0;
+const FAR = 300;
 
 class ShotController {
 
-  constructor(scene) {
+  constructor() {
     this.shots = [];
-    this.scene = scene;
+    this.shootables = [];
+
+    RAYCASTER.near = NEAR;
+    this.hitCounterPlayer = 0;
+    this.hitCounterPlanet = 0;
   }
 
   update(delta) {
+    RAYCASTER.far = FAR * delta;
     this.shots.forEach(shot => {
       shot.update(delta);
       if (shot.lifetimeLeft <= 0.0) {
-        this.scene.remove(shot);
+        SCENE.remove(shot);
         this.shots.splice(this.shots.indexOf(shot), 1);
       }
+
+      let direction = new THREE.Vector3(0, 0, 1);
+      direction.applyQuaternion(shot.quaternion);
+      RAYCASTER.set(shot.position, direction);
+      let intersections = RAYCASTER.intersectObjects(this.shootables);
+      if (intersections.length !== 0) {
+        shot.isDead = true;
+        let hitObject = intersections[0].object;
+        if (hitObject instanceof Ship) hitObject.damage(shot.damage);
+      }
     });
+
+    let i = 0;
+    while (this.shots[i]) {
+      let shot = this.shots[i];
+      if (shot.isDead) {
+        SCENE.remove(shot);
+        this.shots.splice(this.shots.indexOf(shot), 1);
+      } else {
+        i++;
+      }
+    }
   }
 
-  shootLaserShot(ship) {
-    let shot = new LaserShot();
-    shot.position.copy(ship.position);
-    shot.quaternion.copy(ship.quaternion);
-    shot.translateX(0.7 * ship.activeGun); // Bad initial solution
-    ship.activeGun *= -1; // Bad initial solution
+  add(shot) {
+    SCENE.add(shot);
     this.shots.push(shot);
-    this.scene.add(shot);
+  }
+
+  addShootable(mesh) {
+    this.shootables.push(mesh);
   }
 
 }
-
-export default ShotController;
+export const shotController = new ShotController();
