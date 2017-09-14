@@ -1,9 +1,14 @@
 import * as THREE from 'three';
 
-import {SHOT_CONTROLLER} from './ShotController';
-
 export const SCENE = new THREE.Scene();
+export const RAYCASTER = new THREE.Raycaster(new THREE.Vector3(), new THREE.Vector3(0, 0, 1), 0);
 export const PLANETS = [];
+export const SHOOTABLES = [];
+
+function remove(element, list) {
+  let index = list.indexOf(element);
+  if (index > -1) list.splice(index, 1);
+}
 
 class Game {
 
@@ -22,8 +27,8 @@ class Game {
       let object = this.objects[i];
       if (object.removed) {
         SCENE.remove(object);
-        SHOT_CONTROLLER.removeShootable(object);
-        this.objects.splice(this.objects.indexOf(object), 1);
+        remove(object, SHOOTABLES);
+        remove(object, this.objects);
       } else {
         i++;
       }
@@ -31,14 +36,19 @@ class Game {
   }
 
   addObject(object) {
-    this.objects.push(object);
     SCENE.add(object);
-    SHOT_CONTROLLER.addShootable(object);
+    SHOOTABLES.push(object);
+    this.objects.push(object);
   }
 
   addStatic(object) {
     SCENE.add(object);
-    SHOT_CONTROLLER.addShootable(object);
+    SHOOTABLES.push(object);
+  }
+
+  addShot(object) {
+    SCENE.add(object);
+    this.objects.push(object);
   }
 
 }

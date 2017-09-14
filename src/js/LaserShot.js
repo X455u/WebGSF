@@ -1,8 +1,10 @@
 import * as THREE from 'three';
 import SubdivisionModifier from './SubdivisionModifier';
+import Shot from './Shot';
 
 let shotGeometry = new THREE.CylinderGeometry(0.05, 0.05, 5, 8, 1);
 shotGeometry.rotateX(Math.PI / 2);
+shotGeometry.translate(0, 0, -2.5);
 let modifier = new SubdivisionModifier(1);
 modifier.modify(shotGeometry);
 shotGeometry.faceVertexUvs = [];
@@ -16,23 +18,15 @@ let shotMaterial = new THREE.MeshPhongMaterial({
   opacity: 0.75,
   transparent: true
 });
-let shotMesh = new THREE.Mesh(shotGeometry, shotMaterial);
 
-class LaserShot extends THREE.Object3D {
+class LaserShot extends Shot {
 
-  constructor(velocity, lifetime) {
-    super();
-    this.add(shotMesh.clone());
-    this.lifetimeLeft = lifetime;
-    this.velocity = velocity;
+  constructor() {
+    super(shotGeometry, shotMaterial);
+    this.lifetimeLeft = 5;
+    this.velocity = 300;
     this.damage = 5;
   }
 
-  update(delta) {
-    this.lifetimeLeft -= delta;
-    this.translateZ(this.velocity * delta);
-  }
-
 }
-
 export default LaserShot;

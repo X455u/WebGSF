@@ -1,7 +1,6 @@
 import * as THREE from 'three';
 
 import Planet from './Planet';
-import {SHOT_CONTROLLER} from './ShotController';
 import Crosshair from './Crosshair';
 import HUD from './HUD';
 import Sun from './Sun';
@@ -147,8 +146,6 @@ function initGame() {
     spotlight.position.copy(playerShip.position);
     spotlight.target.position.copy(playerShip.position.clone().add(direction));
     spotlight.target.updateMatrixWorld();
-
-    SHOT_CONTROLLER.update(delta);
 
     renderer.render(SCENE, CAMERA);
     renderer.render(hud.scene, hud.camera);

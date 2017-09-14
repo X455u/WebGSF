@@ -1,8 +1,8 @@
 import * as THREE from 'three';
 import LaserShot from './LaserShot';
-import {SHOT_CONTROLLER} from './ShotController';
 
 class SmallPulseLaser extends THREE.Object3D {
+
   constructor() {
     super();
     this.reload = 0.0;
@@ -13,8 +13,7 @@ class SmallPulseLaser extends THREE.Object3D {
 
   shoot() {
     if (this.reload !== 0.0) return;
-    let shot = new LaserShot(this.muzzleVelocity, this.shotLifetime);
-    SHOT_CONTROLLER.add(shot);
+    let shot = new LaserShot();
     this.getWorldPosition(shot.position);
     this.getWorldQuaternion(shot.quaternion);
     this.reload = this.reloadTime;
@@ -27,5 +26,6 @@ class SmallPulseLaser extends THREE.Object3D {
   update(delta) {
     this.reload = Math.max(0.0, this.reload - delta);
   }
+
 }
 export default SmallPulseLaser;

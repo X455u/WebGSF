@@ -18,6 +18,7 @@ class Fighter extends Ship {
     });
     this.weaponSide = 1;
     this.gun.translateX(0.7 * this.weaponSide);
+    this.gun.translateZ(2.8);
 
     this.gun.addEventListener('onShoot', () => {
       this.weaponSide *= -1;

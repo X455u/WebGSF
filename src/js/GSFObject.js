@@ -8,6 +8,8 @@ class GSFObject extends THREE.Mesh {
 
   update() {}
 
+  damage() {}
+
   remove() {
     this.removed = true;
   }
