@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 
-class GSFObject extends THREE.Mesh {
+class GameObject extends THREE.Mesh {
   constructor(geometry, material) {
     super(geometry, material);
     this.removed = false;
@@ -14,4 +14,4 @@ class GSFObject extends THREE.Mesh {
     this.removed = true;
   }
 }
-export default GSFObject;
+export default GameObject;

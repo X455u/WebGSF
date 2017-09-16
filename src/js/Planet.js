@@ -2,13 +2,13 @@ import _ from 'lodash';
 import * as THREE from 'three';
 import SubdivisionModifier from './SubdivisionModifier';
 import {loader} from './GSFLoader';
-import GSFObject from './GSFObject';
+import GameObject from './GameObject';
 
 const DETAIL = 3;
 const NOISE = 0.3;
 const SMOOTHNESS = 2;
 
-class Planet extends GSFObject {
+class Planet extends GameObject {
   constructor(radius) {
     let geometry = new THREE.IcosahedronGeometry(radius, 2);
     let modifier = new SubdivisionModifier(1);

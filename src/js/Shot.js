@@ -1,8 +1,8 @@
 import * as THREE from 'three';
-import GSFObject from './GSFObject';
+import GameObject from './GameObject';
 import {GAME, RAYCASTER, SHOOTABLES} from './Game';
 
-class Shot extends GSFObject {
+class Shot extends GameObject {
   constructor(geometry, material) {
     super(geometry, material);
     this.velocity = 300;

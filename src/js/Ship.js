@@ -1,12 +1,12 @@
 import * as THREE from 'three';
 import {PLANETS} from './Game';
-import GSFObject from './GSFObject';
+import GameObject from './GameObject';
 import Explosion from './Explosion';
 import {GAME} from './Game';
 
 const RAYCASTER = new THREE.Raycaster();
 
-class Ship extends GSFObject {
+class Ship extends GameObject {
 
   constructor(geometry, material, stats) {
     super(geometry, material);
