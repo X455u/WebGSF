@@ -62,9 +62,12 @@ class GPUParticleSystem extends THREE.Object3D {
           float life = lifeUnclamped - float(int(lifeUnclamped)) + lifeOffset;
           if (life > 1.0) life -= 1.0;
   				lifeLeft = 1.0 - life;
+
           vColor = vec4(color, 1.0);
 
-  				gl_PointSize = uScale * size * lifeLeft / distance(position, cameraPosition);
+          vec3 worldPosition = vec3(modelMatrix[3][0], modelMatrix[3][1], modelMatrix[3][2]);
+
+  				gl_PointSize = uScale * size * lifeLeft / distance(worldPosition + position, cameraPosition);
 					gl_Position = projectionMatrix * modelViewMatrix * vec4( position + destination * life, 1.0 );
   			}
   		`,
