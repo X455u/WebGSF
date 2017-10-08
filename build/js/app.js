@@ -8885,21 +8885,19 @@
 
 	var _Planet2 = _interopRequireDefault(_Planet);
 
-	var _ShotController = __webpack_require__(418);
-
-	var _Crosshair = __webpack_require__(430);
+	var _Crosshair = __webpack_require__(419);
 
 	var _Crosshair2 = _interopRequireDefault(_Crosshair);
 
-	var _HUD = __webpack_require__(431);
+	var _HUD = __webpack_require__(426);
 
 	var _HUD2 = _interopRequireDefault(_HUD);
 
-	var _Sun = __webpack_require__(435);
+	var _Sun = __webpack_require__(430);
 
 	var _Sun2 = _interopRequireDefault(_Sun);
 
-	var _Fighter = __webpack_require__(436);
+	var _Fighter = __webpack_require__(431);
 
 	var _Fighter2 = _interopRequireDefault(_Fighter);
 
@@ -8911,9 +8909,13 @@
 
 	var _GSFLoader = __webpack_require__(417);
 
-	var _Game = __webpack_require__(419);
+	var _Game = __webpack_require__(420);
 
-	var _GSFCamera = __webpack_require__(429);
+	var _GSFCamera = __webpack_require__(439);
+
+	var _SimpleParticleSystem = __webpack_require__(447);
+
+	var _SimpleParticleSystem2 = _interopRequireDefault(_SimpleParticleSystem);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -9053,8 +9055,6 @@
 	    spotlight.position.copy(playerShip.position);
 	    spotlight.target.position.copy(playerShip.position.clone().add(direction));
 	    spotlight.target.updateMatrixWorld();
-
-	    _ShotController.SHOT_CONTROLLER.update(delta);
 
 	    renderer.render(_Game.SCENE, _GSFCamera.CAMERA);
 	    renderer.render(hud.scene, hud.camera);
@@ -53367,6 +53367,10 @@
 
 	var _GSFLoader = __webpack_require__(417);
 
+	var _GameObject2 = __webpack_require__(418);
+
+	var _GameObject3 = _interopRequireDefault(_GameObject2);
+
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -53375,8 +53379,8 @@
 	var NOISE = 0.3;
 	var SMOOTHNESS = 2;
 
-	var Planet = function (_THREE$Mesh) {
-	  (0, _inherits3.default)(Planet, _THREE$Mesh);
+	var Planet = function (_GameObject) {
+	  (0, _inherits3.default)(Planet, _GameObject);
 
 	  function Planet(radius) {
 	    (0, _classCallCheck3.default)(this, Planet);
@@ -53412,7 +53416,7 @@
 	  }
 
 	  return Planet;
-	}(THREE.Mesh);
+	}(_GameObject3.default);
 
 	exports.default = Planet;
 
@@ -67773,7 +67777,73 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.SHOT_CONTROLLER = undefined;
+
+	var _getPrototypeOf = __webpack_require__(329);
+
+	var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
+
+	var _classCallCheck2 = __webpack_require__(355);
+
+	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+	var _createClass2 = __webpack_require__(413);
+
+	var _createClass3 = _interopRequireDefault(_createClass2);
+
+	var _possibleConstructorReturn2 = __webpack_require__(356);
+
+	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+	var _inherits2 = __webpack_require__(402);
+
+	var _inherits3 = _interopRequireDefault(_inherits2);
+
+	var _three = __webpack_require__(327);
+
+	var THREE = _interopRequireWildcard(_three);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var GameObject = function (_THREE$Mesh) {
+	  (0, _inherits3.default)(GameObject, _THREE$Mesh);
+
+	  function GameObject(geometry, material) {
+	    (0, _classCallCheck3.default)(this, GameObject);
+
+	    var _this = (0, _possibleConstructorReturn3.default)(this, (GameObject.__proto__ || (0, _getPrototypeOf2.default)(GameObject)).call(this, geometry, material));
+
+	    _this.removed = false;
+	    return _this;
+	  }
+
+	  (0, _createClass3.default)(GameObject, [{
+	    key: 'update',
+	    value: function update() {}
+	  }, {
+	    key: 'damage',
+	    value: function damage() {}
+	  }, {
+	    key: 'remove',
+	    value: function remove() {
+	      this.removed = true;
+	    }
+	  }]);
+	  return GameObject;
+	}(THREE.Mesh);
+
+	exports.default = GameObject;
+
+/***/ }),
+/* 419 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 
 	var _classCallCheck2 = __webpack_require__(355);
 
@@ -67787,91 +67857,60 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _Game = __webpack_require__(419);
+	var _GSFLoader = __webpack_require__(417);
 
-	var _Ship = __webpack_require__(425);
-
-	var _Ship2 = _interopRequireDefault(_Ship);
+	var _Game = __webpack_require__(420);
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	var RAYCASTER = new THREE.Raycaster();
-	var NEAR = 0;
-	var FAR = 300;
+	var FARTHEST = 500;
+	var SCALING_FACTOR = 10;
 
-	var ShotController = function () {
-	  function ShotController() {
-	    (0, _classCallCheck3.default)(this, ShotController);
+	var Crosshair = function () {
+	  function Crosshair(camera, source) {
+	    (0, _classCallCheck3.default)(this, Crosshair);
 
-	    this.shots = [];
-	    this.shootables = [];
+	    this.camera = camera;
+	    this.source = source;
+	    this.raycaster = new THREE.Raycaster();
+	    this.raycaster.far = FARTHEST;
 
-	    RAYCASTER.near = NEAR;
-	    this.hitCounterPlayer = 0;
-	    this.hitCounterPlanet = 0;
+	    var crosshairMaterial = new THREE.SpriteMaterial({
+	      color: 0x00ff00,
+	      map: _GSFLoader.loader.get('crosshair'),
+	      blending: THREE.NormalBlending,
+	      depthWrite: false,
+	      depthTest: false
+	    });
+	    this.sprite = new THREE.Sprite(crosshairMaterial);
+	    this.sprite.renderDepth = 0;
+	    _Game.SCENE.add(this.sprite);
 	  }
 
-	  (0, _createClass3.default)(ShotController, [{
+	  (0, _createClass3.default)(Crosshair, [{
 	    key: 'update',
-	    value: function update(delta) {
-	      var _this = this;
-
-	      RAYCASTER.far = FAR * delta;
-	      this.shots.forEach(function (shot) {
-	        shot.update(delta);
-	        if (shot.lifetimeLeft <= 0.0) {
-	          _Game.SCENE.remove(shot);
-	          _this.shots.splice(_this.shots.indexOf(shot), 1);
-	        }
-
-	        var direction = new THREE.Vector3(0, 0, 1);
-	        direction.applyQuaternion(shot.quaternion);
-	        RAYCASTER.set(shot.position, direction);
-	        var intersections = RAYCASTER.intersectObjects(_this.shootables);
-	        if (intersections.length !== 0) {
-	          shot.isDead = true;
-	          var hitObject = intersections[0].object;
-	          if (hitObject instanceof _Ship2.default) hitObject.damage(shot.damage);
-	        }
-	      });
-
-	      var i = 0;
-	      while (this.shots[i]) {
-	        var shot = this.shots[i];
-	        if (shot.isDead) {
-	          _Game.SCENE.remove(shot);
-	          this.shots.splice(this.shots.indexOf(shot), 1);
-	        } else {
-	          i++;
-	        }
-	      }
-	    }
-	  }, {
-	    key: 'add',
-	    value: function add(shot) {
-	      _Game.SCENE.add(shot);
-	      this.shots.push(shot);
-	    }
-	  }, {
-	    key: 'addShootable',
-	    value: function addShootable(mesh) {
-	      this.shootables.push(mesh);
-	    }
-	  }, {
-	    key: 'removeShootable',
-	    value: function removeShootable(mesh) {
-	      this.shootables.splice(this.shootables.indexOf(mesh), 1);
+	    value: function update(objects) {
+	      var direction = new THREE.Vector3(0, 0, 1);
+	      direction.applyQuaternion(this.source.quaternion);
+	      this.raycaster.set(this.source.position, direction);
+	      var intersections = this.raycaster.intersectObjects(objects);
+	      var point = intersections.length > 0 ? intersections[0].point : this.raycaster.ray.at(FARTHEST);
+	      this.sprite.position.copy(point);
+	      var v = new THREE.Vector3();
+	      var scale = v.subVectors(this.sprite.position, this.camera.position).length() / SCALING_FACTOR;
+	      this.sprite.scale.x = scale;
+	      this.sprite.scale.y = scale;
 	    }
 	  }]);
-	  return ShotController;
+	  return Crosshair;
 	}();
 
-	var SHOT_CONTROLLER = exports.SHOT_CONTROLLER = new ShotController();
+	exports.default = Crosshair;
 
 /***/ }),
-/* 419 */
+/* 420 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -67879,9 +67918,9 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.GAME = exports.PLANETS = exports.SCENE = undefined;
+	exports.GAME = exports.SHOOTABLES = exports.PLANETS = exports.RAYCASTER = exports.SCENE = undefined;
 
-	var _getIterator2 = __webpack_require__(420);
+	var _getIterator2 = __webpack_require__(421);
 
 	var _getIterator3 = _interopRequireDefault(_getIterator2);
 
@@ -67897,14 +67936,19 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _ShotController = __webpack_require__(418);
-
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	var SCENE = exports.SCENE = new THREE.Scene();
+	var RAYCASTER = exports.RAYCASTER = new THREE.Raycaster(new THREE.Vector3(), new THREE.Vector3(0, 0, 1), 0);
 	var PLANETS = exports.PLANETS = [];
+	var SHOOTABLES = exports.SHOOTABLES = [];
+
+	function remove(element, list) {
+	  var index = list.indexOf(element);
+	  if (index > -1) list.splice(index, 1);
+	}
 
 	var Game = function () {
 	  function Game() {
@@ -67948,8 +67992,8 @@
 	        var object = this.objects[i];
 	        if (object.removed) {
 	          SCENE.remove(object);
-	          _ShotController.SHOT_CONTROLLER.removeShootable(object);
-	          this.objects.splice(this.objects.indexOf(object), 1);
+	          remove(object, SHOOTABLES);
+	          remove(object, this.objects);
 	        } else {
 	          i++;
 	        }
@@ -67958,15 +68002,21 @@
 	  }, {
 	    key: 'addObject',
 	    value: function addObject(object) {
-	      this.objects.push(object);
 	      SCENE.add(object);
-	      _ShotController.SHOT_CONTROLLER.addShootable(object);
+	      SHOOTABLES.push(object);
+	      this.objects.push(object);
 	    }
 	  }, {
 	    key: 'addStatic',
 	    value: function addStatic(object) {
 	      SCENE.add(object);
-	      _ShotController.SHOT_CONTROLLER.addShootable(object);
+	      SHOOTABLES.push(object);
+	    }
+	  }, {
+	    key: 'addShot',
+	    value: function addShot(object) {
+	      SCENE.add(object);
+	      this.objects.push(object);
 	    }
 	  }]);
 	  return Game;
@@ -67975,26 +68025,26 @@
 	var GAME = exports.GAME = new Game();
 
 /***/ }),
-/* 420 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	module.exports = { "default": __webpack_require__(421), __esModule: true };
-
-/***/ }),
 /* 421 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	__webpack_require__(382);
-	__webpack_require__(360);
-	module.exports = __webpack_require__(422);
-
+	module.exports = { "default": __webpack_require__(422), __esModule: true };
 
 /***/ }),
 /* 422 */
 /***/ (function(module, exports, __webpack_require__) {
 
+	__webpack_require__(382);
+	__webpack_require__(360);
+	module.exports = __webpack_require__(423);
+
+
+/***/ }),
+/* 423 */
+/***/ (function(module, exports, __webpack_require__) {
+
 	var anObject = __webpack_require__(347);
-	var get = __webpack_require__(423);
+	var get = __webpack_require__(424);
 	module.exports = __webpack_require__(342).getIterator = function (it) {
 	  var iterFn = get(it);
 	  if (typeof iterFn != 'function') throw TypeError(it + ' is not iterable!');
@@ -68003,10 +68053,10 @@
 
 
 /***/ }),
-/* 423 */
+/* 424 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	var classof = __webpack_require__(424);
+	var classof = __webpack_require__(425);
 	var ITERATOR = __webpack_require__(381)('iterator');
 	var Iterators = __webpack_require__(366);
 	module.exports = __webpack_require__(342).getIteratorMethod = function (it) {
@@ -68017,7 +68067,7 @@
 
 
 /***/ }),
-/* 424 */
+/* 425 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	// getting tag from 19.1.3.6 Object.prototype.toString()
@@ -68046,7 +68096,478 @@
 
 
 /***/ }),
-/* 425 */
+/* 426 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _epsilon = __webpack_require__(427);
+
+	var _epsilon2 = _interopRequireDefault(_epsilon);
+
+	var _classCallCheck2 = __webpack_require__(355);
+
+	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+	var _createClass2 = __webpack_require__(413);
+
+	var _createClass3 = _interopRequireDefault(_createClass2);
+
+	var _three = __webpack_require__(327);
+
+	var THREE = _interopRequireWildcard(_three);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function fromBottom(HUD, y) {
+	  return -HUD.height / 2 + y;
+	}
+
+	function fromLeft(HUD, x) {
+	  return -HUD.width / 2 + x;
+	}
+
+	var HP_BAR_HEIGHT = 50;
+
+	var HUD = function () {
+	  function HUD() {
+	    (0, _classCallCheck3.default)(this, HUD);
+
+	    this.width = window.innerWidth;
+	    this.height = window.innerHeight;
+
+	    this.camera = new THREE.OrthographicCamera(-this.width / 2, this.width / 2, this.height / 2, -this.height / 2, -10000, 10000);
+	    this.camera.position.z = 10;
+
+	    this.scene = new THREE.Scene();
+
+	    var scale = Math.min(this.width / 1200, this.height / 800);
+
+	    var hpBarGeometry = new THREE.CylinderGeometry(50, HP_BAR_HEIGHT, 200, 16);
+	    hpBarGeometry.scale(scale, scale, scale);
+	    var hpBarMaterial = new THREE.MeshBasicMaterial({
+	      color: 0xff0000,
+	      transparent: true,
+	      opacity: 0.5
+	    });
+	    var hpBarMesh = new THREE.Mesh(hpBarGeometry, hpBarMaterial);
+	    this.scene.add(hpBarMesh);
+
+	    var hpContainerMaterial = new THREE.MeshBasicMaterial({
+	      color: 0xff0000,
+	      transparent: true,
+	      opacity: 0.5,
+	      wireframe: true
+	    });
+	    var hpContainerMesh = new THREE.Mesh(hpBarGeometry, hpContainerMaterial);
+	    this.scene.add(hpContainerMesh);
+
+	    // hpBarMesh.rotateX(0.2 * Math.PI);
+	    hpBarMesh.position.set(fromLeft(this, 0.1 * this.width), fromBottom(this, 0.15 * this.height), 0);
+	    // hpContainerMesh.rotateX(0.2 * Math.PI);
+	    hpContainerMesh.position.set(hpBarMesh.position.x, hpBarMesh.position.y, hpBarMesh.position.z);
+
+	    var ballGeometry = new THREE.SphereGeometry(75, 32, 32);
+	    ballGeometry.scale(scale, scale, scale);
+	    var ballMaterial = new THREE.MeshBasicMaterial({
+	      color: 0x0000ff,
+	      transparent: true,
+	      opacity: 0.5
+	    });
+	    var ballMesh = new THREE.Mesh(ballGeometry, ballMaterial);
+	    this.scene.add(ballMesh);
+
+	    var ballShellMaterial = new THREE.MeshBasicMaterial({
+	      color: 0x0000ff,
+	      transparent: true,
+	      opacity: 0.5,
+	      wireframe: true
+	    });
+	    var ballShellMesh = new THREE.Mesh(ballGeometry, ballShellMaterial);
+	    this.scene.add(ballShellMesh);
+
+	    ballMesh.rotateX(0.2 * Math.PI);
+	    ballMesh.position.set(fromLeft(this, 0.25 * this.width), fromBottom(this, 0.15 * this.height), 0);
+	    ballShellMesh.rotateX(0.2 * Math.PI);
+	    ballShellMesh.position.set(ballMesh.position.x, ballMesh.position.y, ballMesh.position.z);
+
+	    this.hpMesh = hpBarMesh;
+	    this.shieldMesh = ballMesh;
+	    this.hpBarHeight = HP_BAR_HEIGHT * scale;
+
+	    this.hpBarPosition = this.hpMesh.position.y;
+	    this.hpBarPositionMin = this.hpBarPosition - 2 * 1 * this.hpBarHeight;
+	  }
+
+	  (0, _createClass3.default)(HUD, [{
+	    key: 'update',
+	    value: function update(hpPercent, shieldPercent) {
+	      this.hpMesh.scale.y = Math.max(_epsilon2.default, hpPercent);
+	      this.hpMesh.position.y = Math.max(this.hpBarPositionMin, this.hpBarPosition - 2 * (1 - hpPercent) * this.hpBarHeight);
+	      var shieldScale = this.shieldMesh.scale;
+	      shieldScale.x = shieldScale.y = shieldScale.z = Math.max(_epsilon2.default, shieldPercent);
+	    }
+	  }]);
+	  return HUD;
+	}();
+
+	exports.default = HUD;
+
+/***/ }),
+/* 427 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	module.exports = { "default": __webpack_require__(428), __esModule: true };
+
+/***/ }),
+/* 428 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	__webpack_require__(429);
+	module.exports = Math.pow(2, -52);
+
+
+/***/ }),
+/* 429 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	// 20.1.2.1 Number.EPSILON
+	var $export = __webpack_require__(341);
+
+	$export($export.S, 'Number', { EPSILON: Math.pow(2, -52) });
+
+
+/***/ }),
+/* 430 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _getPrototypeOf = __webpack_require__(329);
+
+	var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
+
+	var _classCallCheck2 = __webpack_require__(355);
+
+	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+	var _possibleConstructorReturn2 = __webpack_require__(356);
+
+	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+	var _inherits2 = __webpack_require__(402);
+
+	var _inherits3 = _interopRequireDefault(_inherits2);
+
+	var _three = __webpack_require__(327);
+
+	var THREE = _interopRequireWildcard(_three);
+
+	var _GSFLoader = __webpack_require__(417);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function lensFlareUpdateCallback(object) {
+	  var f = void 0,
+	      fl = object.lensFlares.length;
+	  var flare = void 0;
+	  var vecX = -object.positionScreen.x * 2;
+	  var vecY = -object.positionScreen.y * 2;
+	  for (f = 0; f < fl; f++) {
+	    flare = object.lensFlares[f];
+	    flare.x = object.positionScreen.x + vecX * flare.distance;
+	    flare.y = object.positionScreen.y + vecY * flare.distance;
+	    flare.rotation = 0;
+	  }
+	  object.lensFlares[2].y += 0.025;
+	  object.lensFlares[3].rotation = object.positionScreen.x * 0.5 + THREE.Math.degToRad(45);
+	}
+
+	var Sun = function (_THREE$PointLight) {
+	  (0, _inherits3.default)(Sun, _THREE$PointLight);
+
+	  function Sun() {
+	    (0, _classCallCheck3.default)(this, Sun);
+
+	    var _this = (0, _possibleConstructorReturn3.default)(this, (Sun.__proto__ || (0, _getPrototypeOf2.default)(Sun)).call(this, 0xffffff, 3));
+
+	    var texFlare0 = _GSFLoader.loader.get('texFlare0');
+	    var texFlare2 = _GSFLoader.loader.get('texFlare2');
+	    var texFlare3 = _GSFLoader.loader.get('texFlare3');
+	    var lensFlare = new THREE.LensFlare(texFlare0, 700, 0.0, THREE.AdditiveBlending, new THREE.Color(0xffffff));
+	    lensFlare.add(texFlare2, 512, 0.0, THREE.AdditiveBlending);
+	    lensFlare.add(texFlare2, 512, 0.0, THREE.AdditiveBlending);
+	    lensFlare.add(texFlare2, 512, 0.0, THREE.AdditiveBlending);
+	    lensFlare.add(texFlare3, 60, 0.6, THREE.AdditiveBlending);
+	    lensFlare.add(texFlare3, 70, 0.7, THREE.AdditiveBlending);
+	    lensFlare.add(texFlare3, 120, 0.9, THREE.AdditiveBlending);
+	    lensFlare.add(texFlare3, 70, 1.0, THREE.AdditiveBlending);
+	    lensFlare.customUpdateCallback = lensFlareUpdateCallback;
+	    _this.add(lensFlare);
+	    return _this;
+	  }
+
+	  return Sun;
+	}(THREE.PointLight);
+
+	exports.default = Sun;
+
+/***/ }),
+/* 431 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _getIterator2 = __webpack_require__(421);
+
+	var _getIterator3 = _interopRequireDefault(_getIterator2);
+
+	var _getPrototypeOf = __webpack_require__(329);
+
+	var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
+
+	var _classCallCheck2 = __webpack_require__(355);
+
+	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+	var _createClass2 = __webpack_require__(413);
+
+	var _createClass3 = _interopRequireDefault(_createClass2);
+
+	var _possibleConstructorReturn2 = __webpack_require__(356);
+
+	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+	var _get2 = __webpack_require__(432);
+
+	var _get3 = _interopRequireDefault(_get2);
+
+	var _inherits2 = __webpack_require__(402);
+
+	var _inherits3 = _interopRequireDefault(_inherits2);
+
+	var _three = __webpack_require__(327);
+
+	var THREE = _interopRequireWildcard(_three);
+
+	var _GSFLoader = __webpack_require__(417);
+
+	var _Ship2 = __webpack_require__(436);
+
+	var _Ship3 = _interopRequireDefault(_Ship2);
+
+	var _SmallPulseLaser = __webpack_require__(440);
+
+	var _SmallPulseLaser2 = _interopRequireDefault(_SmallPulseLaser);
+
+	var _SimpleParticleSystem = __webpack_require__(447);
+
+	var _SimpleParticleSystem2 = _interopRequireDefault(_SimpleParticleSystem);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var Fighter = function (_Ship) {
+	  (0, _inherits3.default)(Fighter, _Ship);
+
+	  function Fighter() {
+	    (0, _classCallCheck3.default)(this, Fighter);
+
+	    var _this = (0, _possibleConstructorReturn3.default)(this, (Fighter.__proto__ || (0, _getPrototypeOf2.default)(Fighter)).call(this, _GSFLoader.loader.get('fighterGeometry'), _GSFLoader.loader.get('fighterMaterial'), {
+	      maxVelocity: 50,
+	      acceleration: 80,
+	      turnSpeed: 0.25,
+	      gun: new _SmallPulseLaser2.default(),
+	      maxHp: 100,
+	      maxShield: 50
+	    }));
+
+	    _this.weaponSide = 1;
+	    _this.gun.translateX(0.7 * _this.weaponSide);
+	    _this.gun.translateZ(2.8);
+
+	    _this.gun.addEventListener('onShoot', function () {
+	      _this.weaponSide *= -1;
+	      _this.gun.translateX(1.4 * _this.weaponSide);
+	    });
+
+	    _this.thrusterPositions = [new THREE.Vector3(-0.8, 0.25, -1), // Up-left
+	    new THREE.Vector3(0.8, 0.25, -1), // Up-right
+	    new THREE.Vector3(-0.8, -0.25, -1), // Down-left
+	    new THREE.Vector3(0.8, -0.25, -1) // Down-right
+	    ];
+
+	    _this.thrusters = [];
+	    var _iteratorNormalCompletion = true;
+	    var _didIteratorError = false;
+	    var _iteratorError = undefined;
+
+	    try {
+	      for (var _iterator = (0, _getIterator3.default)(_this.thrusterPositions), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	        var thrusterPosition = _step.value;
+
+	        var thruster = new _SimpleParticleSystem2.default({
+	          particles: 200,
+	          destination: new THREE.Vector3(0, 0, -2),
+	          positionRandomness: 0.2,
+	          destinationRandomness: 0.5,
+	          color: new THREE.Color(0xFFFFAA),
+	          size: 100,
+	          lifetime: 0.2
+	        });
+	        _this.add(thruster);
+	        thruster.translateX(thrusterPosition.x);
+	        thruster.translateY(thrusterPosition.y);
+	        thruster.translateZ(thrusterPosition.z);
+	        _this.thrusters.push(thruster);
+	      }
+	    } catch (err) {
+	      _didIteratorError = true;
+	      _iteratorError = err;
+	    } finally {
+	      try {
+	        if (!_iteratorNormalCompletion && _iterator.return) {
+	          _iterator.return();
+	        }
+	      } finally {
+	        if (_didIteratorError) {
+	          throw _iteratorError;
+	        }
+	      }
+	    }
+
+	    return _this;
+	  }
+
+	  (0, _createClass3.default)(Fighter, [{
+	    key: 'update',
+	    value: function update(delta) {
+	      (0, _get3.default)(Fighter.prototype.__proto__ || (0, _getPrototypeOf2.default)(Fighter.prototype), 'update', this).call(this, delta);
+	      var _iteratorNormalCompletion2 = true;
+	      var _didIteratorError2 = false;
+	      var _iteratorError2 = undefined;
+
+	      try {
+	        for (var _iterator2 = (0, _getIterator3.default)(this.thrusters), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+	          var thruster = _step2.value;
+
+	          thruster.update(delta);
+	        }
+	      } catch (err) {
+	        _didIteratorError2 = true;
+	        _iteratorError2 = err;
+	      } finally {
+	        try {
+	          if (!_iteratorNormalCompletion2 && _iterator2.return) {
+	            _iterator2.return();
+	          }
+	        } finally {
+	          if (_didIteratorError2) {
+	            throw _iteratorError2;
+	          }
+	        }
+	      }
+	    }
+	  }]);
+	  return Fighter;
+	}(_Ship3.default);
+
+	exports.default = Fighter;
+
+/***/ }),
+/* 432 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	exports.__esModule = true;
+
+	var _getPrototypeOf = __webpack_require__(329);
+
+	var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
+
+	var _getOwnPropertyDescriptor = __webpack_require__(433);
+
+	var _getOwnPropertyDescriptor2 = _interopRequireDefault(_getOwnPropertyDescriptor);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	exports.default = function get(object, property, receiver) {
+	  if (object === null) object = Function.prototype;
+	  var desc = (0, _getOwnPropertyDescriptor2.default)(object, property);
+
+	  if (desc === undefined) {
+	    var parent = (0, _getPrototypeOf2.default)(object);
+
+	    if (parent === null) {
+	      return undefined;
+	    } else {
+	      return get(parent, property, receiver);
+	    }
+	  } else if ("value" in desc) {
+	    return desc.value;
+	  } else {
+	    var getter = desc.get;
+
+	    if (getter === undefined) {
+	      return undefined;
+	    }
+
+	    return getter.call(receiver);
+	  }
+	};
+
+/***/ }),
+/* 433 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	module.exports = { "default": __webpack_require__(434), __esModule: true };
+
+/***/ }),
+/* 434 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	__webpack_require__(435);
+	var $Object = __webpack_require__(342).Object;
+	module.exports = function getOwnPropertyDescriptor(it, key) {
+	  return $Object.getOwnPropertyDescriptor(it, key);
+	};
+
+
+/***/ }),
+/* 435 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	// 19.1.2.6 Object.getOwnPropertyDescriptor(O, P)
+	var toIObject = __webpack_require__(372);
+	var $getOwnPropertyDescriptor = __webpack_require__(398).f;
+
+	__webpack_require__(340)('getOwnPropertyDescriptor', function () {
+	  return function getOwnPropertyDescriptor(it, key) {
+	    return $getOwnPropertyDescriptor(toIObject(it), key);
+	  };
+	});
+
+
+/***/ }),
+/* 436 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -68079,13 +68600,13 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _Game = __webpack_require__(419);
+	var _Game = __webpack_require__(420);
 
-	var _GSFObject2 = __webpack_require__(426);
+	var _GameObject2 = __webpack_require__(418);
 
-	var _GSFObject3 = _interopRequireDefault(_GSFObject2);
+	var _GameObject3 = _interopRequireDefault(_GameObject2);
 
-	var _Explosion = __webpack_require__(427);
+	var _Explosion = __webpack_require__(437);
 
 	var _Explosion2 = _interopRequireDefault(_Explosion);
 
@@ -68095,8 +68616,8 @@
 
 	var RAYCASTER = new THREE.Raycaster();
 
-	var Ship = function (_GSFObject) {
-	  (0, _inherits3.default)(Ship, _GSFObject);
+	var Ship = function (_GameObject) {
+	  (0, _inherits3.default)(Ship, _GameObject);
 
 	  function Ship(geometry, material, stats) {
 	    (0, _classCallCheck3.default)(this, Ship);
@@ -68243,12 +68764,12 @@
 	    }
 	  }]);
 	  return Ship;
-	}(_GSFObject3.default);
+	}(_GameObject3.default);
 
 	exports.default = Ship;
 
 /***/ }),
-/* 426 */
+/* 437 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -68281,77 +68802,13 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	var GSFObject = function (_THREE$Mesh) {
-	  (0, _inherits3.default)(GSFObject, _THREE$Mesh);
-
-	  function GSFObject(geometry, material) {
-	    (0, _classCallCheck3.default)(this, GSFObject);
-
-	    var _this = (0, _possibleConstructorReturn3.default)(this, (GSFObject.__proto__ || (0, _getPrototypeOf2.default)(GSFObject)).call(this, geometry, material));
-
-	    _this.removed = false;
-	    return _this;
-	  }
-
-	  (0, _createClass3.default)(GSFObject, [{
-	    key: 'update',
-	    value: function update() {}
-	  }, {
-	    key: 'remove',
-	    value: function remove() {
-	      this.removed = true;
-	    }
-	  }]);
-	  return GSFObject;
-	}(THREE.Mesh);
-
-	exports.default = GSFObject;
-
-/***/ }),
-/* 427 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _getPrototypeOf = __webpack_require__(329);
-
-	var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
-
-	var _classCallCheck2 = __webpack_require__(355);
-
-	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
-
-	var _createClass2 = __webpack_require__(413);
-
-	var _createClass3 = _interopRequireDefault(_createClass2);
-
-	var _possibleConstructorReturn2 = __webpack_require__(356);
-
-	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
-
-	var _inherits2 = __webpack_require__(402);
-
-	var _inherits3 = _interopRequireDefault(_inherits2);
-
-	var _three = __webpack_require__(327);
-
-	var THREE = _interopRequireWildcard(_three);
-
-	var _GPUParticleSystem = __webpack_require__(428);
+	var _GPUParticleSystem = __webpack_require__(438);
 
 	var _GPUParticleSystem2 = _interopRequireDefault(_GPUParticleSystem);
 
-	var _Game = __webpack_require__(419);
+	var _Game = __webpack_require__(420);
 
-	var _GSFCamera = __webpack_require__(429);
+	var _GSFCamera = __webpack_require__(439);
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -68404,7 +68861,7 @@
 	exports.default = Explosion;
 
 /***/ }),
-/* 428 */
+/* 438 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -68468,19 +68925,8 @@
 			// custom vertex and fragement shader
 
 			var GPUParticleShader = {
-
-				vertexShader: ['uniform float uTime;', 'uniform float uScale;', 'uniform sampler2D tNoise;', 'attribute vec3 positionStart;', 'attribute float startTime;', 'attribute vec3 velocity;', 'attribute float turbulence;', 'attribute vec3 color;', 'attribute float size;', 'attribute float lifeTime;', 'attribute float distanceToCamera;', 'varying vec4 vColor;', 'varying float lifeLeft;', 'void main() {',
-
-				// unpack things from our attributes'
-
-				'	vColor = vec4( color, 1.0 );',
-
-				// convert our velocity back into a value we can use'
-
-				'	vec3 newPosition;', '	vec3 v;', '	float timeElapsed = uTime - startTime;', '	lifeLeft = 1.0 - ( timeElapsed / lifeTime );', '	gl_PointSize = ( uScale * size / distanceToCamera ) * lifeLeft;', '	v.x = ( velocity.x - 0.5 ) * 3.0;', '	v.y = ( velocity.y - 0.5 ) * 3.0;', '	v.z = ( velocity.z - 0.5 ) * 3.0;', '	newPosition = positionStart + ( v * 10.0 ) * timeElapsed;', '	vec3 noise = texture2D( tNoise, vec2( newPosition.x * 0.015 + ( uTime * 0.05 ), newPosition.y * 0.02 + ( uTime * 0.015 ) ) ).rgb;', '	vec3 noiseVel = ( noise.rgb - 0.5 ) * 30.0;', '	newPosition = mix( newPosition, newPosition + vec3( noiseVel * ( turbulence * 5.0 ) ), ( timeElapsed / lifeTime ) );', '	if( v.y > 0. && v.y < .05 ) {', '		lifeLeft = 0.0;', '	}', '	if( v.x < - 1.45 ) {', '		lifeLeft = 0.0;', '	}', '	if( timeElapsed > 0.0 ) {', '		gl_Position = projectionMatrix * modelViewMatrix * vec4( newPosition, 1.0 );', '	} else {', '		gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );', '		lifeLeft = 0.0;', '		gl_PointSize = 0.;', '	}', '}'].join('\n'),
-
-				fragmentShader: ['float scaleLinear( float value, vec2 valueDomain ) {', '	return ( value - valueDomain.x ) / ( valueDomain.y - valueDomain.x );', '}', 'float scaleLinear( float value, vec2 valueDomain, vec2 valueRange ) {', '	return mix( valueRange.x, valueRange.y, scaleLinear( value, valueDomain ) );', '}', 'varying vec4 vColor;', 'varying float lifeLeft;', 'uniform sampler2D tSprite;', 'void main() {', '	float alpha = 0.;', '	if( lifeLeft > 0.995 ) {', '		alpha = scaleLinear( lifeLeft, vec2( 1.0, 0.995 ), vec2( 0.0, 1.0 ) );', '	} else {', '		alpha = lifeLeft * 0.75;', '	}', '	vec4 tex = texture2D( tSprite, gl_PointCoord );', '	gl_FragColor = vec4( vColor.rgb * tex.a, alpha * tex.a );', '}'].join('\n')
-
+				vertexShader: '\n  \t\t\tuniform float uTime;\n  \t\t\tuniform float uScale;\n  \t\t\tuniform sampler2D tNoise;\n\n  \t\t\tattribute vec3 positionStart;\n  \t\t\tattribute float startTime;\n  \t\t\tattribute vec3 velocity;\n  \t\t\tattribute float turbulence;\n  \t\t\tattribute vec3 color;\n  \t\t\tattribute float size;\n  \t\t\tattribute float lifeTime;\n  \t\t\tattribute float distanceToCamera;\n\n  \t\t\tvarying vec4 vColor;\n  \t\t\tvarying float lifeLeft;\n\n  \t\t\tvoid main() {\n  \t\t\t\tvColor = vec4( color, 1.0 );\n  \t\t\t\tvec3 newPosition;\n  \t\t\t\tvec3 v;\n  \t\t\t\tfloat timeElapsed = uTime - startTime;\n  \t\t\t\tlifeLeft = 1.0 - ( timeElapsed / lifeTime );\n  \t\t\t\tgl_PointSize = ( uScale * size / distanceToCamera ) * lifeLeft;\n  \t\t\t\tv.x = ( velocity.x - 0.5 ) * 3.0;\n  \t\t\t\tv.y = ( velocity.y - 0.5 ) * 3.0;\n  \t\t\t\tv.z = ( velocity.z - 0.5 ) * 3.0;\n  \t\t\t\tnewPosition = positionStart + ( v * 10.0 ) * timeElapsed;\n  \t\t\t\tvec3 noise = texture2D( tNoise, vec2( newPosition.x * 0.015 + ( uTime * 0.05 ), newPosition.y * 0.02 + ( uTime * 0.015 ) ) ).rgb;\n  \t\t\t\tvec3 noiseVel = ( noise.rgb - 0.5 ) * 30.0;\n  \t\t\t\tnewPosition = mix( newPosition, newPosition + vec3( noiseVel * ( turbulence * 5.0 ) ), ( timeElapsed / lifeTime ) );\n  \t\t\t\tif( v.y > 0. && v.y < .05 ) {\n  \t\t\t\t\tlifeLeft = 1.0;\n  \t\t\t\t}\n  \t\t\t\tif( v.x < - 1.45 ) {\n  \t\t\t\t\tlifeLeft = 1.0;\n  \t\t\t\t}\n  \t\t\t\tif( timeElapsed > 0.0 ) {\n  \t\t\t\t\tgl_Position = projectionMatrix * modelViewMatrix * vec4( newPosition, 1.0 );\n  \t\t\t\t} else {\n  \t\t\t\t\tgl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );\n  \t\t\t\t\tlifeLeft = 1.0;\n  \t\t\t\t}\n  \t\t\t}\n  \t\t',
+				fragmentShader: '\n  \t\t\tfloat scaleLinear( float value, vec2 valueDomain ) {\n  \t\t\t\treturn ( value - valueDomain.x ) / ( valueDomain.y - valueDomain.x );\n  \t\t\t}\n  \t\t\tfloat scaleLinear( float value, vec2 valueDomain, vec2 valueRange ) {\n  \t\t\t\treturn mix( valueRange.x, valueRange.y, scaleLinear( value, valueDomain ) );\n  \t\t\t}\n  \t\t\tvarying vec4 vColor;\n  \t\t\tvarying float lifeLeft;\n  \t\t\tuniform sampler2D tSprite;\n  \t\t\tvoid main() {\n  \t\t\t\tfloat alpha = 0.;\n  \t\t\t\tif( lifeLeft > 0.995 ) {\n  \t\t\t\t\talpha = scaleLinear( lifeLeft, vec2( 1.0, 0.995 ), vec2( 0.0, 1.0 ) );\n  \t\t\t\t} else {\n  \t\t\t\t\talpha = lifeLeft * 0.75;\n  \t\t\t\t}\n  \t\t\t\tvec4 tex = texture2D( tSprite, gl_PointCoord );\n  \t\t\t\tgl_FragColor = vec4( vColor.rgb * tex.a, alpha * tex.a );\n  \t\t\t}\n  \t\t'
 			};
 
 			// preload a million random numbers
@@ -68856,7 +69302,7 @@
 	exports.default = GPUParticleSystem;
 
 /***/ }),
-/* 429 */
+/* 439 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -68933,583 +69379,9 @@
 	var CAMERA = exports.CAMERA = new GSFCamera();
 
 /***/ }),
-/* 430 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _classCallCheck2 = __webpack_require__(355);
-
-	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
-
-	var _createClass2 = __webpack_require__(413);
-
-	var _createClass3 = _interopRequireDefault(_createClass2);
-
-	var _three = __webpack_require__(327);
-
-	var THREE = _interopRequireWildcard(_three);
-
-	var _GSFLoader = __webpack_require__(417);
-
-	var _Game = __webpack_require__(419);
-
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	var FARTHEST = 500;
-	var SCALING_FACTOR = 10;
-
-	var Crosshair = function () {
-	  function Crosshair(camera, source) {
-	    (0, _classCallCheck3.default)(this, Crosshair);
-
-	    this.camera = camera;
-	    this.source = source;
-	    this.raycaster = new THREE.Raycaster();
-	    this.raycaster.far = FARTHEST;
-
-	    var crosshairMaterial = new THREE.SpriteMaterial({
-	      color: 0x00ff00,
-	      map: _GSFLoader.loader.get('crosshair'),
-	      blending: THREE.NormalBlending,
-	      depthWrite: false,
-	      depthTest: false
-	    });
-	    this.sprite = new THREE.Sprite(crosshairMaterial);
-	    this.sprite.renderDepth = 0;
-	    _Game.SCENE.add(this.sprite);
-	  }
-
-	  (0, _createClass3.default)(Crosshair, [{
-	    key: 'update',
-	    value: function update(objects) {
-	      var direction = new THREE.Vector3(0, 0, 1);
-	      direction.applyQuaternion(this.source.quaternion);
-	      this.raycaster.set(this.source.position, direction);
-	      var intersections = this.raycaster.intersectObjects(objects);
-	      var point = intersections.length > 0 ? intersections[0].point : this.raycaster.ray.at(FARTHEST);
-	      this.sprite.position.copy(point);
-	      var v = new THREE.Vector3();
-	      var scale = v.subVectors(this.sprite.position, this.camera.position).length() / SCALING_FACTOR;
-	      this.sprite.scale.x = scale;
-	      this.sprite.scale.y = scale;
-	    }
-	  }]);
-	  return Crosshair;
-	}();
-
-	exports.default = Crosshair;
-
-/***/ }),
-/* 431 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _epsilon = __webpack_require__(432);
-
-	var _epsilon2 = _interopRequireDefault(_epsilon);
-
-	var _classCallCheck2 = __webpack_require__(355);
-
-	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
-
-	var _createClass2 = __webpack_require__(413);
-
-	var _createClass3 = _interopRequireDefault(_createClass2);
-
-	var _three = __webpack_require__(327);
-
-	var THREE = _interopRequireWildcard(_three);
-
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function fromBottom(HUD, y) {
-	  return -HUD.height / 2 + y;
-	}
-
-	function fromLeft(HUD, x) {
-	  return -HUD.width / 2 + x;
-	}
-
-	var HP_BAR_HEIGHT = 50;
-
-	var HUD = function () {
-	  function HUD() {
-	    (0, _classCallCheck3.default)(this, HUD);
-
-	    this.width = window.innerWidth;
-	    this.height = window.innerHeight;
-
-	    this.camera = new THREE.OrthographicCamera(-this.width / 2, this.width / 2, this.height / 2, -this.height / 2, -10000, 10000);
-	    this.camera.position.z = 10;
-
-	    this.scene = new THREE.Scene();
-
-	    var scale = Math.min(this.width / 1200, this.height / 800);
-
-	    var hpBarGeometry = new THREE.CylinderGeometry(50, HP_BAR_HEIGHT, 200, 16);
-	    hpBarGeometry.scale(scale, scale, scale);
-	    var hpBarMaterial = new THREE.MeshBasicMaterial({
-	      color: 0xff0000,
-	      transparent: true,
-	      opacity: 0.5
-	    });
-	    var hpBarMesh = new THREE.Mesh(hpBarGeometry, hpBarMaterial);
-	    this.scene.add(hpBarMesh);
-
-	    var hpContainerMaterial = new THREE.MeshBasicMaterial({
-	      color: 0xff0000,
-	      transparent: true,
-	      opacity: 0.5,
-	      wireframe: true
-	    });
-	    var hpContainerMesh = new THREE.Mesh(hpBarGeometry, hpContainerMaterial);
-	    this.scene.add(hpContainerMesh);
-
-	    // hpBarMesh.rotateX(0.2 * Math.PI);
-	    hpBarMesh.position.set(fromLeft(this, 0.1 * this.width), fromBottom(this, 0.15 * this.height), 0);
-	    // hpContainerMesh.rotateX(0.2 * Math.PI);
-	    hpContainerMesh.position.set(hpBarMesh.position.x, hpBarMesh.position.y, hpBarMesh.position.z);
-
-	    var ballGeometry = new THREE.SphereGeometry(75, 32, 32);
-	    ballGeometry.scale(scale, scale, scale);
-	    var ballMaterial = new THREE.MeshBasicMaterial({
-	      color: 0x0000ff,
-	      transparent: true,
-	      opacity: 0.5
-	    });
-	    var ballMesh = new THREE.Mesh(ballGeometry, ballMaterial);
-	    this.scene.add(ballMesh);
-
-	    var ballShellMaterial = new THREE.MeshBasicMaterial({
-	      color: 0x0000ff,
-	      transparent: true,
-	      opacity: 0.5,
-	      wireframe: true
-	    });
-	    var ballShellMesh = new THREE.Mesh(ballGeometry, ballShellMaterial);
-	    this.scene.add(ballShellMesh);
-
-	    ballMesh.rotateX(0.2 * Math.PI);
-	    ballMesh.position.set(fromLeft(this, 0.25 * this.width), fromBottom(this, 0.15 * this.height), 0);
-	    ballShellMesh.rotateX(0.2 * Math.PI);
-	    ballShellMesh.position.set(ballMesh.position.x, ballMesh.position.y, ballMesh.position.z);
-
-	    this.hpMesh = hpBarMesh;
-	    this.shieldMesh = ballMesh;
-	    this.hpBarHeight = HP_BAR_HEIGHT * scale;
-
-	    this.hpBarPosition = this.hpMesh.position.y;
-	    this.hpBarPositionMin = this.hpBarPosition - 2 * 1 * this.hpBarHeight;
-	  }
-
-	  (0, _createClass3.default)(HUD, [{
-	    key: 'update',
-	    value: function update(hpPercent, shieldPercent) {
-	      this.hpMesh.scale.y = Math.max(_epsilon2.default, hpPercent);
-	      this.hpMesh.position.y = Math.max(this.hpBarPositionMin, this.hpBarPosition - 2 * (1 - hpPercent) * this.hpBarHeight);
-	      var shieldScale = this.shieldMesh.scale;
-	      shieldScale.x = shieldScale.y = shieldScale.z = Math.max(_epsilon2.default, shieldPercent);
-	    }
-	  }]);
-	  return HUD;
-	}();
-
-	exports.default = HUD;
-
-/***/ }),
-/* 432 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	module.exports = { "default": __webpack_require__(433), __esModule: true };
-
-/***/ }),
-/* 433 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	__webpack_require__(434);
-	module.exports = Math.pow(2, -52);
-
-
-/***/ }),
-/* 434 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	// 20.1.2.1 Number.EPSILON
-	var $export = __webpack_require__(341);
-
-	$export($export.S, 'Number', { EPSILON: Math.pow(2, -52) });
-
-
-/***/ }),
-/* 435 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _getPrototypeOf = __webpack_require__(329);
-
-	var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
-
-	var _classCallCheck2 = __webpack_require__(355);
-
-	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
-
-	var _possibleConstructorReturn2 = __webpack_require__(356);
-
-	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
-
-	var _inherits2 = __webpack_require__(402);
-
-	var _inherits3 = _interopRequireDefault(_inherits2);
-
-	var _three = __webpack_require__(327);
-
-	var THREE = _interopRequireWildcard(_three);
-
-	var _GSFLoader = __webpack_require__(417);
-
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function lensFlareUpdateCallback(object) {
-	  var f = void 0,
-	      fl = object.lensFlares.length;
-	  var flare = void 0;
-	  var vecX = -object.positionScreen.x * 2;
-	  var vecY = -object.positionScreen.y * 2;
-	  for (f = 0; f < fl; f++) {
-	    flare = object.lensFlares[f];
-	    flare.x = object.positionScreen.x + vecX * flare.distance;
-	    flare.y = object.positionScreen.y + vecY * flare.distance;
-	    flare.rotation = 0;
-	  }
-	  object.lensFlares[2].y += 0.025;
-	  object.lensFlares[3].rotation = object.positionScreen.x * 0.5 + THREE.Math.degToRad(45);
-	}
-
-	var Sun = function (_THREE$PointLight) {
-	  (0, _inherits3.default)(Sun, _THREE$PointLight);
-
-	  function Sun() {
-	    (0, _classCallCheck3.default)(this, Sun);
-
-	    var _this = (0, _possibleConstructorReturn3.default)(this, (Sun.__proto__ || (0, _getPrototypeOf2.default)(Sun)).call(this, 0xffffff, 3));
-
-	    var texFlare0 = _GSFLoader.loader.get('texFlare0');
-	    var texFlare2 = _GSFLoader.loader.get('texFlare2');
-	    var texFlare3 = _GSFLoader.loader.get('texFlare3');
-	    var lensFlare = new THREE.LensFlare(texFlare0, 700, 0.0, THREE.AdditiveBlending, new THREE.Color(0xffffff));
-	    lensFlare.add(texFlare2, 512, 0.0, THREE.AdditiveBlending);
-	    lensFlare.add(texFlare2, 512, 0.0, THREE.AdditiveBlending);
-	    lensFlare.add(texFlare2, 512, 0.0, THREE.AdditiveBlending);
-	    lensFlare.add(texFlare3, 60, 0.6, THREE.AdditiveBlending);
-	    lensFlare.add(texFlare3, 70, 0.7, THREE.AdditiveBlending);
-	    lensFlare.add(texFlare3, 120, 0.9, THREE.AdditiveBlending);
-	    lensFlare.add(texFlare3, 70, 1.0, THREE.AdditiveBlending);
-	    lensFlare.customUpdateCallback = lensFlareUpdateCallback;
-	    _this.add(lensFlare);
-	    return _this;
-	  }
-
-	  return Sun;
-	}(THREE.PointLight);
-
-	exports.default = Sun;
-
-/***/ }),
-/* 436 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _getIterator2 = __webpack_require__(420);
-
-	var _getIterator3 = _interopRequireDefault(_getIterator2);
-
-	var _getPrototypeOf = __webpack_require__(329);
-
-	var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
-
-	var _classCallCheck2 = __webpack_require__(355);
-
-	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
-
-	var _createClass2 = __webpack_require__(413);
-
-	var _createClass3 = _interopRequireDefault(_createClass2);
-
-	var _possibleConstructorReturn2 = __webpack_require__(356);
-
-	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
-
-	var _get2 = __webpack_require__(437);
-
-	var _get3 = _interopRequireDefault(_get2);
-
-	var _inherits2 = __webpack_require__(402);
-
-	var _inherits3 = _interopRequireDefault(_inherits2);
-
-	var _three = __webpack_require__(327);
-
-	var THREE = _interopRequireWildcard(_three);
-
-	var _GSFLoader = __webpack_require__(417);
-
-	var _Ship2 = __webpack_require__(425);
-
-	var _Ship3 = _interopRequireDefault(_Ship2);
-
-	var _SmallPulseLaser = __webpack_require__(441);
-
-	var _SmallPulseLaser2 = _interopRequireDefault(_SmallPulseLaser);
-
-	var _GPUParticleSystem = __webpack_require__(428);
-
-	var _GPUParticleSystem2 = _interopRequireDefault(_GPUParticleSystem);
-
-	var _Game = __webpack_require__(419);
-
-	var _GSFCamera = __webpack_require__(429);
-
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	var Fighter = function (_Ship) {
-	  (0, _inherits3.default)(Fighter, _Ship);
-
-	  function Fighter() {
-	    (0, _classCallCheck3.default)(this, Fighter);
-
-	    var _this = (0, _possibleConstructorReturn3.default)(this, (Fighter.__proto__ || (0, _getPrototypeOf2.default)(Fighter)).call(this, _GSFLoader.loader.get('fighterGeometry'), _GSFLoader.loader.get('fighterMaterial'), {
-	      maxVelocity: 50,
-	      acceleration: 80,
-	      turnSpeed: 0.25,
-	      gun: new _SmallPulseLaser2.default(),
-	      maxHp: 100,
-	      maxShield: 50
-	    }));
-
-	    _this.weaponSide = 1;
-	    _this.gun.translateX(0.7 * _this.weaponSide);
-
-	    _this.gun.addEventListener('onShoot', function () {
-	      _this.weaponSide *= -1;
-	      _this.gun.translateX(1.4 * _this.weaponSide);
-	    });
-
-	    _this.thrusters = [new THREE.Vector3(-0.8, 0.25, -1), // Up-left
-	    new THREE.Vector3(0.8, 0.25, -1), // Up-right
-	    new THREE.Vector3(-0.8, -0.25, -1), // Down-left
-	    new THREE.Vector3(0.8, -0.25, -1) // Down-right
-	    ];
-	    _this.particleSystem = new _GPUParticleSystem2.default({ maxParticles: 1800 });
-	    _Game.SCENE.add(_this.particleSystem);
-	    _this.options = {
-	      position: new THREE.Vector3(),
-	      positionRandomness: 0.2,
-	      velocity: new THREE.Vector3(),
-	      velocityRandomness: 0.2,
-	      color: 0xffffaa,
-	      colorRandomness: 0.0,
-	      turbulence: 0.0,
-	      lifetime: 0.2,
-	      size: 800,
-	      sizeRandomness: 0,
-	      distanceToCamera: 10
-	    };
-	    _this.spawnerOptions = {
-	      spawnRate: 200
-	    };
-	    _this.tick = 0;
-	    return _this;
-	  }
-
-	  (0, _createClass3.default)(Fighter, [{
-	    key: 'update',
-	    value: function update(delta) {
-	      (0, _get3.default)(Fighter.prototype.__proto__ || (0, _getPrototypeOf2.default)(Fighter.prototype), 'update', this).call(this, delta);
-
-	      var rotatedThrusters = [];
-	      var _iteratorNormalCompletion = true;
-	      var _didIteratorError = false;
-	      var _iteratorError = undefined;
-
-	      try {
-	        for (var _iterator = (0, _getIterator3.default)(this.thrusters), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-	          var thruster = _step.value;
-
-	          var _rotatedThruster = thruster.clone();
-	          _rotatedThruster.applyQuaternion(this.quaternion);
-	          rotatedThrusters.push(_rotatedThruster);
-	        }
-	      } catch (err) {
-	        _didIteratorError = true;
-	        _iteratorError = err;
-	      } finally {
-	        try {
-	          if (!_iteratorNormalCompletion && _iterator.return) {
-	            _iterator.return();
-	          }
-	        } finally {
-	          if (_didIteratorError) {
-	            throw _iteratorError;
-	          }
-	        }
-	      }
-
-	      var velocity = new THREE.Vector3(0, 0, -0.2);
-	      velocity.applyQuaternion(this.quaternion);
-	      this.options.velocity = velocity;
-	      this.options.distanceToCamera = _GSFCamera.CAMERA.position.distanceTo(this.position);
-	      var offsetSinceLastFrame = new THREE.Vector3(0, 0, -1);
-	      offsetSinceLastFrame.applyQuaternion(this.quaternion);
-	      offsetSinceLastFrame.multiplyScalar(this.velocity * delta);
-	      var particlesToSpawn = this.spawnerOptions.spawnRate * delta;
-	      for (var x = 0; x < particlesToSpawn; x++) {
-	        var _iteratorNormalCompletion2 = true;
-	        var _didIteratorError2 = false;
-	        var _iteratorError2 = undefined;
-
-	        try {
-	          for (var _iterator2 = (0, _getIterator3.default)(rotatedThrusters), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-	            var rotatedThruster = _step2.value;
-
-	            this.options.position.addVectors(this.position, rotatedThruster);
-	            var offset = offsetSinceLastFrame.clone();
-	            offset.multiplyScalar(x / particlesToSpawn);
-	            this.options.position.add(offset);
-	            this.particleSystem.spawnParticle(this.options);
-	          }
-	        } catch (err) {
-	          _didIteratorError2 = true;
-	          _iteratorError2 = err;
-	        } finally {
-	          try {
-	            if (!_iteratorNormalCompletion2 && _iterator2.return) {
-	              _iterator2.return();
-	            }
-	          } finally {
-	            if (_didIteratorError2) {
-	              throw _iteratorError2;
-	            }
-	          }
-	        }
-	      }
-
-	      if (this.tick < 0) this.tick = 0;
-	      this.tick += delta;
-	      this.particleSystem.update(this.tick);
-	    }
-	  }]);
-	  return Fighter;
-	}(_Ship3.default);
-
-	exports.default = Fighter;
-
-/***/ }),
-/* 437 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	"use strict";
-
-	exports.__esModule = true;
-
-	var _getPrototypeOf = __webpack_require__(329);
-
-	var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
-
-	var _getOwnPropertyDescriptor = __webpack_require__(438);
-
-	var _getOwnPropertyDescriptor2 = _interopRequireDefault(_getOwnPropertyDescriptor);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	exports.default = function get(object, property, receiver) {
-	  if (object === null) object = Function.prototype;
-	  var desc = (0, _getOwnPropertyDescriptor2.default)(object, property);
-
-	  if (desc === undefined) {
-	    var parent = (0, _getPrototypeOf2.default)(object);
-
-	    if (parent === null) {
-	      return undefined;
-	    } else {
-	      return get(parent, property, receiver);
-	    }
-	  } else if ("value" in desc) {
-	    return desc.value;
-	  } else {
-	    var getter = desc.get;
-
-	    if (getter === undefined) {
-	      return undefined;
-	    }
-
-	    return getter.call(receiver);
-	  }
-	};
-
-/***/ }),
-/* 438 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	module.exports = { "default": __webpack_require__(439), __esModule: true };
-
-/***/ }),
-/* 439 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	__webpack_require__(440);
-	var $Object = __webpack_require__(342).Object;
-	module.exports = function getOwnPropertyDescriptor(it, key) {
-	  return $Object.getOwnPropertyDescriptor(it, key);
-	};
-
-
-/***/ }),
 /* 440 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	// 19.1.2.6 Object.getOwnPropertyDescriptor(O, P)
-	var toIObject = __webpack_require__(372);
-	var $getOwnPropertyDescriptor = __webpack_require__(398).f;
-
-	__webpack_require__(340)('getOwnPropertyDescriptor', function () {
-	  return function getOwnPropertyDescriptor(it, key) {
-	    return $getOwnPropertyDescriptor(toIObject(it), key);
-	  };
-	});
-
-
-/***/ }),
-/* 441 */
-/***/ (function(module, exports, __webpack_require__) {
-
 	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
@@ -69540,11 +69412,9 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _LaserShot = __webpack_require__(442);
+	var _LaserShot = __webpack_require__(441);
 
 	var _LaserShot2 = _interopRequireDefault(_LaserShot);
-
-	var _ShotController = __webpack_require__(418);
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -69569,8 +69439,7 @@
 	    key: 'shoot',
 	    value: function shoot() {
 	      if (this.reload !== 0.0) return;
-	      var shot = new _LaserShot2.default(this.muzzleVelocity, this.shotLifetime);
-	      _ShotController.SHOT_CONTROLLER.add(shot);
+	      var shot = new _LaserShot2.default();
 	      this.getWorldPosition(shot.position);
 	      this.getWorldQuaternion(shot.quaternion);
 	      this.reload = this.reloadTime;
@@ -69589,6 +69458,84 @@
 	}(THREE.Object3D);
 
 	exports.default = SmallPulseLaser;
+
+/***/ }),
+/* 441 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _getPrototypeOf = __webpack_require__(329);
+
+	var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
+
+	var _classCallCheck2 = __webpack_require__(355);
+
+	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+	var _possibleConstructorReturn2 = __webpack_require__(356);
+
+	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+	var _inherits2 = __webpack_require__(402);
+
+	var _inherits3 = _interopRequireDefault(_inherits2);
+
+	var _three = __webpack_require__(327);
+
+	var THREE = _interopRequireWildcard(_three);
+
+	var _SubdivisionModifier = __webpack_require__(412);
+
+	var _SubdivisionModifier2 = _interopRequireDefault(_SubdivisionModifier);
+
+	var _Shot2 = __webpack_require__(442);
+
+	var _Shot3 = _interopRequireDefault(_Shot2);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var shotGeometry = new THREE.CylinderGeometry(0.05, 0.05, 5, 8, 1);
+	shotGeometry.rotateX(Math.PI / 2);
+	shotGeometry.translate(0, 0, -2.5);
+	var modifier = new _SubdivisionModifier2.default(1);
+	modifier.modify(shotGeometry);
+	shotGeometry.faceVertexUvs = [];
+	shotGeometry.uvsNeedUpdate = true;
+	var shotMaterial = new THREE.MeshPhongMaterial({
+	  color: 0x000000,
+	  specular: 0x666666,
+	  emissive: 0xff0000,
+	  shininess: 0,
+	  flatShading: false,
+	  opacity: 0.75,
+	  transparent: true
+	});
+
+	var LaserShot = function (_Shot) {
+	  (0, _inherits3.default)(LaserShot, _Shot);
+
+	  function LaserShot() {
+	    (0, _classCallCheck3.default)(this, LaserShot);
+
+	    var _this = (0, _possibleConstructorReturn3.default)(this, (LaserShot.__proto__ || (0, _getPrototypeOf2.default)(LaserShot)).call(this, shotGeometry, shotMaterial));
+
+	    _this.lifetimeLeft = 5;
+	    _this.velocity = 300;
+	    _this.damage = 5;
+	    return _this;
+	  }
+
+	  return LaserShot;
+	}(_Shot3.default);
+
+	exports.default = LaserShot;
 
 /***/ }),
 /* 442 */
@@ -69624,57 +69571,58 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _SubdivisionModifier = __webpack_require__(412);
+	var _GameObject2 = __webpack_require__(418);
 
-	var _SubdivisionModifier2 = _interopRequireDefault(_SubdivisionModifier);
+	var _GameObject3 = _interopRequireDefault(_GameObject2);
+
+	var _Game = __webpack_require__(420);
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	var shotGeometry = new THREE.CylinderGeometry(0.05, 0.05, 5, 8, 1);
-	shotGeometry.rotateX(Math.PI / 2);
-	var modifier = new _SubdivisionModifier2.default(1);
-	modifier.modify(shotGeometry);
-	shotGeometry.faceVertexUvs = [];
-	shotGeometry.uvsNeedUpdate = true;
-	var shotMaterial = new THREE.MeshPhongMaterial({
-	  color: 0x000000,
-	  specular: 0x666666,
-	  emissive: 0xff0000,
-	  shininess: 0,
-	  flatShading: false,
-	  opacity: 0.75,
-	  transparent: true
-	});
-	var shotMesh = new THREE.Mesh(shotGeometry, shotMaterial);
+	var Shot = function (_GameObject) {
+	  (0, _inherits3.default)(Shot, _GameObject);
 
-	var LaserShot = function (_THREE$Object3D) {
-	  (0, _inherits3.default)(LaserShot, _THREE$Object3D);
+	  function Shot(geometry, material) {
+	    (0, _classCallCheck3.default)(this, Shot);
 
-	  function LaserShot(velocity, lifetime) {
-	    (0, _classCallCheck3.default)(this, LaserShot);
+	    var _this = (0, _possibleConstructorReturn3.default)(this, (Shot.__proto__ || (0, _getPrototypeOf2.default)(Shot)).call(this, geometry, material));
 
-	    var _this = (0, _possibleConstructorReturn3.default)(this, (LaserShot.__proto__ || (0, _getPrototypeOf2.default)(LaserShot)).call(this));
-
-	    _this.add(shotMesh.clone());
-	    _this.lifetimeLeft = lifetime;
-	    _this.velocity = velocity;
-	    _this.damage = 5;
+	    _this.velocity = 300;
+	    _this.lifetime = 5;
+	    _this.damage = 1;
+	    _Game.GAME.addShot(_this);
 	    return _this;
 	  }
 
-	  (0, _createClass3.default)(LaserShot, [{
+	  (0, _createClass3.default)(Shot, [{
 	    key: 'update',
 	    value: function update(delta) {
 	      this.lifetimeLeft -= delta;
+	      if (this.lifetimeLeft < 0) {
+	        this.remove();
+	        return;
+	      }
+
+	      _Game.RAYCASTER.far = this.velocity * delta;
+	      var direction = new THREE.Vector3(0, 0, 1);
+	      direction.applyQuaternion(this.quaternion);
+	      _Game.RAYCASTER.set(this.position, direction);
+	      var intersections = _Game.RAYCASTER.intersectObjects(_Game.SHOOTABLES);
+	      if (intersections.length > 0) {
+	        this.remove();
+	        var hitObject = intersections[0].object;
+	        hitObject.damage(this.damage);
+	      }
+
 	      this.translateZ(this.velocity * delta);
 	    }
 	  }]);
-	  return LaserShot;
-	}(THREE.Object3D);
+	  return Shot;
+	}(_GameObject3.default);
 
-	exports.default = LaserShot;
+	exports.default = Shot;
 
 /***/ }),
 /* 443 */
@@ -72981,6 +72929,265 @@
 	})();
 
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
+
+/***/ }),
+/* 447 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _getPrototypeOf = __webpack_require__(329);
+
+	var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
+
+	var _classCallCheck2 = __webpack_require__(355);
+
+	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+	var _createClass2 = __webpack_require__(413);
+
+	var _createClass3 = _interopRequireDefault(_createClass2);
+
+	var _possibleConstructorReturn2 = __webpack_require__(356);
+
+	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+	var _inherits2 = __webpack_require__(402);
+
+	var _inherits3 = _interopRequireDefault(_inherits2);
+
+	var _three = __webpack_require__(327);
+
+	var THREE = _interopRequireWildcard(_three);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function randomPointInUnitSphere() {
+	  var x1 = 2 * (Math.random() - 0.5);
+	  var x2 = 2 * (Math.random() - 0.5);
+	  var x3 = 2 * (Math.random() - 0.5);
+	  var coef = Math.pow(Math.random(), 1.0 / 3.0) / Math.sqrt(x1 * x1 + x2 * x2 + x3 * x3);
+	  var result = new THREE.Vector3(x1 * coef, x2 * coef, x3 * coef);
+	  return result;
+	} /* eslint-disable */
+
+	var GPUParticleSystem = function (_THREE$Object3D) {
+	  (0, _inherits3.default)(GPUParticleSystem, _THREE$Object3D);
+
+	  function GPUParticleSystem(options) {
+	    (0, _classCallCheck3.default)(this, GPUParticleSystem);
+
+	    var _this = (0, _possibleConstructorReturn3.default)(this, (GPUParticleSystem.__proto__ || (0, _getPrototypeOf2.default)(GPUParticleSystem)).call(this));
+
+	    _this.options = options || {};
+
+	    // parse options and use defaults
+	    _this.PARTICLE_COUNT = options.particles || 200;
+	    _this.PARTICLE_CURSOR = 0;
+
+	    _this.PARTICLE_SPRITE_TEXTURE = options.particleSpriteTex || null;
+
+	    _this.options.lifetime = _this.options.lifetime || 1.0;
+
+	    _this.time = 0.0;
+	    _this.offset = 0;
+	    _this.count = 0;
+	    _this.DPR = window.devicePixelRatio;
+	    _this.particleUpdate = false;
+
+	    // geometry
+	    _this.particleShaderGeo = new THREE.BufferGeometry();
+
+	    _this.particleShaderGeo.addAttribute('position', new THREE.BufferAttribute(new Float32Array(_this.PARTICLE_COUNT * 3), 3).setDynamic(true));
+	    _this.particleShaderGeo.addAttribute('destination', new THREE.BufferAttribute(new Float32Array(_this.PARTICLE_COUNT * 3), 3).setDynamic(true));
+	    _this.particleShaderGeo.addAttribute('color', new THREE.BufferAttribute(new Float32Array(_this.PARTICLE_COUNT * 3), 3).setDynamic(true));
+	    _this.particleShaderGeo.addAttribute('size', new THREE.BufferAttribute(new Float32Array(_this.PARTICLE_COUNT), 1).setDynamic(true));
+	    _this.particleShaderGeo.addAttribute('lifeOffset', new THREE.BufferAttribute(new Float32Array(_this.PARTICLE_COUNT), 1).setDynamic(true));
+
+	    // material
+	    _this.particleShaderMat = _this.particleShaderMat;
+
+	    // custom vertex and fragement shader
+	    var GPUParticleShader = {
+	      vertexShader: '\n  \t\t\tuniform float uTime;\n  \t\t\tuniform float uScale;\n  \t\t\tuniform float uLifetime;\n\n  \t\t\tattribute vec3 destination;\n  \t\t\tattribute vec3 color;\n  \t\t\tattribute float size;\n        attribute float lifeOffset;\n\n  \t\t\tvarying vec4 vColor;\n  \t\t\tvarying float lifeLeft;\n\n  \t\t\tvoid main() {\n          float lifeUnclamped = uTime / uLifetime;\n          float life = lifeUnclamped - float(int(lifeUnclamped)) + lifeOffset;\n          if (life > 1.0) life -= 1.0;\n  \t\t\t\tlifeLeft = 1.0 - life;\n\n          vColor = vec4(color, 1.0);\n\n          vec3 worldPosition = vec3(modelMatrix[3][0], modelMatrix[3][1], modelMatrix[3][2]);\n\n  \t\t\t\tgl_PointSize = uScale * size * lifeLeft / distance(worldPosition + position, cameraPosition);\n\t\t\t\t\tgl_Position = projectionMatrix * modelViewMatrix * vec4( position + destination * life, 1.0 );\n  \t\t\t}\n  \t\t',
+	      fragmentShader: '\n        uniform sampler2D tSprite;\n  \t\t\tvarying vec4 vColor;\n  \t\t\tvarying float lifeLeft;\n  \t\t\tvoid main() {\n  \t\t\t\tvec4 tex = texture2D( tSprite, gl_PointCoord );\n  \t\t\t\tgl_FragColor = vec4( vColor.rgb, lifeLeft * tex.a );\n  \t\t\t}\n  \t\t'
+	    };
+
+	    var textureLoader = new THREE.TextureLoader();
+
+	    _this.particleSpriteTex = _this.PARTICLE_SPRITE_TEXTURE || textureLoader.load('./media/particle2.png');
+	    _this.particleSpriteTex.wrapS = _this.particleSpriteTex.wrapT = THREE.RepeatWrapping;
+
+	    _this.particleShaderMat = new THREE.ShaderMaterial({
+	      transparent: true,
+	      depthWrite: false,
+	      uniforms: {
+	        'uTime': {
+	          value: 0.0
+	        },
+	        'uScale': {
+	          value: Math.pow(window.innerHeight / 1200, 2)
+	        },
+	        'tSprite': {
+	          value: _this.particleSpriteTex
+	        },
+	        'uLifetime': {
+	          value: _this.options.lifetime
+	        }
+	      },
+	      blending: THREE.AdditiveBlending,
+	      vertexShader: GPUParticleShader.vertexShader,
+	      fragmentShader: GPUParticleShader.fragmentShader
+	    });
+
+	    // define defaults for all values
+	    _this.particleShaderMat.defaultAttributeValues.particlePositionsStartTime = [0, 0, 0, 0];
+	    _this.particleShaderMat.defaultAttributeValues.particleVelColSizeLife = [0, 0, 0, 0];
+
+	    var particleSystem = new THREE.Points(_this.particleShaderGeo, _this.particleShaderMat);
+	    particleSystem.frustumCulled = false;
+	    _this.add(particleSystem);
+
+	    for (var i = 0; i < _this.PARTICLE_COUNT; i++) {
+	      _this.spawnParticle(_this.options);
+	    }
+	    return _this;
+	  }
+
+	  (0, _createClass3.default)(GPUParticleSystem, [{
+	    key: 'random',
+	    value: function random() {
+	      return 2 * (Math.random() - 0.5);
+	    }
+	  }, {
+	    key: 'dispose',
+	    value: function dispose() {
+	      this.particleShaderMat.dispose();
+	      this.particleSpriteTex.dispose();
+	    }
+	  }, {
+	    key: 'spawnParticle',
+	    value: function spawnParticle(options) {
+	      var positionAttribute = this.particleShaderGeo.getAttribute('position');
+	      var destinationAttribute = this.particleShaderGeo.getAttribute('destination');
+	      var colorAttribute = this.particleShaderGeo.getAttribute('color');
+	      var sizeAttribute = this.particleShaderGeo.getAttribute('size');
+	      var lifeOffsetAttribute = this.particleShaderGeo.getAttribute('lifeOffset');
+
+	      options = options || {};
+
+	      // setup reasonable default values for all arguments
+	      var position = new THREE.Vector3();
+	      var destination = new THREE.Vector3();
+	      var color = new THREE.Color();
+
+	      position = options.position !== undefined ? position.copy(options.position) : position.set(0, 0, 0);
+	      destination = options.destination !== undefined ? destination.copy(options.destination) : destination.set(0, 0, 0);
+	      color = options.color !== undefined ? color.set(options.color) : color.set(0xffffff);
+
+	      var positionRandomness = options.positionRandomness !== undefined ? options.positionRandomness : 0;
+	      var destinationRandomness = options.destinationRandomness !== undefined ? options.destinationRandomness : 0;
+	      var colorRandomness = options.colorRandomness !== undefined ? options.colorRandomness : 0;
+	      var size = options.size !== undefined ? options.size : 100;
+	      var sizeRandomness = options.sizeRandomness !== undefined ? options.sizeRandomness : 0;
+	      var smoothPosition = options.smoothPosition !== undefined ? options.smoothPosition : false;
+
+	      if (this.DPR !== undefined) size *= this.DPR;
+
+	      var i = this.PARTICLE_CURSOR++;
+
+	      // position
+	      var positionRandomOffset = randomPointInUnitSphere().multiplyScalar(positionRandomness);
+	      positionAttribute.array[i * 3 + 0] = position.x + positionRandomOffset.x;
+	      positionAttribute.array[i * 3 + 1] = position.y + positionRandomOffset.y;
+	      positionAttribute.array[i * 3 + 2] = position.z + positionRandomOffset.z;
+
+	      if (smoothPosition === true) {
+	        positionAttribute.array[i * 3 + 0] += -(destination.x * this.random());
+	        positionAttribute.array[i * 3 + 1] += -(destination.y * this.random());
+	        positionAttribute.array[i * 3 + 2] += -(destination.z * this.random());
+	      }
+
+	      // destination
+	      var destinationRandomOffset = randomPointInUnitSphere().multiplyScalar(positionRandomness);
+	      destinationAttribute.array[i * 3 + 0] = destination.x + destinationRandomOffset.x;
+	      destinationAttribute.array[i * 3 + 1] = destination.y + destinationRandomOffset.y;
+	      destinationAttribute.array[i * 3 + 2] = destination.z + destinationRandomOffset.z;
+
+	      // color
+	      color.r = THREE.Math.clamp(color.r + this.random() * colorRandomness, 0, 1);
+	      color.g = THREE.Math.clamp(color.g + this.random() * colorRandomness, 0, 1);
+	      color.b = THREE.Math.clamp(color.b + this.random() * colorRandomness, 0, 1);
+
+	      colorAttribute.array[i * 3 + 0] = color.r;
+	      colorAttribute.array[i * 3 + 1] = color.g;
+	      colorAttribute.array[i * 3 + 2] = color.b;
+
+	      // size, lifeOffset
+	      sizeAttribute.array[i] = size + this.random() * sizeRandomness;
+	      lifeOffsetAttribute.array[i] = Math.random();
+
+	      this.particleUpdate = true;
+	    }
+	  }, {
+	    key: 'update',
+	    value: function update(delta) {
+	      this.time += delta;
+	      if (this.time > this.options.lifetime) this.time -= this.options.lifetime;
+	      this.particleShaderMat.uniforms.uTime.value = this.time;
+	      this.geometryUpdate();
+	    }
+	  }, {
+	    key: 'geometryUpdate',
+	    value: function geometryUpdate() {
+	      if (this.particleUpdate === true) {
+	        this.particleUpdate = false;
+
+	        var positionAttribute = this.particleShaderGeo.getAttribute('position');
+	        var destinationAttribute = this.particleShaderGeo.getAttribute('destination');
+	        var colorAttribute = this.particleShaderGeo.getAttribute('color');
+	        var sizeAttribute = this.particleShaderGeo.getAttribute('size');
+	        var lifeOffsetAttribute = this.particleShaderGeo.getAttribute('lifeOffset');
+
+	        positionAttribute.updateRange.offset = 0;
+	        destinationAttribute.updateRange.offset = 0;
+	        colorAttribute.updateRange.offset = 0;
+	        sizeAttribute.updateRange.offset = 0;
+	        lifeOffsetAttribute.updateRange.offset = 0;
+
+	        // Use -1 to update the entire buffer, see #11476
+	        positionAttribute.updateRange.count = -1;
+	        destinationAttribute.updateRange.count = -1;
+	        colorAttribute.updateRange.count = -1;
+	        sizeAttribute.updateRange.count = -1;
+	        lifeOffsetAttribute.updateRange.count = -1;
+
+	        positionAttribute.needsUpdate = true;
+	        destinationAttribute.needsUpdate = true;
+	        colorAttribute.needsUpdate = true;
+	        sizeAttribute.needsUpdate = true;
+	        lifeOffsetAttribute.needsUpdate = true;
+
+	        this.offset = 0;
+	        this.count = 0;
+	      }
+	    }
+	  }, {
+	    key: 'dispose',
+	    value: function dispose() {
+	      this.particleShaderGeo.dispose();
+	    }
+	  }]);
+	  return GPUParticleSystem;
+	}(THREE.Object3D);
+
+	exports.default = GPUParticleSystem;
 
 /***/ })
 /******/ ]);
