@@ -1,6 +1,15 @@
 /* eslint-disable */
 import * as THREE from 'three';
 
+function randomPointInUnitSphere() {
+  let x1 = 2 * (Math.random() - 0.5);
+  let x2 = 2 * (Math.random() - 0.5);
+  let x3 = 2 * (Math.random() - 0.5);
+  let coef = Math.pow(Math.random(), 1.0 / 3.0) / Math.sqrt(x1*x1 + x2*x2 + x3*x3);
+  let result = new THREE.Vector3(x1 * coef, x2 * coef, x3 * coef);
+  return result;
+}
+
 class GPUParticleSystem extends THREE.Object3D {
 
   constructor(options) {
@@ -149,9 +158,10 @@ class GPUParticleSystem extends THREE.Object3D {
 		let i = this.PARTICLE_CURSOR++;
 
 		// position
-		positionAttribute.array[ i * 3 + 0 ] = position.x + ( this.random() * positionRandomness );
-		positionAttribute.array[ i * 3 + 1 ] = position.y + ( this.random() * positionRandomness );
-		positionAttribute.array[ i * 3 + 2 ] = position.z + ( this.random() * positionRandomness );
+		let positionRandomOffset = randomPointInUnitSphere().multiplyScalar(positionRandomness);
+		positionAttribute.array[ i * 3 + 0 ] = position.x + positionRandomOffset.x;
+		positionAttribute.array[ i * 3 + 1 ] = position.y + positionRandomOffset.y;
+		positionAttribute.array[ i * 3 + 2 ] = position.z + positionRandomOffset.z;
 
 		if ( smoothPosition === true ) {
 			positionAttribute.array[ i * 3 + 0 ] += - ( destination.x * this.random() );
@@ -160,9 +170,10 @@ class GPUParticleSystem extends THREE.Object3D {
 		}
 
 		// destination
-		destinationAttribute.array[ i * 3 + 0 ] = destination.x + this.random() * destinationRandomness;
-		destinationAttribute.array[ i * 3 + 1 ] = destination.y + this.random() * destinationRandomness;
-		destinationAttribute.array[ i * 3 + 2 ] = destination.z + this.random() * destinationRandomness;
+		let destinationRandomOffset = randomPointInUnitSphere().multiplyScalar(positionRandomness);
+		destinationAttribute.array[ i * 3 + 0 ] = destination.x + destinationRandomOffset.x;
+		destinationAttribute.array[ i * 3 + 1 ] = destination.y + destinationRandomOffset.y;
+		destinationAttribute.array[ i * 3 + 2 ] = destination.z + destinationRandomOffset.z;
 
 		// color
 		color.r = THREE.Math.clamp( color.r + this.random() * colorRandomness, 0, 1 );
