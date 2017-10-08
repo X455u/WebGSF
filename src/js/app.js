@@ -11,7 +11,6 @@ import {Howl} from 'howler';
 import {loader} from './GSFLoader';
 import {GAME, SCENE, PLANETS} from './Game';
 import {CAMERA} from './GSFCamera';
-import SimpleParticleSystem from './SimpleParticleSystem';
 
 const DEBUG = false;
 
@@ -124,19 +123,6 @@ function initGame() {
     hud.update(playerShip.hp / playerShip.maxHp, playerShip.shield / playerShip.maxShield);
   });
 
-  // Particle testing
-  let particles = new SimpleParticleSystem({
-    particles: 10000000,
-    destination: new THREE.Vector3(0, 0, 0),
-    positionRandomness: 50,
-    destinationRandomness: 1000,
-    color: new THREE.Color(0xFFFFAA),
-    size: 100,
-    cameraPosition: CAMERA.position,
-    lifetime: 1.0
-  });
-  SCENE.add(particles);
-
   // Game Loop
   let previousTime;
   function render() {
@@ -148,9 +134,6 @@ function initGame() {
     crosshair.update([planet, ...enemies]);
 
     GAME.update(delta);
-
-    particles.options.cameraPosition = CAMERA.position;
-    particles.update(delta);
 
     // Camera follow
     let quaternion = (new THREE.Quaternion()).setFromAxisAngle(new THREE.Vector3(0, 1, 0), Math.PI);
