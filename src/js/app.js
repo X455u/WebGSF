@@ -67,7 +67,6 @@ function initGame() {
   // Load player ship
   let playerShip = new Fighter();
   player.setShip(playerShip);
-  GAME.addObject(playerShip);
   CAMERA.setTarget(playerShip);
 
   let crosshair = new Crosshair(CAMERA, playerShip);
@@ -106,7 +105,6 @@ function initGame() {
     enemyShip.position.add(offset);
     enemyShip.target = playerShip;
     enemyShip.ai = FIGHTER_AI;
-    GAME.addObject(enemyShip);
   }
 
   // HUD

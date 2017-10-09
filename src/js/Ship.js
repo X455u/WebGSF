@@ -7,6 +7,7 @@ class Ship extends GameObject {
 
   constructor(geometry, material, stats) {
     super(geometry, material);
+    GAME.addObject(this, true);
 
     // Stats
     this.maxVelocity = stats.maxVelocity;

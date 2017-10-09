@@ -33,20 +33,21 @@ class Game {
     }
   }
 
-  addObject(object) {
-    SCENE.add(object);
-    SHOOTABLES.push(object);
-    this.objects.push(object);
-  }
-
-  addStatic(object) {
-    SCENE.add(object);
-    SHOOTABLES.push(object);
-  }
-
-  addShot(object) {
+  addObject(object, isShootable) {
     SCENE.add(object);
     this.objects.push(object);
+    if (isShootable) SHOOTABLES.push(object);
+  }
+
+  addStatic(object, isShootable) {
+    SCENE.add(object);
+    if (isShootable) SHOOTABLES.push(object);
+  }
+
+  addShot(object, isShootable) {
+    SCENE.add(object);
+    this.objects.push(object);
+    if (isShootable) SHOOTABLES.push(object);
   }
 
 }
