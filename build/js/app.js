@@ -8881,10 +8881,6 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _Planet = __webpack_require__(328);
-
-	var _Planet2 = _interopRequireDefault(_Planet);
-
 	var _Crosshair = __webpack_require__(419);
 
 	var _Crosshair2 = _interopRequireDefault(_Crosshair);
@@ -8912,10 +8908,6 @@
 	var _Game = __webpack_require__(420);
 
 	var _GSFCamera = __webpack_require__(439);
-
-	var _SimpleParticleSystem = __webpack_require__(447);
-
-	var _SimpleParticleSystem2 = _interopRequireDefault(_SimpleParticleSystem);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -8982,12 +8974,6 @@
 
 	  var crosshair = new _Crosshair2.default(_GSFCamera.CAMERA, playerShip);
 
-	  // Planet testing
-	  var planet = new _Planet2.default(500);
-	  planet.position.y = -800;
-	  _Game.GAME.addStatic(planet);
-	  _Game.PLANETS.push(planet);
-
 	  // Sun
 	  var sun = new _Sun2.default();
 	  sun.position.z = 10000;
@@ -9040,7 +9026,7 @@
 	    previousTime = time;
 
 	    _Player.player.update();
-	    crosshair.update([planet].concat(enemies));
+	    crosshair.update(enemies);
 
 	    _Game.GAME.update(delta);
 
@@ -53328,99 +53314,7 @@
 
 
 /***/ }),
-/* 328 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _getPrototypeOf = __webpack_require__(329);
-
-	var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
-
-	var _classCallCheck2 = __webpack_require__(355);
-
-	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
-
-	var _possibleConstructorReturn2 = __webpack_require__(356);
-
-	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
-
-	var _inherits2 = __webpack_require__(402);
-
-	var _inherits3 = _interopRequireDefault(_inherits2);
-
-	var _lodash = __webpack_require__(410);
-
-	var _lodash2 = _interopRequireDefault(_lodash);
-
-	var _three = __webpack_require__(327);
-
-	var THREE = _interopRequireWildcard(_three);
-
-	var _SubdivisionModifier = __webpack_require__(412);
-
-	var _SubdivisionModifier2 = _interopRequireDefault(_SubdivisionModifier);
-
-	var _GSFLoader = __webpack_require__(417);
-
-	var _GameObject2 = __webpack_require__(418);
-
-	var _GameObject3 = _interopRequireDefault(_GameObject2);
-
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	var DETAIL = 3;
-	var NOISE = 0.3;
-	var SMOOTHNESS = 2;
-
-	var Planet = function (_GameObject) {
-	  (0, _inherits3.default)(Planet, _GameObject);
-
-	  function Planet(radius) {
-	    (0, _classCallCheck3.default)(this, Planet);
-
-	    var geometry = new THREE.IcosahedronGeometry(radius, 2);
-	    var modifier = new _SubdivisionModifier2.default(1);
-
-	    _lodash2.default.range(DETAIL).forEach(function (i) {
-	      geometry.vertices.forEach(function (v) {
-	        var noiseFactor = NOISE / Math.pow(SMOOTHNESS, i);
-	        var s = 1 + (2 * Math.random() - 1) * noiseFactor;
-	        v.multiplyScalar(s);
-	      });
-	      modifier.modify(geometry);
-	    });
-
-	    geometry.computeBoundingBox();
-	    geometry.computeBoundingSphere();
-
-	    // Dummy UV implementation
-	    geometry.faceVertexUvs = [geometry.faces.map(function () {
-	      return [new THREE.Vector2(0, 0), new THREE.Vector2(1, 0), new THREE.Vector2(0, 1)];
-	    })];
-	    geometry.uvsNeedUpdate = true;
-
-	    var material = new THREE.MeshPhongMaterial({
-	      color: 0x111111,
-	      shininess: 1,
-	      normalMap: _GSFLoader.loader.get('planetNormalMap')
-	    });
-
-	    return (0, _possibleConstructorReturn3.default)(this, (Planet.__proto__ || (0, _getPrototypeOf2.default)(Planet)).call(this, geometry, material));
-	  }
-
-	  return Planet;
-	}(_GameObject3.default);
-
-	exports.default = Planet;
-
-/***/ }),
+/* 328 */,
 /* 329 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -68453,6 +68347,7 @@
 	      }
 	    }
 
+	    _this.hitRadius = 1;
 	    return _this;
 	  }
 
@@ -68600,8 +68495,6 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _Game = __webpack_require__(420);
-
 	var _GameObject2 = __webpack_require__(418);
 
 	var _GameObject3 = _interopRequireDefault(_GameObject2);
@@ -68610,11 +68503,11 @@
 
 	var _Explosion2 = _interopRequireDefault(_Explosion);
 
+	var _Game = __webpack_require__(420);
+
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	var RAYCASTER = new THREE.Raycaster();
 
 	var Ship = function (_GameObject) {
 	  (0, _inherits3.default)(Ship, _GameObject);
@@ -68632,6 +68525,7 @@
 	    _this.maxShield = stats.maxShield;
 	    if (stats.gun) {
 	      _this.gun = stats.gun;
+	      _this.gun.owner = _this;
 	      _this.add(stats.gun);
 	    }
 
@@ -68722,16 +68616,6 @@
 	          this.gun.shoot();
 	          this.isShooting = false;
 	        }
-	      }
-
-	      RAYCASTER.near = 0;
-	      RAYCASTER.far = this.velocity * delta;
-	      var direction = new THREE.Vector3(0, 0, 1);
-	      direction.applyQuaternion(this.quaternion);
-	      RAYCASTER.set(this.position, direction);
-	      var intersections = RAYCASTER.intersectObjects(_Game.PLANETS);
-	      if (intersections.length !== 0) {
-	        this.damage(1000);
 	      }
 	    }
 	  }, {
@@ -69432,6 +69316,7 @@
 	    _this.reloadTime = 0.5;
 	    _this.muzzleVelocity = 300;
 	    _this.shotLifetime = 5.0;
+	    _this.owner = null;
 	    return _this;
 	  }
 
@@ -69440,6 +69325,7 @@
 	    value: function shoot() {
 	      if (this.reload !== 0.0) return;
 	      var shot = new _LaserShot2.default();
+	      shot.owner = this.owner;
 	      this.getWorldPosition(shot.position);
 	      this.getWorldQuaternion(shot.quaternion);
 	      this.reload = this.reloadTime;
@@ -69547,6 +69433,10 @@
 	  value: true
 	});
 
+	var _getIterator2 = __webpack_require__(421);
+
+	var _getIterator3 = _interopRequireDefault(_getIterator2);
+
 	var _getPrototypeOf = __webpack_require__(329);
 
 	var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
@@ -69592,6 +69482,7 @@
 	    _this.velocity = 300;
 	    _this.lifetime = 5;
 	    _this.damage = 1;
+	    _this.owner = null;
 	    _Game.GAME.addShot(_this);
 	    return _this;
 	  }
@@ -69605,14 +69496,54 @@
 	        return;
 	      }
 
-	      _Game.RAYCASTER.far = this.velocity * delta;
+	      var x1 = this.position.clone();
+	      var x2 = x1.clone();
 	      var direction = new THREE.Vector3(0, 0, 1);
 	      direction.applyQuaternion(this.quaternion);
-	      _Game.RAYCASTER.set(this.position, direction);
-	      var intersections = _Game.RAYCASTER.intersectObjects(_Game.SHOOTABLES);
-	      if (intersections.length > 0) {
+	      direction.multiplyScalar(this.velocity * delta);
+	      x2.add(direction);
+	      var denominator = x1.distanceTo(x2);
+
+	      var hitObject = void 0;
+	      var hitDistance = Infinity;
+	      var _iteratorNormalCompletion = true;
+	      var _didIteratorError = false;
+	      var _iteratorError = undefined;
+
+	      try {
+	        for (var _iterator = (0, _getIterator3.default)(_Game.SHOOTABLES), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	          var shootable = _step.value;
+
+	          if (shootable === this.owner) continue;
+	          var x0 = shootable.position;
+	          if (this.position.distanceTo(x0) > denominator) continue;
+	          var a1 = new THREE.Vector3().subVectors(x0, x1);
+	          var a2 = new THREE.Vector3().subVectors(x0, x2);
+	          var radius = a1.cross(a2).length() / denominator;
+	          if (radius > shootable.hitRadius) continue;
+	          var hitDistance2 = this.position.distanceTo(x0);
+	          if (hitDistance2 < hitDistance) {
+	            hitDistance = hitDistance2;
+	            hitObject = shootable;
+	          }
+	        }
+	      } catch (err) {
+	        _didIteratorError = true;
+	        _iteratorError = err;
+	      } finally {
+	        try {
+	          if (!_iteratorNormalCompletion && _iterator.return) {
+	            _iterator.return();
+	          }
+	        } finally {
+	          if (_didIteratorError) {
+	            throw _iteratorError;
+	          }
+	        }
+	      }
+
+	      if (hitObject) {
 	        this.remove();
-	        var hitObject = intersections[0].object;
 	        hitObject.damage(this.damage);
 	      }
 
