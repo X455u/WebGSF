@@ -1,6 +1,5 @@
 import * as THREE from 'three';
 
-import Planet from './Planet';
 import Crosshair from './Crosshair';
 import HUD from './HUD';
 import Sun from './Sun';
@@ -9,7 +8,7 @@ import {FIGHTER_AI} from './FighterAI';
 import {player} from './Player';
 import {Howl} from 'howler';
 import {loader} from './GSFLoader';
-import {GAME, SCENE, PLANETS} from './Game';
+import {GAME, SCENE} from './Game';
 import {CAMERA} from './GSFCamera';
 
 const DEBUG = false;
@@ -73,12 +72,6 @@ function initGame() {
 
   let crosshair = new Crosshair(CAMERA, playerShip);
 
-  // Planet testing
-  let planet = new Planet(500);
-  planet.position.y = -800;
-  GAME.addStatic(planet);
-  PLANETS.push(planet);
-
   // Sun
   let sun = new Sun();
   sun.position.z = 10000;
@@ -131,7 +124,7 @@ function initGame() {
     previousTime = time;
 
     player.update();
-    crosshair.update([planet, ...enemies]);
+    crosshair.update(enemies);
 
     GAME.update(delta);
 

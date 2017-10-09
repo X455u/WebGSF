@@ -1,8 +1,6 @@
 import * as THREE from 'three';
 
 export const SCENE = new THREE.Scene();
-export const RAYCASTER = new THREE.Raycaster(new THREE.Vector3(), new THREE.Vector3(0, 0, 1), 0);
-export const PLANETS = [];
 export const SHOOTABLES = [];
 
 function remove(element, list) {

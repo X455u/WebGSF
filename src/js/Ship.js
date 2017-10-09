@@ -1,10 +1,7 @@
 import * as THREE from 'three';
-import {PLANETS} from './Game';
 import GameObject from './GameObject';
 import Explosion from './Explosion';
 import {GAME} from './Game';
-
-const RAYCASTER = new THREE.Raycaster();
 
 class Ship extends GameObject {
 
@@ -19,6 +16,7 @@ class Ship extends GameObject {
     this.maxShield = stats.maxShield;
     if (stats.gun) {
       this.gun = stats.gun;
+      this.gun.owner = this;
       this.add(stats.gun);
     }
 
@@ -102,16 +100,6 @@ class Ship extends GameObject {
         this.gun.shoot();
         this.isShooting = false;
       }
-    }
-
-    RAYCASTER.near = 0;
-    RAYCASTER.far = this.velocity * delta;
-    let direction = new THREE.Vector3(0, 0, 1);
-    direction.applyQuaternion(this.quaternion);
-    RAYCASTER.set(this.position, direction);
-    let intersections = RAYCASTER.intersectObjects(PLANETS);
-    if (intersections.length !== 0) {
-      this.damage(1000);
     }
   }
 

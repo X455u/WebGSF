@@ -47,6 +47,8 @@ class Fighter extends Ship {
       thruster.translateZ(thrusterPosition.z);
       this.thrusters.push(thruster);
     }
+
+    this.hitRadius = 1;
   }
 
   update(delta) {
