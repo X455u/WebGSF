@@ -30,8 +30,11 @@ class GSFLoader {
     this.TEX_LOADER.load('./media/background.jpg', (texture) => {
       this.assets['backgroundTexture'] = texture;
     });
-    this.TEX_LOADER.load('./media/planet_nor.png', (normalMap) => {
-      this.assets['planetNormalMap'] = normalMap;
+    // this.TEX_LOADER.load('./media/planet_nor.png', (normalMap) => {
+    //   this.assets['planetNormalMap'] = normalMap;
+    // });
+    this.TEX_LOADER.load('./media/mars.jpg', (texture) => {
+      this.assets['marsTexture'] = texture;
     });
     this.TEX_LOADER.load('./media/lensflare/lensflare0.png', (texture) => {
       this.assets['texFlare0'] = texture;

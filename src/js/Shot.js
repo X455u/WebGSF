@@ -19,25 +19,25 @@ class Shot extends GameObject {
       return;
     }
 
-    let x1 = this.position.clone();
-    let x2 = x1.clone();
+    let shotStart = this.position.clone();
+    let shotEnd = shotStart.clone();
     let direction = new THREE.Vector3(0, 0, 1);
     direction.applyQuaternion(this.quaternion);
     direction.multiplyScalar(this.velocity * delta);
-    x2.add(direction);
-    let denominator = x1.distanceTo(x2);
+    shotEnd.add(direction);
+    let denominator = shotStart.distanceTo(shotEnd);
 
     let hitObject;
     let hitDistance = Infinity;
     for (let shootable of SHOOTABLES) {
       if (shootable === this.owner) continue;
-      let x0 = shootable.position;
-      if (this.position.distanceTo(x0) > denominator) continue;
-      let a1 = new THREE.Vector3().subVectors(x0, x1);
-      let a2 = new THREE.Vector3().subVectors(x0, x2);
+      let shootableCenter = shootable.position;
+      if (this.position.distanceTo(shootableCenter) > denominator + shootable.hitRadius) continue;
+      let a1 = new THREE.Vector3().subVectors(shootableCenter, shotStart);
+      let a2 = new THREE.Vector3().subVectors(shootableCenter, shotEnd);
       let radius = a1.cross(a2).length() / denominator;
       if (radius > shootable.hitRadius) continue;
-      let hitDistance2 = this.position.distanceTo(x0);
+      let hitDistance2 = this.position.distanceTo(shootableCenter);
       if (hitDistance2 < hitDistance) {
         hitDistance = hitDistance2;
         hitObject = shootable;

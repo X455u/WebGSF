@@ -4,6 +4,7 @@ import Crosshair from './Crosshair';
 import HUD from './HUD';
 import Sun from './Sun';
 import Fighter from './Fighter';
+import SimpleMars from './SimpleMars';
 import {FIGHTER_AI} from './FighterAI';
 import {player} from './Player';
 import {Howl} from 'howler';
@@ -113,6 +114,11 @@ function initGame() {
   playerShip.addEventListener('onDamage', () => {
     hud.update(playerShip.hp / playerShip.maxHp, playerShip.shield / playerShip.maxShield);
   });
+
+  // Planets
+  let mars = new SimpleMars(550, 4);
+  mars.position.y = -600;
+  GAME.addStatic(mars, true);
 
   // Game Loop
   let previousTime;
