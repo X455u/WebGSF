@@ -33,6 +33,9 @@ class GSFLoader {
     // this.TEX_LOADER.load('./media/planet_nor.png', (normalMap) => {
     //   this.assets['planetNormalMap'] = normalMap;
     // });
+    this.TEX_LOADER.load('./media/planet_nor_big.png', (normalMap) => {
+      this.assets['planetNormalMapBig'] = normalMap;
+    });
     this.TEX_LOADER.load('./media/mars.jpg', (texture) => {
       this.assets['marsTexture'] = texture;
     });
