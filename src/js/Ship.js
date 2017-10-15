@@ -1,4 +1,3 @@
-import * as THREE from 'three';
 import GameObject from './GameObject';
 import Explosion from './Explosion';
 import {GAME} from './Game';
@@ -37,8 +36,8 @@ class Ship extends GameObject {
 
     // AI
     this.ai = null;
-    this.attacking = true;
-    this.target = null;
+    this.AIattacking = true;
+    this.AItarget = null;
 
     // Events
     this.addEventListener('onDamage', () => {
@@ -80,7 +79,7 @@ class Ship extends GameObject {
   }
 
   update(delta) {
-    if (this.ai && this.target) this.ai.update(this, delta);
+    if (this.ai && this.AItarget) this.ai.update(this, delta);
 
     this.rotateX(this.turnParameters.x * this.turnSpeed * 2 * Math.PI * delta);
     this.rotateY(this.turnParameters.y * this.turnSpeed * 2 * Math.PI * delta);
@@ -103,33 +102,6 @@ class Ship extends GameObject {
       }
     }
   }
-
-  turnTowards(target, delta) {
-    let matrix = new THREE.Matrix4();
-    let up = (new THREE.Vector3(0, 1, 0)).applyQuaternion(this.quaternion);
-    matrix.lookAt(target, this.position, up);
-
-    let quaternion = new THREE.Quaternion();
-    quaternion.setFromRotationMatrix(matrix);
-
-    let direction = new THREE.Vector3(0, 0, 1);
-    direction.applyQuaternion(this.quaternion);
-    direction.normalize();
-
-    let targetDirection = new THREE.Vector3();
-    targetDirection.subVectors(target, this.position);
-    targetDirection.normalize();
-
-    let angle = direction.angleTo(targetDirection);
-    this.quaternion.slerp(quaternion, this.turnSpeed * delta * 2 * Math.PI / angle);
-  }
-
-  getVelocityVec() {
-    let direction = (new THREE.Vector3(0, 0, 1)).applyQuaternion(this.quaternion);
-    let velocityVec = direction.clone().multiplyScalar(this.velocity);
-    return velocityVec;
-  }
-
 }
 
 export default Ship;

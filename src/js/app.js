@@ -5,6 +5,7 @@ import HUD from './HUD';
 import Sun from './Sun';
 import Fighter from './Fighter';
 import SimpleMars from './SimpleMars';
+import Missile from './Missile';
 import {FIGHTER_AI} from './FighterAI';
 import {player} from './Player';
 import {Howl} from 'howler';
@@ -104,8 +105,13 @@ function initGame() {
     let offset = new THREE.Vector3(Math.random(), Math.random(), Math.random());
     offset.multiplyScalar(i * 5);
     enemyShip.position.add(offset);
-    enemyShip.target = playerShip;
+    enemyShip.AItarget = playerShip;
     enemyShip.ai = FIGHTER_AI;
+    enemies.push(enemyShip);
+    enemyShip.addEventListener('onDamage', () => {
+      let index = enemies.indexOf(enemyShip);
+      if (index > -1) enemies.splice(index, 1);
+    });
   }
 
   // HUD
@@ -119,6 +125,16 @@ function initGame() {
   let mars = new SimpleMars(550, 4);
   mars.position.y = -600;
   GAME.addStatic(mars, true);
+
+  // Missiles
+  playerShip.shootMissile = () => {
+    let missile = new Missile();
+    missile.position.copy(playerShip.position);
+    missile.quaternion.copy(playerShip.quaternion);
+    missile.translateY(-1);
+    missile.owner = playerShip;
+    missile.target = enemies[0];
+  };
 
   // Game Loop
   let previousTime;

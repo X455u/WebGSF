@@ -10,19 +10,19 @@ class FighterAI {
   }
 
   update(ship, delta) {
-    if (ship.attacking) {
-      let aimTarget = this.getAimTarget(ship.position, ship.target.position, ship.target.getVelocityVec(), ship.gun.muzzleVelocity);
+    if (ship.AIattacking) {
+      let aimTarget = this.getAimTarget(ship.position, ship.AItarget.position, ship.AItarget.getVelocityVec(), ship.gun.muzzleVelocity);
       ship.turnTowards(aimTarget, delta);
       ship.shoot();
-      if (ship.position.distanceTo(ship.target.position) < CLOSE_DISTANCE) {
-        ship.attacking = false;
+      if (ship.position.distanceTo(ship.AItarget.position) < CLOSE_DISTANCE) {
+        ship.AIattacking = false;
       }
     } else {
-      let away = (new THREE.Vector3()).subVectors(ship.position, ship.target.position);
+      let away = (new THREE.Vector3()).subVectors(ship.position, ship.AItarget.position);
       away.add(ship.position);
       ship.turnTowards(away, delta);
-      if (ship.position.distanceTo(ship.target.position) > FAR_DISTANCE) {
-        ship.attacking = true;
+      if (ship.position.distanceTo(ship.AItarget.position) > FAR_DISTANCE) {
+        ship.AIattacking = true;
       }
     }
     ship.thrust();

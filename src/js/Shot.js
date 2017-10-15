@@ -13,8 +13,8 @@ class Shot extends GameObject {
   }
 
   update(delta) {
-    this.lifetimeLeft -= delta;
-    if (this.lifetimeLeft < 0) {
+    this.lifetime -= delta;
+    if (this.lifetime < 0) {
       this.remove();
       return;
     }

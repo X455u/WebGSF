@@ -39,6 +39,7 @@ class Player {
       // Ship acceleration
       if (keymaster.isPressed('space')) this.ship.thrust();
       if (keymaster.isPressed('x')) this.ship.shoot();
+      if (keymaster.isPressed('c')) this.ship.shootMissile();
     } else {
       if (this.isThrusting) this.ship.thrust();
       if (this.isShooting) this.ship.shoot();
