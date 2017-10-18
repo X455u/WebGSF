@@ -47,7 +47,9 @@ class Missile extends Shot {
   }
 
   update(delta) {
-    this.turnTowards(this.target.position, delta);
+    if (this.target) {
+      this.turnTowards(this.target.position, delta);
+    }
     super.update(delta);
   }
 
