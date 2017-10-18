@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 
 export const SCENE = new THREE.Scene();
-export const SHOOTABLES = [];
+export const COLLIDABLES = [];
 
 function remove(element, list) {
   let index = list.indexOf(element);
@@ -25,7 +25,7 @@ class Game {
       let object = this.objects[i];
       if (object.removed) {
         SCENE.remove(object);
-        remove(object, SHOOTABLES);
+        remove(object, COLLIDABLES);
         remove(object, this.objects);
       } else {
         i++;
@@ -36,18 +36,18 @@ class Game {
   addObject(object, isShootable) {
     SCENE.add(object);
     this.objects.push(object);
-    if (isShootable) SHOOTABLES.push(object);
+    if (isShootable) COLLIDABLES.push(object);
   }
 
   addStatic(object, isShootable) {
     SCENE.add(object);
-    if (isShootable) SHOOTABLES.push(object);
+    if (isShootable) COLLIDABLES.push(object);
   }
 
   addShot(object, isShootable) {
     SCENE.add(object);
     this.objects.push(object);
-    if (isShootable) SHOOTABLES.push(object);
+    if (isShootable) COLLIDABLES.push(object);
   }
 
 }

@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import GameObject from './GameObject';
-import {GAME, SHOOTABLES} from './Game';
+import {GAME, COLLIDABLES} from './Game';
 
 class Shot extends GameObject {
   constructor(geometry, material) {
@@ -29,7 +29,7 @@ class Shot extends GameObject {
 
     let hitObject;
     let hitDistance = Infinity;
-    for (let shootable of SHOOTABLES) {
+    for (let shootable of COLLIDABLES) {
       if (shootable === this.owner) continue;
       let shootableCenter = shootable.position;
       if (this.position.distanceTo(shootableCenter) > denominator + shootable.hitRadius) continue;
