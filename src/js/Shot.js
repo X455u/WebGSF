@@ -45,7 +45,7 @@ class Shot extends GameObject {
     }
     if (hitObject) {
       this.remove();
-      hitObject.damage(this.damage);
+      hitObject.dealDamage(this.damage);
     }
 
     this.translateZ(this.velocity * delta);

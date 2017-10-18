@@ -11,7 +11,7 @@ class GameObject extends THREE.Mesh {
 
   update() {}
 
-  damage() {}
+  dealDamage() {}
 
   remove() {
     this.removed = true;

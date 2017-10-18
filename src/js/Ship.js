@@ -65,7 +65,7 @@ class Ship extends GameObject {
     this.turnParameters.z = Math.min(Math.max(-1, z_), 1);
   }
 
-  damage(damage) {
+  dealDamage(damage) {
     this.shield -= damage;
     if (this.shield < 0) {
       this.hp += this.shield;
