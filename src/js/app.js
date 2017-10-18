@@ -53,6 +53,11 @@ function initGame() {
   });
   music.play();
 
+  let points = document.createElement('div');
+  points.className = 'debug';
+  points.innerHTML = 'Points: ' + player.points;
+  document.body.appendChild(points);
+
   let renderer = new THREE.WebGLRenderer({antialias: true, alpha: true});
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.autoClear = false;
@@ -109,8 +114,12 @@ function initGame() {
     enemyShip.ai = FIGHTER_AI;
     enemies.push(enemyShip);
     enemyShip.addEventListener('onDamage', () => {
-      let index = enemies.indexOf(enemyShip);
-      if (index > -1) enemies.splice(index, 1);
+      if (enemyShip.hp === 0) {
+        let index = enemies.indexOf(enemyShip);
+        if (index > -1) enemies.splice(index, 1);
+        player.addPoints(1);
+        points.innerHTML = 'Points: ' + player.points;
+      }
     });
   }
 

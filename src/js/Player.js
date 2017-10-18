@@ -20,6 +20,11 @@ class Player {
       this.setMobileEventListeners();
     }
     this.ship = null;
+    this.points = 0;
+  }
+
+  addPoints(points) {
+    this.points += points;
   }
 
   setShip(ship) {
@@ -46,7 +51,6 @@ class Player {
     }
 
     this.ship.turn(this.turnParameters.x, 0, this.turnParameters.z);
-
   }
 
   setMobileEventListeners() {
