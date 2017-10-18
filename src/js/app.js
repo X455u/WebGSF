@@ -114,11 +114,11 @@ function initGame() {
     enemyShip.ai = FIGHTER_AI;
     enemies.push(enemyShip);
     enemyShip.addEventListener('onDamage', () => {
-      if (enemyShip.hp === 0) {
+      if (enemyShip.hp === 0 && enemies.indexOf(enemyShip) > -1) {
         let index = enemies.indexOf(enemyShip);
         if (index > -1) enemies.splice(index, 1);
-        player.addPoints(1);
-        points.innerHTML = 'Points: ' + player.points;
+        player.addPoints(100);
+        points.innerHTML = 'Points: ' + Math.floor(player.points);
       }
     });
   }
@@ -153,6 +153,8 @@ function initGame() {
     previousTime = time;
 
     player.update();
+    player.addPoints(delta);
+    points.innerHTML = 'Points: ' + Math.floor(player.points);
     crosshair.update(enemies);
 
     GAME.update(delta);
