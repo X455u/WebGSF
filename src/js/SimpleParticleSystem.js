@@ -10,7 +10,7 @@ function randomPointInUnitSphere() {
   return result;
 }
 
-class GPUParticleSystem extends THREE.Object3D {
+class SimpleParticleSystem extends THREE.Object3D {
 
   constructor(options) {
     super();
@@ -241,4 +241,4 @@ class GPUParticleSystem extends THREE.Object3D {
 
 }
 
-export default GPUParticleSystem;
+export default SimpleParticleSystem;
