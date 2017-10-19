@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import {COLLIDABLES} from './Game';
 
 class GameObject extends THREE.Mesh {
   constructor(geometry, material) {
@@ -41,6 +42,35 @@ class GameObject extends THREE.Mesh {
     let direction = (new THREE.Vector3(0, 0, 1)).applyQuaternion(this.quaternion);
     let velocityVec = direction.clone().multiplyScalar(this.velocity);
     return velocityVec;
+  }
+
+  checkCollision(quaternion, distance) {
+    let start = this.position.clone();
+    let end = start.clone();
+    let direction = new THREE.Vector3(0, 0, 1);
+    direction.applyQuaternion(quaternion);
+    direction.multiplyScalar(distance);
+    end.add(direction);
+
+    let hitObject;
+    let hitDistance = Infinity;
+    let a1 = new THREE.Vector3();
+    let a2 = new THREE.Vector3();
+    for (let shootable of COLLIDABLES) {
+      if (shootable === this || shootable === this.owner) continue;
+      let shootableCenter = shootable.position;
+      if (this.position.distanceTo(shootableCenter) > distance + shootable.hitRadius + this.hitRadius) continue;
+      a1.subVectors(shootableCenter, start);
+      a2.subVectors(shootableCenter, end);
+      let radius = a1.cross(a2).length() / distance;
+      if (radius > shootable.hitRadius + this.hitRadius) continue;
+      let hitDistance2 = this.position.distanceTo(shootableCenter);
+      if (hitDistance2 < hitDistance) {
+        hitDistance = hitDistance2;
+        hitObject = shootable;
+      }
+    }
+    return hitObject;
   }
 }
 export default GameObject;

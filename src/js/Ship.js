@@ -103,30 +103,7 @@ class Ship extends GameObject {
       }
     }
 
-    let start = this.position.clone();
-    let end = start.clone();
-    let direction = new THREE.Vector3(0, 0, 1);
-    direction.applyQuaternion(this.quaternion);
-    direction.multiplyScalar(this.velocity * delta);
-    end.add(direction);
-    let denominator = start.distanceTo(end);
-
-    let hitObject;
-    let hitDistance = Infinity;
-    for (let shootable of COLLIDABLES) {
-      if (shootable === this) continue;
-      let shootableCenter = shootable.position;
-      if (this.position.distanceTo(shootableCenter) > denominator + shootable.hitRadius) continue;
-      let a1 = new THREE.Vector3().subVectors(shootableCenter, start);
-      let a2 = new THREE.Vector3().subVectors(shootableCenter, end);
-      let radius = a1.cross(a2).length() / denominator;
-      if (radius > shootable.hitRadius) continue;
-      let hitDistance2 = this.position.distanceTo(shootableCenter);
-      if (hitDistance2 < hitDistance) {
-        hitDistance = hitDistance2;
-        hitObject = shootable;
-      }
-    }
+    let hitObject = this.checkCollision(this.quaternion, this.velocity * delta);
     if (hitObject) {
       this.dealDamage(Infinity);
       hitObject.dealDamage(Infinity);
