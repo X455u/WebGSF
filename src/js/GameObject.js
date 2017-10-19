@@ -39,8 +39,8 @@ class GameObject extends THREE.Mesh {
   }
 
   getVelocityVec() {
-    let direction = (new THREE.Vector3(0, 0, 1)).applyQuaternion(this.quaternion);
-    let velocityVec = direction.clone().multiplyScalar(this.velocity);
+    let direction = new THREE.Vector3(0, 0, 1).applyQuaternion(this.quaternion);
+    let velocityVec = direction.multiplyScalar(this.velocity);
     return velocityVec;
   }
 

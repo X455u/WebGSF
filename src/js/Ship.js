@@ -82,9 +82,10 @@ class Ship extends GameObject {
   update(delta) {
     if (this.ai && this.AItarget) this.ai.update(this, delta);
 
-    this.rotateX(this.turnParameters.x * this.turnSpeed * 2 * Math.PI * delta);
-    this.rotateY(this.turnParameters.y * this.turnSpeed * 2 * Math.PI * delta);
-    this.rotateZ(this.turnParameters.z * this.turnSpeed * 2 * Math.PI * delta);
+    let turnAmount = this.turnSpeed * 2 * Math.PI * delta;
+    this.rotateX(this.turnParameters.x * turnAmount);
+    this.rotateY(this.turnParameters.y * turnAmount);
+    this.rotateZ(this.turnParameters.z * turnAmount);
 
     if (this.isThrusting) {
       this.velocity += this.acceleration * delta;
