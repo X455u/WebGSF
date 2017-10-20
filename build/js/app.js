@@ -9017,7 +9017,7 @@
 	  var _loop = function _loop(i) {
 	    var enemyShip = new _Fighter2.default();
 	    var offset = new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize();
-	    offset.multiplyScalar(5);
+	    offset.multiplyScalar(10);
 	    enemyShip.position.add(offset);
 	    enemyShip.AItarget = playerShip;
 	    enemyShip.ai = _FighterAI.FIGHTER_AI;
@@ -55786,10 +55786,6 @@
 	  value: true
 	});
 
-	var _getIterator2 = __webpack_require__(351);
-
-	var _getIterator3 = _interopRequireDefault(_getIterator2);
-
 	var _getPrototypeOf = __webpack_require__(394);
 
 	var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
@@ -55918,9 +55914,10 @@
 	    value: function update(delta) {
 	      if (this.ai && this.AItarget) this.ai.update(this, delta);
 
-	      this.rotateX(this.turnParameters.x * this.turnSpeed * 2 * Math.PI * delta);
-	      this.rotateY(this.turnParameters.y * this.turnSpeed * 2 * Math.PI * delta);
-	      this.rotateZ(this.turnParameters.z * this.turnSpeed * 2 * Math.PI * delta);
+	      var turnAmount = this.turnSpeed * 2 * Math.PI * delta;
+	      this.rotateX(this.turnParameters.x * turnAmount);
+	      this.rotateY(this.turnParameters.y * turnAmount);
+	      this.rotateZ(this.turnParameters.z * turnAmount);
 
 	      if (this.isThrusting) {
 	        this.velocity += this.acceleration * delta;
@@ -55939,52 +55936,7 @@
 	        }
 	      }
 
-	      var start = this.position.clone();
-	      var end = start.clone();
-	      var direction = new THREE.Vector3(0, 0, 1);
-	      direction.applyQuaternion(this.quaternion);
-	      direction.multiplyScalar(this.velocity * delta);
-	      end.add(direction);
-	      var denominator = start.distanceTo(end);
-
-	      var hitObject = void 0;
-	      var hitDistance = Infinity;
-	      var _iteratorNormalCompletion = true;
-	      var _didIteratorError = false;
-	      var _iteratorError = undefined;
-
-	      try {
-	        for (var _iterator = (0, _getIterator3.default)(_Game.COLLIDABLES), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-	          var shootable = _step.value;
-
-	          if (shootable === this) continue;
-	          var shootableCenter = shootable.position;
-	          if (this.position.distanceTo(shootableCenter) > denominator + shootable.hitRadius) continue;
-	          var a1 = new THREE.Vector3().subVectors(shootableCenter, start);
-	          var a2 = new THREE.Vector3().subVectors(shootableCenter, end);
-	          var radius = a1.cross(a2).length() / denominator;
-	          if (radius > shootable.hitRadius) continue;
-	          var hitDistance2 = this.position.distanceTo(shootableCenter);
-	          if (hitDistance2 < hitDistance) {
-	            hitDistance = hitDistance2;
-	            hitObject = shootable;
-	          }
-	        }
-	      } catch (err) {
-	        _didIteratorError = true;
-	        _iteratorError = err;
-	      } finally {
-	        try {
-	          if (!_iteratorNormalCompletion && _iterator.return) {
-	            _iterator.return();
-	          }
-	        } finally {
-	          if (_didIteratorError) {
-	            throw _iteratorError;
-	          }
-	        }
-	      }
-
+	      var hitObject = this.checkCollision(this.quaternion, this.velocity * delta);
 	      if (hitObject) {
 	        this.dealDamage(Infinity);
 	        hitObject.dealDamage(Infinity);
@@ -56005,6 +55957,10 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
+
+	var _getIterator2 = __webpack_require__(351);
+
+	var _getIterator3 = _interopRequireDefault(_getIterator2);
 
 	var _getPrototypeOf = __webpack_require__(394);
 
@@ -56029,6 +55985,8 @@
 	var _three = __webpack_require__(327);
 
 	var THREE = _interopRequireWildcard(_three);
+
+	var _Game = __webpack_require__(350);
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -56085,8 +56043,63 @@
 	    key: 'getVelocityVec',
 	    value: function getVelocityVec() {
 	      var direction = new THREE.Vector3(0, 0, 1).applyQuaternion(this.quaternion);
-	      var velocityVec = direction.clone().multiplyScalar(this.velocity);
+	      var velocityVec = direction.multiplyScalar(this.velocity);
 	      return velocityVec;
+	    }
+	  }, {
+	    key: 'checkCollision',
+	    value: function checkCollision(quaternion, distance) {
+	      var extraHitRadius = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+
+	      var start = this.position.clone();
+	      var end = start.clone();
+	      var direction = new THREE.Vector3(0, 0, 1);
+	      direction.applyQuaternion(quaternion);
+	      direction.multiplyScalar(distance);
+	      end.add(direction);
+
+	      var hitObject = void 0;
+	      var hitDistance = Infinity;
+	      var a1 = new THREE.Vector3();
+	      var a2 = new THREE.Vector3();
+	      var _iteratorNormalCompletion = true;
+	      var _didIteratorError = false;
+	      var _iteratorError = undefined;
+
+	      try {
+	        for (var _iterator = (0, _getIterator3.default)(_Game.COLLIDABLES), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	          var shootable = _step.value;
+
+	          if (shootable === this || shootable === this.owner) continue;
+	          if (shootable.position.dot(direction) < 0) continue;
+	          var shootableCenter = shootable.position;
+	          if (this.position.distanceTo(shootableCenter) > distance + shootable.hitRadius + this.hitRadius + extraHitRadius) continue;
+	          a1.subVectors(shootableCenter, start);
+	          a2.subVectors(shootableCenter, end);
+	          var radius = a1.cross(a2).length() / distance;
+	          if (radius > shootable.hitRadius + this.hitRadius + extraHitRadius) continue;
+	          var hitDistance2 = this.position.distanceTo(shootableCenter);
+	          if (hitDistance2 < hitDistance) {
+	            hitDistance = hitDistance2;
+	            hitObject = shootable;
+	          }
+	        }
+	      } catch (err) {
+	        _didIteratorError = true;
+	        _iteratorError = err;
+	      } finally {
+	        try {
+	          if (!_iteratorNormalCompletion && _iterator.return) {
+	            _iterator.return();
+	          }
+	        } finally {
+	          if (_didIteratorError) {
+	            throw _iteratorError;
+	          }
+	        }
+	      }
+
+	      return hitObject;
 	    }
 	  }]);
 	  return GameObject;
@@ -57165,10 +57178,6 @@
 	  value: true
 	});
 
-	var _getIterator2 = __webpack_require__(351);
-
-	var _getIterator3 = _interopRequireDefault(_getIterator2);
-
 	var _getPrototypeOf = __webpack_require__(394);
 
 	var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
@@ -57228,52 +57237,7 @@
 	        return;
 	      }
 
-	      var shotStart = this.position.clone();
-	      var shotEnd = shotStart.clone();
-	      var direction = new THREE.Vector3(0, 0, 1);
-	      direction.applyQuaternion(this.quaternion);
-	      direction.multiplyScalar(this.velocity * delta);
-	      shotEnd.add(direction);
-	      var denominator = shotStart.distanceTo(shotEnd);
-
-	      var hitObject = void 0;
-	      var hitDistance = Infinity;
-	      var _iteratorNormalCompletion = true;
-	      var _didIteratorError = false;
-	      var _iteratorError = undefined;
-
-	      try {
-	        for (var _iterator = (0, _getIterator3.default)(_Game.COLLIDABLES), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-	          var shootable = _step.value;
-
-	          if (shootable === this.owner) continue;
-	          var shootableCenter = shootable.position;
-	          if (this.position.distanceTo(shootableCenter) > denominator + shootable.hitRadius) continue;
-	          var a1 = new THREE.Vector3().subVectors(shootableCenter, shotStart);
-	          var a2 = new THREE.Vector3().subVectors(shootableCenter, shotEnd);
-	          var radius = a1.cross(a2).length() / denominator;
-	          if (radius > shootable.hitRadius) continue;
-	          var hitDistance2 = this.position.distanceTo(shootableCenter);
-	          if (hitDistance2 < hitDistance) {
-	            hitDistance = hitDistance2;
-	            hitObject = shootable;
-	          }
-	        }
-	      } catch (err) {
-	        _didIteratorError = true;
-	        _iteratorError = err;
-	      } finally {
-	        try {
-	          if (!_iteratorNormalCompletion && _iterator.return) {
-	            _iterator.return();
-	          }
-	        } finally {
-	          if (_didIteratorError) {
-	            throw _iteratorError;
-	          }
-	        }
-	      }
-
+	      var hitObject = this.checkCollision(this.quaternion, this.velocity * delta);
 	      if (hitObject) {
 	        this.remove();
 	        hitObject.dealDamage(this.damage);
@@ -57770,6 +57734,7 @@
 
 	var CLOSE_DISTANCE = 50;
 	var FAR_DISTANCE = 200;
+	var COLLISION_CHECK_DISTANCE = 20;
 
 	var FighterAI = function () {
 	  function FighterAI() {
@@ -57779,19 +57744,26 @@
 	  (0, _createClass3.default)(FighterAI, [{
 	    key: 'update',
 	    value: function update(ship, delta) {
-	      if (ship.AIattacking) {
-	        var aimTarget = this.getAimTarget(ship.position, ship.AItarget.position, ship.AItarget.getVelocityVec(), ship.gun.muzzleVelocity);
-	        ship.turnTowards(aimTarget, delta);
-	        ship.shoot();
-	        if (ship.position.distanceTo(ship.AItarget.position) < CLOSE_DISTANCE) {
-	          ship.AIattacking = false;
-	        }
-	      } else {
-	        var away = new THREE.Vector3().subVectors(ship.position, ship.AItarget.position);
+	      var hitObject = ship.checkCollision(ship.quaternion, COLLISION_CHECK_DISTANCE, ship.hitRadius);
+	      if (hitObject) {
+	        var away = new THREE.Vector3().subVectors(ship.position, hitObject.position);
 	        away.add(ship.position);
 	        ship.turnTowards(away, delta);
-	        if (ship.position.distanceTo(ship.AItarget.position) > FAR_DISTANCE) {
-	          ship.AIattacking = true;
+	      } else {
+	        if (ship.AIattacking) {
+	          var aimTarget = this.getAimTarget(ship.position, ship.AItarget.position, ship.AItarget.getVelocityVec(), ship.gun.muzzleVelocity);
+	          ship.turnTowards(aimTarget, delta);
+	          ship.shoot();
+	          if (ship.position.distanceTo(ship.AItarget.position) < CLOSE_DISTANCE) {
+	            ship.AIattacking = false;
+	          }
+	        } else {
+	          var _away = new THREE.Vector3().subVectors(ship.position, ship.AItarget.position);
+	          _away.add(ship.position);
+	          ship.turnTowards(_away, delta);
+	          if (ship.position.distanceTo(ship.AItarget.position) > FAR_DISTANCE) {
+	            ship.AIattacking = true;
+	          }
 	        }
 	      }
 	      ship.thrust();
