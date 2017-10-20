@@ -108,7 +108,7 @@ function initGame() {
   for (let i = 0; i < 5; i++) {
     let enemyShip = new Fighter();
     let offset = new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize();
-    offset.multiplyScalar(5);
+    offset.multiplyScalar(10);
     enemyShip.position.add(offset);
     enemyShip.AItarget = playerShip;
     enemyShip.ai = FIGHTER_AI;

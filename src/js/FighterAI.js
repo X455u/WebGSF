@@ -2,6 +2,7 @@ import * as THREE from 'three';
 
 const CLOSE_DISTANCE = 50;
 const FAR_DISTANCE = 200;
+const COLLISION_CHECK_DISTANCE = 20;
 
 class FighterAI {
 
@@ -10,19 +11,26 @@ class FighterAI {
   }
 
   update(ship, delta) {
-    if (ship.AIattacking) {
-      let aimTarget = this.getAimTarget(ship.position, ship.AItarget.position, ship.AItarget.getVelocityVec(), ship.gun.muzzleVelocity);
-      ship.turnTowards(aimTarget, delta);
-      ship.shoot();
-      if (ship.position.distanceTo(ship.AItarget.position) < CLOSE_DISTANCE) {
-        ship.AIattacking = false;
-      }
-    } else {
-      let away = (new THREE.Vector3()).subVectors(ship.position, ship.AItarget.position);
+    let hitObject = ship.checkCollision(ship.quaternion, COLLISION_CHECK_DISTANCE, ship.hitRadius);
+    if (hitObject) {
+      let away = (new THREE.Vector3()).subVectors(ship.position, hitObject.position);
       away.add(ship.position);
       ship.turnTowards(away, delta);
-      if (ship.position.distanceTo(ship.AItarget.position) > FAR_DISTANCE) {
-        ship.AIattacking = true;
+    } else {
+      if (ship.AIattacking) {
+        let aimTarget = this.getAimTarget(ship.position, ship.AItarget.position, ship.AItarget.getVelocityVec(), ship.gun.muzzleVelocity);
+        ship.turnTowards(aimTarget, delta);
+        ship.shoot();
+        if (ship.position.distanceTo(ship.AItarget.position) < CLOSE_DISTANCE) {
+          ship.AIattacking = false;
+        }
+      } else {
+        let away = (new THREE.Vector3()).subVectors(ship.position, ship.AItarget.position);
+        away.add(ship.position);
+        ship.turnTowards(away, delta);
+        if (ship.position.distanceTo(ship.AItarget.position) > FAR_DISTANCE) {
+          ship.AIattacking = true;
+        }
       }
     }
     ship.thrust();

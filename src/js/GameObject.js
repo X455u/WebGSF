@@ -44,7 +44,7 @@ class GameObject extends THREE.Mesh {
     return velocityVec;
   }
 
-  checkCollision(quaternion, distance) {
+  checkCollision(quaternion, distance, extraHitRadius = 0) {
     let start = this.position.clone();
     let end = start.clone();
     let direction = new THREE.Vector3(0, 0, 1);
@@ -58,12 +58,13 @@ class GameObject extends THREE.Mesh {
     let a2 = new THREE.Vector3();
     for (let shootable of COLLIDABLES) {
       if (shootable === this || shootable === this.owner) continue;
+      if (shootable.position.dot(direction) < 0) continue;
       let shootableCenter = shootable.position;
-      if (this.position.distanceTo(shootableCenter) > distance + shootable.hitRadius + this.hitRadius) continue;
+      if (this.position.distanceTo(shootableCenter) > distance + shootable.hitRadius + this.hitRadius + extraHitRadius) continue;
       a1.subVectors(shootableCenter, start);
       a2.subVectors(shootableCenter, end);
       let radius = a1.cross(a2).length() / distance;
-      if (radius > shootable.hitRadius + this.hitRadius) continue;
+      if (radius > shootable.hitRadius + this.hitRadius + extraHitRadius) continue;
       let hitDistance2 = this.position.distanceTo(shootableCenter);
       if (hitDistance2 < hitDistance) {
         hitDistance = hitDistance2;
