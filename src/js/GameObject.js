@@ -67,7 +67,6 @@ class GameObject extends THREE.Mesh {
     let a2 = VECTOR3_E;
     for (let shootable of COLLIDABLES) {
       if (shootable === this || shootable === this.owner) continue;
-      if (shootable.position.dot(direction) < 0) continue;
       let shootableCenter = shootable.position;
       if (this.position.distanceTo(shootableCenter) > distance + shootable.hitRadius + this.hitRadius + extraHitRadius) continue;
       a1.subVectors(shootableCenter, start);
