@@ -29,6 +29,9 @@ class Player {
 
   setShip(ship) {
     this.ship = ship;
+    ship.maxVelocity *= 1.5;
+    ship.turnSpeed *= 1.5;
+    this.shieldRegen = 5;
   }
 
   update() {

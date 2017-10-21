@@ -1,7 +1,6 @@
-import * as THREE from 'three';
 import GameObject from './GameObject';
-import Explosion from './Explosion';
-import {GAME, COLLIDABLES} from './Game';
+// import Explosion from './Explosion';
+import {GAME} from './Game';
 
 class Ship extends GameObject {
 
@@ -15,6 +14,7 @@ class Ship extends GameObject {
     this.turnSpeed = stats.turnSpeed;
     this.maxHp = stats.maxHp;
     this.maxShield = stats.maxShield;
+    this.shieldRegen = 0;
     if (stats.gun) {
       this.gun = stats.gun;
       this.gun.owner = this;
@@ -109,6 +109,8 @@ class Ship extends GameObject {
       this.dealDamage(Infinity);
       hitObject.dealDamage(Infinity);
     }
+
+    this.shield = Math.min(this.maxShield, this.shield + this.shieldRegen * delta);
   }
 }
 
