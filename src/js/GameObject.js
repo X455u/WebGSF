@@ -65,18 +65,18 @@ class GameObject extends THREE.Mesh {
     let hitDistance = Infinity;
     let a1 = VECTOR3_D;
     let a2 = VECTOR3_E;
-    for (let shootable of COLLIDABLES) {
-      if (shootable === this || shootable === this.owner) continue;
-      let shootableCenter = shootable.position;
-      if (this.position.distanceTo(shootableCenter) > distance + shootable.hitRadius + this.hitRadius + extraHitRadius) continue;
-      a1.subVectors(shootableCenter, start);
-      a2.subVectors(shootableCenter, end);
+    for (let collidable of COLLIDABLES) {
+      if (collidable === this || collidable === this.owner) continue;
+      let collidableCenter = collidable.position;
+      if (this.position.distanceTo(collidableCenter) > distance + collidable.hitRadius + this.hitRadius + extraHitRadius) continue;
+      a1.subVectors(collidableCenter, start);
+      a2.subVectors(collidableCenter, end);
       let radius = a1.cross(a2).length() / distance;
-      if (radius > shootable.hitRadius + this.hitRadius + extraHitRadius) continue;
-      let hitDistance2 = this.position.distanceTo(shootableCenter);
+      if (radius > collidable.hitRadius + this.hitRadius + extraHitRadius) continue;
+      let hitDistance2 = this.position.distanceTo(collidableCenter);
       if (hitDistance2 < hitDistance) {
         hitDistance = hitDistance2;
-        hitObject = shootable;
+        hitObject = collidable;
       }
     }
     return hitObject;
