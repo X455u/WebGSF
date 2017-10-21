@@ -8887,8 +8887,6 @@
 
 	var _HUD = __webpack_require__(389);
 
-	var _HUD2 = _interopRequireDefault(_HUD);
-
 	var _Sun = __webpack_require__(393);
 
 	var _Sun2 = _interopRequireDefault(_Sun);
@@ -9036,11 +9034,9 @@
 	    _loop(i);
 	  }
 
-	  // HUD
-	  var hud = new _HUD2.default();
-
 	  playerShip.addEventListener('onDamage', function () {
-	    hud.update(playerShip.hp / playerShip.maxHp, playerShip.shield / playerShip.maxShield);
+	    _HUD.HUD.updateHP(playerShip.hp / playerShip.maxHp);
+	    _HUD.HUD.updateShield(playerShip.shield / playerShip.maxShield);
 	  });
 
 	  // Planets
@@ -9072,9 +9068,6 @@
 
 	    _Game.GAME.update(delta);
 
-	    // Camera follow
-	    var quaternion = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), Math.PI);
-	    quaternion.multiplyQuaternions(playerShip.quaternion, quaternion);
 	    _GSFCamera.CAMERA.update(delta);
 
 	    // update spotlight position and direction
@@ -9085,7 +9078,6 @@
 	    spotlight.target.updateMatrixWorld();
 
 	    renderer.render(_Game.SCENE, _GSFCamera.CAMERA);
-	    renderer.render(hud.scene, hud.camera);
 
 	    //Update debugging text
 	    if (DEBUG) {
@@ -54623,10 +54615,7 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _epsilon = __webpack_require__(390);
-
-	var _epsilon2 = _interopRequireDefault(_epsilon);
+	exports.HUD = undefined;
 
 	var _classCallCheck2 = __webpack_require__(329);
 
@@ -54636,133 +54625,47 @@
 
 	var _createClass3 = _interopRequireDefault(_createClass2);
 
-	var _three = __webpack_require__(327);
-
-	var THREE = _interopRequireWildcard(_three);
-
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	function fromBottom(HUD, y) {
-	  return -HUD.height / 2 + y;
-	}
+	var HeadsUpDisplay = function () {
+	  function HeadsUpDisplay() {
+	    (0, _classCallCheck3.default)(this, HeadsUpDisplay);
 
-	function fromLeft(HUD, x) {
-	  return -HUD.width / 2 + x;
-	}
-
-	var HP_BAR_HEIGHT = 50;
-
-	var HUD = function () {
-	  function HUD() {
-	    (0, _classCallCheck3.default)(this, HUD);
-
-	    this.width = window.innerWidth;
-	    this.height = window.innerHeight;
-
-	    this.camera = new THREE.OrthographicCamera(-this.width / 2, this.width / 2, this.height / 2, -this.height / 2, -10000, 10000);
-	    this.camera.position.z = 10;
-
-	    this.scene = new THREE.Scene();
-
-	    var scale = Math.min(this.width / 1200, this.height / 800);
-
-	    var hpBarGeometry = new THREE.CylinderGeometry(50, HP_BAR_HEIGHT, 200, 16);
-	    hpBarGeometry.scale(scale, scale, scale);
-	    var hpBarMaterial = new THREE.MeshBasicMaterial({
-	      color: 0xff0000,
-	      transparent: true,
-	      opacity: 0.5
-	    });
-	    var hpBarMesh = new THREE.Mesh(hpBarGeometry, hpBarMaterial);
-	    this.scene.add(hpBarMesh);
-
-	    var hpContainerMaterial = new THREE.MeshBasicMaterial({
-	      color: 0xff0000,
-	      transparent: true,
-	      opacity: 0.5,
-	      wireframe: true
-	    });
-	    var hpContainerMesh = new THREE.Mesh(hpBarGeometry, hpContainerMaterial);
-	    this.scene.add(hpContainerMesh);
-
-	    // hpBarMesh.rotateX(0.2 * Math.PI);
-	    hpBarMesh.position.set(fromLeft(this, 0.1 * this.width), fromBottom(this, 0.15 * this.height), 0);
-	    // hpContainerMesh.rotateX(0.2 * Math.PI);
-	    hpContainerMesh.position.set(hpBarMesh.position.x, hpBarMesh.position.y, hpBarMesh.position.z);
-
-	    var ballGeometry = new THREE.SphereGeometry(75, 32, 32);
-	    ballGeometry.scale(scale, scale, scale);
-	    var ballMaterial = new THREE.MeshBasicMaterial({
-	      color: 0x0000ff,
-	      transparent: true,
-	      opacity: 0.5
-	    });
-	    var ballMesh = new THREE.Mesh(ballGeometry, ballMaterial);
-	    this.scene.add(ballMesh);
-
-	    var ballShellMaterial = new THREE.MeshBasicMaterial({
-	      color: 0x0000ff,
-	      transparent: true,
-	      opacity: 0.5,
-	      wireframe: true
-	    });
-	    var ballShellMesh = new THREE.Mesh(ballGeometry, ballShellMaterial);
-	    this.scene.add(ballShellMesh);
-
-	    ballMesh.rotateX(0.2 * Math.PI);
-	    ballMesh.position.set(fromLeft(this, 0.25 * this.width), fromBottom(this, 0.15 * this.height), 0);
-	    ballShellMesh.rotateX(0.2 * Math.PI);
-	    ballShellMesh.position.set(ballMesh.position.x, ballMesh.position.y, ballMesh.position.z);
-
-	    this.hpMesh = hpBarMesh;
-	    this.shieldMesh = ballMesh;
-	    this.hpBarHeight = HP_BAR_HEIGHT * scale;
-
-	    this.hpBarPosition = this.hpMesh.position.y;
-	    this.hpBarPositionMin = this.hpBarPosition - 2 * 1 * this.hpBarHeight;
+	    document.body.innerHTML += '<style>\n      .bar {\n        position: fixed;\n        left: 20px;\n        width: 200px;\n        height: 20px;\n        border-style: solid;\n        border-radius: 5px;\n        border-width: 1px;\n        overflow: hidden;\n      }\n      .bar.hp {\n        bottom: 20px;\n        border-color: darkred;\n      }\n      .bar.shield {\n        bottom: 60px;\n        border-color: darkblue;\n      }\n      .stat {\n        width: 100%;\n        height: 100%;\n      }\n      .stat.hp {\n        background-color: red;\n      }\n      .stat.shield {\n        background-color: blue;\n      }\n    </style>';
+	    this.hpBar = document.createElement('div');
+	    this.hpBar.className = 'bar hp';
+	    document.body.appendChild(this.hpBar);
+	    this.hpStat = document.createElement('div');
+	    this.hpStat.className = 'stat hp';
+	    this.hpBar.appendChild(this.hpStat);
+	    this.shieldBar = document.createElement('div');
+	    this.shieldBar.className = 'bar shield';
+	    document.body.appendChild(this.shieldBar);
+	    this.shieldStat = document.createElement('div');
+	    this.shieldStat.className = 'stat shield';
+	    this.shieldBar.appendChild(this.shieldStat);
 	  }
 
-	  (0, _createClass3.default)(HUD, [{
-	    key: 'update',
-	    value: function update(hpPercent, shieldPercent) {
-	      this.hpMesh.scale.y = Math.max(_epsilon2.default, hpPercent);
-	      this.hpMesh.position.y = Math.max(this.hpBarPositionMin, this.hpBarPosition - 2 * (1 - hpPercent) * this.hpBarHeight);
-	      var shieldScale = this.shieldMesh.scale;
-	      shieldScale.x = shieldScale.y = shieldScale.z = Math.max(_epsilon2.default, shieldPercent);
+	  (0, _createClass3.default)(HeadsUpDisplay, [{
+	    key: 'updateHP',
+	    value: function updateHP(hpPercent) {
+	      this.hpStat.style.width = hpPercent * 100 + '%';
+	    }
+	  }, {
+	    key: 'updateShield',
+	    value: function updateShield(shieldPercent) {
+	      this.shieldStat.style.width = shieldPercent * 100 + '%';
 	    }
 	  }]);
-	  return HUD;
+	  return HeadsUpDisplay;
 	}();
 
-	exports.default = HUD;
+	var HUD = exports.HUD = new HeadsUpDisplay();
 
 /***/ }),
-/* 390 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	module.exports = { "default": __webpack_require__(391), __esModule: true };
-
-/***/ }),
-/* 391 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	__webpack_require__(392);
-	module.exports = Math.pow(2, -52);
-
-
-/***/ }),
-/* 392 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	// 20.1.2.1 Number.EPSILON
-	var $export = __webpack_require__(334);
-
-	$export($export.S, 'Number', { EPSILON: Math.pow(2, -52) });
-
-
-/***/ }),
+/* 390 */,
+/* 391 */,
+/* 392 */,
 /* 393 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -55868,8 +55771,8 @@
 	    // Events
 	    _this.addEventListener('onDamage', function () {
 	      if (_this.hp === 0) {
-	        var explosion = new _Explosion2.default({ position: _this.position });
-	        _Game.GAME.addObject(explosion);
+	        // let explosion = new Explosion({position: this.position});
+	        // GAME.addObject(explosion);
 	        _this.remove();
 	      }
 	    });
@@ -55992,6 +55895,16 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+	// Object pool
+	var MATRIX = new THREE.Matrix4();
+	var QUATERNION = new THREE.Quaternion();
+
+	var VECTOR3_A = new THREE.Vector3();
+	var VECTOR3_B = new THREE.Vector3();
+	var VECTOR3_C = new THREE.Vector3();
+	var VECTOR3_D = new THREE.Vector3();
+	var VECTOR3_E = new THREE.Vector3();
+
 	var GameObject = function (_THREE$Mesh) {
 	  (0, _inherits3.default)(GameObject, _THREE$Mesh);
 
@@ -56021,19 +55934,18 @@
 	  }, {
 	    key: 'turnTowards',
 	    value: function turnTowards(target, delta) {
-	      var matrix = new THREE.Matrix4();
-	      var up = new THREE.Vector3(0, 1, 0).applyQuaternion(this.quaternion);
+	      var matrix = MATRIX;
+	      var up = VECTOR3_A.set(0, 1, 0).applyQuaternion(this.quaternion);
 	      matrix.lookAt(target, this.position, up);
 
-	      var quaternion = new THREE.Quaternion();
+	      var quaternion = QUATERNION;
 	      quaternion.setFromRotationMatrix(matrix);
 
-	      var direction = new THREE.Vector3(0, 0, 1);
+	      var direction = VECTOR3_B.set(0, 0, 1);
 	      direction.applyQuaternion(this.quaternion);
 	      direction.normalize();
 
-	      var targetDirection = new THREE.Vector3();
-	      targetDirection.subVectors(target, this.position);
+	      var targetDirection = VECTOR3_C.subVectors(target, this.position);
 	      targetDirection.normalize();
 
 	      var angle = direction.angleTo(targetDirection);
@@ -56042,26 +55954,26 @@
 	  }, {
 	    key: 'getVelocityVec',
 	    value: function getVelocityVec() {
-	      var direction = new THREE.Vector3(0, 0, 1).applyQuaternion(this.quaternion);
-	      var velocityVec = direction.multiplyScalar(this.velocity);
-	      return velocityVec;
+	      var velocityVec = VECTOR3_A;
+	      velocityVec.set(0, 0, 1).applyQuaternion(this.quaternion);
+	      return velocityVec.multiplyScalar(this.velocity);
 	    }
 	  }, {
 	    key: 'checkCollision',
 	    value: function checkCollision(quaternion, distance) {
 	      var extraHitRadius = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
 
-	      var start = this.position.clone();
-	      var end = start.clone();
-	      var direction = new THREE.Vector3(0, 0, 1);
+	      var start = VECTOR3_A.copy(this.position);
+	      var end = VECTOR3_B.copy(start);
+	      var direction = VECTOR3_C.set(0, 0, 1);
 	      direction.applyQuaternion(quaternion);
 	      direction.multiplyScalar(distance);
 	      end.add(direction);
 
 	      var hitObject = void 0;
 	      var hitDistance = Infinity;
-	      var a1 = new THREE.Vector3();
-	      var a2 = new THREE.Vector3();
+	      var a1 = VECTOR3_D;
+	      var a2 = VECTOR3_E;
 	      var _iteratorNormalCompletion = true;
 	      var _didIteratorError = false;
 	      var _iteratorError = undefined;
@@ -56679,6 +56591,10 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+	// Object pool
+	var VECTOR3_A = new THREE.Vector3();
+	var QUATERNION = new THREE.Quaternion();
+
 	var GSFCamera = function (_THREE$PerspectiveCam) {
 	  (0, _inherits3.default)(GSFCamera, _THREE$PerspectiveCam);
 
@@ -56702,7 +56618,7 @@
 	      var offset = this.followOffset.clone().applyQuaternion(this.target.quaternion);
 	      var cameraTargetPosition = this.target.position.clone().add(offset);
 	      this.position.lerp(cameraTargetPosition, this.followSpeed * delta);
-	      var quat = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), Math.PI);
+	      var quat = QUATERNION.setFromAxisAngle(VECTOR3_A.set(0, 1, 0), Math.PI);
 	      quat.multiplyQuaternions(this.target.quaternion, quat);
 	      this.quaternion.slerp(quat, this.followSpeed * delta);
 	    }
@@ -57696,8 +57612,8 @@
 	    key: 'remove',
 	    value: function remove() {
 	      (0, _get3.default)(Missile.prototype.__proto__ || (0, _getPrototypeOf2.default)(Missile.prototype), 'remove', this).call(this);
-	      var explosion = new _Explosion2.default({ position: this.position });
-	      _Game.GAME.addObject(explosion);
+	      // let explosion = new Explosion({position: this.position});
+	      // GAME.addObject(explosion);
 	    }
 	  }]);
 	  return Missile;
@@ -57736,6 +57652,11 @@
 	var FAR_DISTANCE = 200;
 	var COLLISION_CHECK_DISTANCE = 20;
 
+	// Object pool
+	var VECTOR3_A = new THREE.Vector3();
+	var VECTOR3_B = new THREE.Vector3();
+	var VECTOR3_C = new THREE.Vector3();
+
 	var FighterAI = function () {
 	  function FighterAI() {
 	    (0, _classCallCheck3.default)(this, FighterAI);
@@ -57746,7 +57667,7 @@
 	    value: function update(ship, delta) {
 	      var hitObject = ship.checkCollision(ship.quaternion, COLLISION_CHECK_DISTANCE, ship.hitRadius);
 	      if (hitObject) {
-	        var away = new THREE.Vector3().subVectors(ship.position, hitObject.position);
+	        var away = VECTOR3_A.subVectors(ship.position, hitObject.position);
 	        away.add(ship.position);
 	        ship.turnTowards(away, delta);
 	      } else {
@@ -57758,7 +57679,7 @@
 	            ship.AIattacking = false;
 	          }
 	        } else {
-	          var _away = new THREE.Vector3().subVectors(ship.position, ship.AItarget.position);
+	          var _away = VECTOR3_A.subVectors(ship.position, ship.AItarget.position);
 	          _away.add(ship.position);
 	          ship.turnTowards(_away, delta);
 	          if (ship.position.distanceTo(ship.AItarget.position) > FAR_DISTANCE) {
@@ -57771,12 +57692,12 @@
 	  }, {
 	    key: 'getAimTarget',
 	    value: function getAimTarget(shipPosition, targetPosition, targetVelocity, shotSpeed) {
-	      var thisToTarget = targetPosition.clone().sub(shipPosition);
+	      var thisToTarget = VECTOR3_A.copy(targetPosition).sub(shipPosition);
 	      var targetMoveAngle = thisToTarget.angleTo(targetVelocity); // 0 or PI when paralell to vector from this to target.
 	      var aimAdvanceAngle = Math.asin(Math.sin(targetMoveAngle) * targetVelocity.length() / shotSpeed);
-	      var aimAdvanceAxis = new THREE.Vector3().crossVectors(thisToTarget, targetVelocity).normalize();
+	      var aimAdvanceAxis = VECTOR3_B.crossVectors(thisToTarget, targetVelocity).normalize();
 	      var aimAdvanceVector = thisToTarget.applyAxisAngle(aimAdvanceAxis, aimAdvanceAngle);
-	      var aimTarget = new THREE.Vector3().addVectors(shipPosition, aimAdvanceVector);
+	      var aimTarget = VECTOR3_C.addVectors(shipPosition, aimAdvanceVector);
 	      if (!aimTarget.x || !aimTarget.y || !aimTarget.z) {
 	        return targetPosition;
 	      } else {
