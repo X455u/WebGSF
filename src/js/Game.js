@@ -2,6 +2,7 @@ import * as THREE from 'three';
 
 export const SCENE = new THREE.Scene();
 export const COLLIDABLES = [];
+export const SOUND_LISTENER = new THREE.AudioListener();
 
 function remove(element, list) {
   let index = list.indexOf(element);

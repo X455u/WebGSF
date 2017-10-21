@@ -9,8 +9,8 @@ import Missile from './Missile';
 import {FIGHTER_AI} from './FighterAI';
 import {player} from './Player';
 import {Howl} from 'howler';
-import {GAME, SCENE} from './Game';
 import {LOADER} from './GSFLoader';
+import {GAME, SCENE, SOUND_LISTENER} from './Game';
 import {CAMERA} from './GSFCamera';
 
 const DEBUG = false;
@@ -141,6 +141,9 @@ function initGame() {
     missile.owner = playerShip;
     missile.target = enemies[0];
   };
+
+  // Sounds
+  CAMERA.add(SOUND_LISTENER);
 
   // Game Loop
   let previousTime;

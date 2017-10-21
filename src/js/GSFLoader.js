@@ -1,10 +1,12 @@
 import * as THREE from 'three';
+import {SOUND_LISTENER} from './Game';
 
 class GSFLoader {
   constructor() {
     this.manager = new THREE.LoadingManager();
     this.JSON_LOADER = new THREE.JSONLoader(this.manager);
     this.TEX_LOADER = new THREE.TextureLoader(this.manager);
+    this.AUDIO_LOADER = new THREE.AudioLoader(this.manager);
     this.assets = {};
   }
 
@@ -50,6 +52,9 @@ class GSFLoader {
     });
     this.TEX_LOADER.load('./media/crosshair.png', (texture) => {
       this.assets['crosshair'] = texture;
+    });
+    this.AUDIO_LOADER.load('./media/laser.mp3', (buffer) => {
+      this.assets['laserSoundBuffer'] = buffer;
     });
     /* eslint-enable dot-notation */
   }

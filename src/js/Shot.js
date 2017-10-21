@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import GameObject from './GameObject';
-import {GAME, COLLIDABLES} from './Game';
+import {GAME} from './Game';
 
 class Shot extends GameObject {
   constructor(geometry, material) {
