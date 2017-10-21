@@ -1,6 +1,16 @@
 import * as THREE from 'three';
 import {COLLIDABLES} from './Game';
 
+// Object pool
+const MATRIX = new THREE.Matrix4();
+const QUATERNION = new THREE.Quaternion();
+
+const VECTOR3_A = new THREE.Vector3();
+const VECTOR3_B = new THREE.Vector3();
+const VECTOR3_C = new THREE.Vector3();
+const VECTOR3_D = new THREE.Vector3();
+const VECTOR3_E = new THREE.Vector3();
+
 class GameObject extends THREE.Mesh {
   constructor(geometry, material) {
     super(geometry, material);
@@ -19,19 +29,18 @@ class GameObject extends THREE.Mesh {
   }
 
   turnTowards(target, delta) {
-    let matrix = new THREE.Matrix4();
-    let up = (new THREE.Vector3(0, 1, 0)).applyQuaternion(this.quaternion);
+    let matrix = MATRIX;
+    let up = VECTOR3_A.set(0, 1, 0).applyQuaternion(this.quaternion);
     matrix.lookAt(target, this.position, up);
 
-    let quaternion = new THREE.Quaternion();
+    let quaternion = QUATERNION;
     quaternion.setFromRotationMatrix(matrix);
 
-    let direction = new THREE.Vector3(0, 0, 1);
+    let direction = VECTOR3_B.set(0, 0, 1);
     direction.applyQuaternion(this.quaternion);
     direction.normalize();
 
-    let targetDirection = new THREE.Vector3();
-    targetDirection.subVectors(target, this.position);
+    let targetDirection = VECTOR3_C.subVectors(target, this.position);
     targetDirection.normalize();
 
     let angle = direction.angleTo(targetDirection);
@@ -39,23 +48,23 @@ class GameObject extends THREE.Mesh {
   }
 
   getVelocityVec() {
-    let direction = new THREE.Vector3(0, 0, 1).applyQuaternion(this.quaternion);
-    let velocityVec = direction.multiplyScalar(this.velocity);
-    return velocityVec;
+    let velocityVec = VECTOR3_A;
+    velocityVec.set(0, 0, 1).applyQuaternion(this.quaternion);
+    return velocityVec.multiplyScalar(this.velocity);
   }
 
   checkCollision(quaternion, distance, extraHitRadius = 0) {
-    let start = this.position.clone();
-    let end = start.clone();
-    let direction = new THREE.Vector3(0, 0, 1);
+    let start = VECTOR3_A.copy(this.position);
+    let end = VECTOR3_B.copy(start);
+    let direction = VECTOR3_C.set(0, 0, 1);
     direction.applyQuaternion(quaternion);
     direction.multiplyScalar(distance);
     end.add(direction);
 
     let hitObject;
     let hitDistance = Infinity;
-    let a1 = new THREE.Vector3();
-    let a2 = new THREE.Vector3();
+    let a1 = VECTOR3_D;
+    let a2 = VECTOR3_E;
     for (let shootable of COLLIDABLES) {
       if (shootable === this || shootable === this.owner) continue;
       if (shootable.position.dot(direction) < 0) continue;
