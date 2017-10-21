@@ -9009,14 +9009,17 @@
 	    document.body.appendChild(text);
 	  }
 
+	  // Planets
+	  var mars = new _SimpleMars2.default(550, 4);
+	  mars.position.y = -600;
+	  _Game.GAME.addStatic(mars, true);
+
 	  // Enemies
 	  var enemies = [];
-
-	  var _loop = function _loop(i) {
+	  setInterval(function () {
 	    var enemyShip = new _Fighter2.default();
-	    var offset = new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize();
-	    offset.multiplyScalar(10);
-	    enemyShip.position.add(offset);
+	    enemyShip.position.subVectors(mars.position, playerShip.position).setLength(mars.hitRadius + 30);
+	    enemyShip.position.add(mars.position);
 	    enemyShip.AItarget = playerShip;
 	    enemyShip.ai = _FighterAI.FIGHTER_AI;
 	    enemies.push(enemyShip);
@@ -9028,21 +9031,12 @@
 	        points.innerHTML = 'Points: ' + Math.floor(_Player.player.points);
 	      }
 	    });
-	  };
-
-	  for (var i = 0; i < 5; i++) {
-	    _loop(i);
-	  }
+	  }, 10000);
 
 	  playerShip.addEventListener('onDamage', function () {
 	    _HUD.HUD.updateHP(playerShip.hp / playerShip.maxHp);
 	    _HUD.HUD.updateShield(playerShip.shield / playerShip.maxShield);
 	  });
-
-	  // Planets
-	  var mars = new _SimpleMars2.default(550, 4);
-	  mars.position.y = -600;
-	  _Game.GAME.addStatic(mars, true);
 
 	  // Missiles
 	  playerShip.shootMissile = function () {
@@ -9063,7 +9057,7 @@
 
 	    _Player.player.update();
 	    _Player.player.addPoints(delta);
-	    points.innerHTML = 'Points: ' + Math.floor(_Player.player.points);
+	    if (!playerShip.removed) points.innerHTML = 'Points: ' + Math.floor(_Player.player.points);
 	    crosshair.update(enemies);
 
 	    _Game.GAME.update(delta);
@@ -55709,10 +55703,6 @@
 
 	var _inherits3 = _interopRequireDefault(_inherits2);
 
-	var _three = __webpack_require__(327);
-
-	var THREE = _interopRequireWildcard(_three);
-
 	var _GameObject2 = __webpack_require__(432);
 
 	var _GameObject3 = _interopRequireDefault(_GameObject2);
@@ -55722,8 +55712,6 @@
 	var _Explosion2 = _interopRequireDefault(_Explosion);
 
 	var _Game = __webpack_require__(350);
-
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -55743,6 +55731,7 @@
 	    _this.turnSpeed = stats.turnSpeed;
 	    _this.maxHp = stats.maxHp;
 	    _this.maxShield = stats.maxShield;
+	    _this.shieldRegen = 0;
 	    if (stats.gun) {
 	      _this.gun = stats.gun;
 	      _this.gun.owner = _this;
@@ -55771,8 +55760,8 @@
 	    // Events
 	    _this.addEventListener('onDamage', function () {
 	      if (_this.hp === 0) {
-	        // let explosion = new Explosion({position: this.position});
-	        // GAME.addObject(explosion);
+	        var explosion = new _Explosion2.default({ position: _this.position });
+	        _Game.GAME.addObject(explosion);
 	        _this.remove();
 	      }
 	    });
@@ -55843,6 +55832,13 @@
 	      if (hitObject) {
 	        this.dealDamage(Infinity);
 	        hitObject.dealDamage(Infinity);
+	      }
+
+	      if (this.shield !== this.maxShield) {
+	        this.shield = Math.min(this.maxShield, this.shield + this.shieldRegen * delta);
+	        this.dispatchEvent({
+	          type: 'onShieldRegen'
+	        });
 	      }
 	    }
 	  }]);
@@ -55980,20 +55976,19 @@
 
 	      try {
 	        for (var _iterator = (0, _getIterator3.default)(_Game.COLLIDABLES), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-	          var shootable = _step.value;
+	          var collidable = _step.value;
 
-	          if (shootable === this || shootable === this.owner) continue;
-	          if (shootable.position.dot(direction) < 0) continue;
-	          var shootableCenter = shootable.position;
-	          if (this.position.distanceTo(shootableCenter) > distance + shootable.hitRadius + this.hitRadius + extraHitRadius) continue;
-	          a1.subVectors(shootableCenter, start);
-	          a2.subVectors(shootableCenter, end);
+	          if (collidable === this || collidable === this.owner) continue;
+	          var collidableCenter = collidable.position;
+	          if (this.position.distanceTo(collidableCenter) > distance + collidable.hitRadius + this.hitRadius + extraHitRadius) continue;
+	          a1.subVectors(collidableCenter, start);
+	          a2.subVectors(collidableCenter, end);
 	          var radius = a1.cross(a2).length() / distance;
-	          if (radius > shootable.hitRadius + this.hitRadius + extraHitRadius) continue;
-	          var hitDistance2 = this.position.distanceTo(shootableCenter);
+	          if (radius > collidable.hitRadius + this.hitRadius + extraHitRadius) continue;
+	          var hitDistance2 = this.position.distanceTo(collidableCenter);
 	          if (hitDistance2 < hitDistance) {
 	            hitDistance = hitDistance2;
-	            hitObject = shootable;
+	            hitObject = collidable;
 	          }
 	        }
 	      } catch (err) {
@@ -56683,7 +56678,7 @@
 
 	    var _this = (0, _possibleConstructorReturn3.default)(this, (SmallPulseLaser.__proto__ || (0, _getPrototypeOf2.default)(SmallPulseLaser)).call(this));
 
-	    _this.reload = 0.0;
+	    _this.reload = 1.0;
 	    _this.reloadTime = 0.5;
 	    _this.muzzleVelocity = 300;
 	    _this.shotLifetime = 5.0;
@@ -57650,7 +57645,9 @@
 
 	var CLOSE_DISTANCE = 50;
 	var FAR_DISTANCE = 200;
-	var COLLISION_CHECK_DISTANCE = 20;
+	var COLLISION_CHECK_DISTANCE = 30;
+	var SAFETY_DISTANCE = 10;
+	var SHOOT_ANGLE = 0.05;
 
 	// Object pool
 	var VECTOR3_A = new THREE.Vector3();
@@ -57665,7 +57662,7 @@
 	  (0, _createClass3.default)(FighterAI, [{
 	    key: 'update',
 	    value: function update(ship, delta) {
-	      var hitObject = ship.checkCollision(ship.quaternion, COLLISION_CHECK_DISTANCE, ship.hitRadius);
+	      var hitObject = ship.checkCollision(ship.quaternion, COLLISION_CHECK_DISTANCE, SAFETY_DISTANCE);
 	      if (hitObject) {
 	        var away = VECTOR3_A.subVectors(ship.position, hitObject.position);
 	        away.add(ship.position);
@@ -57674,7 +57671,10 @@
 	        if (ship.AIattacking) {
 	          var aimTarget = this.getAimTarget(ship.position, ship.AItarget.position, ship.AItarget.getVelocityVec(), ship.gun.muzzleVelocity);
 	          ship.turnTowards(aimTarget, delta);
-	          ship.shoot();
+
+	          var facing = VECTOR3_A.set(0, 0, 1).applyQuaternion(ship.quaternion);
+	          var angleToTarget = facing.angleTo(VECTOR3_B.subVectors(aimTarget, ship.position));
+	          if (angleToTarget < SHOOT_ANGLE) ship.shoot();
 	          if (ship.position.distanceTo(ship.AItarget.position) < CLOSE_DISTANCE) {
 	            ship.AIattacking = false;
 	          }
@@ -57737,6 +57737,8 @@
 
 	var _keymaster2 = _interopRequireDefault(_keymaster);
 
+	var _HUD = __webpack_require__(389);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function isMobile() {
@@ -57773,6 +57775,13 @@
 	    key: 'setShip',
 	    value: function setShip(ship) {
 	      this.ship = ship;
+	      ship.maxVelocity *= 1.5;
+	      ship.turnSpeed *= 1.5;
+	      ship.shieldRegen = 5;
+	      ship.gun.reloadTime = 0.05;
+	      ship.addEventListener('onShieldRegen', function () {
+	        _HUD.HUD.updateShield(ship.shield / ship.maxShield);
+	      });
 	    }
 	  }, {
 	    key: 'update',
