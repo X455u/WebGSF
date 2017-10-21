@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 
 import Crosshair from './Crosshair';
-import HUD from './HUD';
+import {HUD} from './HUD';
 import Sun from './Sun';
 import Fighter from './Fighter';
 import SimpleMars from './SimpleMars';
@@ -123,11 +123,9 @@ function initGame() {
     });
   }
 
-  // HUD
-  let hud = new HUD();
-
   playerShip.addEventListener('onDamage', () => {
-    hud.update(playerShip.hp / playerShip.maxHp, playerShip.shield / playerShip.maxShield);
+    HUD.updateHP(playerShip.hp / playerShip.maxHp);
+    HUD.updateShield(playerShip.shield / playerShip.maxShield);
   });
 
   // Planets
@@ -172,7 +170,6 @@ function initGame() {
     spotlight.target.updateMatrixWorld();
 
     renderer.render(SCENE, CAMERA);
-    renderer.render(hud.scene, hud.camera);
 
     //Update debugging text
     if (DEBUG) {
