@@ -110,7 +110,12 @@ class Ship extends GameObject {
       hitObject.dealDamage(Infinity);
     }
 
-    this.shield = Math.min(this.maxShield, this.shield + this.shieldRegen * delta);
+    if (this.shield !== this.maxShield) {
+      this.shield = Math.min(this.maxShield, this.shield + this.shieldRegen * delta);
+      this.dispatchEvent({
+        type: 'onShieldRegen'
+      });
+    }
   }
 }
 

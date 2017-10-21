@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import keymaster from 'keymaster';
+import {HUD} from './HUD';
 
 function isMobile() {
   return window.DeviceMotionEvent !== undefined && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
@@ -31,7 +32,11 @@ class Player {
     this.ship = ship;
     ship.maxVelocity *= 1.5;
     ship.turnSpeed *= 1.5;
-    this.shieldRegen = 5;
+    ship.shieldRegen = 5;
+    ship.gun.reloadTime = 0.05;
+    ship.addEventListener('onShieldRegen', () => {
+      HUD.updateShield(ship.shield / ship.maxShield);
+    });
   }
 
   update() {
