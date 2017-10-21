@@ -151,7 +151,7 @@ function initGame() {
 
     player.update();
     player.addPoints(delta);
-    points.innerHTML = 'Points: ' + Math.floor(player.points);
+    if (!playerShip.removed) points.innerHTML = 'Points: ' + Math.floor(player.points);
     crosshair.update(enemies);
 
     GAME.update(delta);

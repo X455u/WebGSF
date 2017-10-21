@@ -1,5 +1,5 @@
 import GameObject from './GameObject';
-// import Explosion from './Explosion';
+import Explosion from './Explosion';
 import {GAME} from './Game';
 
 class Ship extends GameObject {
@@ -43,8 +43,8 @@ class Ship extends GameObject {
     // Events
     this.addEventListener('onDamage', () => {
       if (this.hp === 0) {
-        // let explosion = new Explosion({position: this.position});
-        // GAME.addObject(explosion);
+        let explosion = new Explosion({position: this.position});
+        GAME.addObject(explosion);
         this.remove();
       }
     });
