@@ -55,8 +55,8 @@ class Missile extends Shot {
 
   remove() {
     super.remove();
-    let explosion = new Explosion({position: this.position});
-    GAME.addObject(explosion);
+    // let explosion = new Explosion({position: this.position});
+    // GAME.addObject(explosion);
   }
 }
 export default Missile;
