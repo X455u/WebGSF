@@ -103,13 +103,17 @@ function initGame() {
     document.body.appendChild(text);
   }
 
+  // Planets
+  let mars = new SimpleMars(550, 4);
+  mars.position.y = -600;
+  GAME.addStatic(mars, true);
+
   // Enemies
   let enemies = [];
-  for (let i = 0; i < 5; i++) {
+  setInterval(() => {
     let enemyShip = new Fighter();
-    let offset = new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize();
-    offset.multiplyScalar(10);
-    enemyShip.position.add(offset);
+    enemyShip.position.subVectors(mars.position, playerShip.position).setLength(mars.hitRadius + 30);
+    enemyShip.position.add(mars.position);
     enemyShip.AItarget = playerShip;
     enemyShip.ai = FIGHTER_AI;
     enemies.push(enemyShip);
@@ -121,17 +125,12 @@ function initGame() {
         points.innerHTML = 'Points: ' + Math.floor(player.points);
       }
     });
-  }
+  }, 10000);
 
   playerShip.addEventListener('onDamage', () => {
     HUD.updateHP(playerShip.hp / playerShip.maxHp);
     HUD.updateShield(playerShip.shield / playerShip.maxShield);
   });
-
-  // Planets
-  let mars = new SimpleMars(550, 4);
-  mars.position.y = -600;
-  GAME.addStatic(mars, true);
 
   // Missiles
   playerShip.shootMissile = () => {
