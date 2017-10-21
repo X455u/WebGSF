@@ -9,8 +9,8 @@ import Missile from './Missile';
 import {FIGHTER_AI} from './FighterAI';
 import {player} from './Player';
 import {Howl} from 'howler';
-import {loader} from './GSFLoader';
 import {GAME, SCENE} from './Game';
+import {LOADER} from './GSFLoader';
 import {CAMERA} from './GSFCamera';
 
 const DEBUG = false;
@@ -32,15 +32,15 @@ loadingProgress.appendChild(loadingProgressCount);
 let loadingProgressTotal = document.createElement('div');
 loadingProgress.appendChild(loadingProgressTotal);
 
-loader.manager.onStart = (url, itemsLoaded, itemsTotal) => {
+LOADER.manager.onStart = (url, itemsLoaded, itemsTotal) => {
   loadingProgressCount.innerHTML = itemsLoaded;
   loadingProgressTotal.innerHTML = '/' + itemsTotal;
 };
-loader.manager.onProgress = (url, itemsLoaded, itemsTotal) => {
+LOADER.manager.onProgress = (url, itemsLoaded, itemsTotal) => {
   loadingProgressCount.innerHTML = itemsLoaded;
   loadingProgressTotal.innerHTML = '/' + itemsTotal;
 };
-loader.manager.onError = (url) => {
+LOADER.manager.onError = (url) => {
   console.error('Error loading: ' + url);
 };
 
@@ -85,7 +85,7 @@ function initGame() {
 
   // Background
   let material = new THREE.MeshBasicMaterial({
-    map: loader.get('backgroundTexture'),
+    map: LOADER.get('backgroundTexture'),
     side: THREE.BackSide,
     color: 0x555555
   });
@@ -182,8 +182,8 @@ function initGame() {
   render();
 }
 
-loader.manager.onLoad = () => {
+LOADER.manager.onLoad = () => {
   document.body.removeChild(loadingText);
   initGame();
 };
-loader.load();
+LOADER.load();

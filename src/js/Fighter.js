@@ -1,12 +1,12 @@
 import * as THREE from 'three';
-import {loader} from './GSFLoader';
+import {LOADER} from './GSFLoader';
 import Ship from './Ship';
 import SmallPulseLaser from './SmallPulseLaser';
 import SimpleParticleSystem from './SimpleParticleSystem';
 
 class Fighter extends Ship {
   constructor() {
-    super(loader.get('fighterGeometry'), loader.get('fighterMaterial'), {
+    super(LOADER.get('fighterGeometry'), LOADER.get('fighterMaterial'), {
       maxVelocity: 50,
       acceleration: 80,
       turnSpeed: 0.25,

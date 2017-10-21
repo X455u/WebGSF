@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import * as THREE from 'three';
 import SubdivisionModifier from './SubdivisionModifier';
-import {loader} from './GSFLoader';
+import {LOADER} from './GSFLoader';
 import GameObject from './GameObject';
 
 const DETAIL = 3;
@@ -36,7 +36,7 @@ class Planet extends GameObject {
     let material = new THREE.MeshPhongMaterial({
       color: 0x111111,
       shininess: 1,
-      normalMap: loader.get('planetNormalMap')
+      normalMap: LOADER.get('planetNormalMap')
     });
 
     super(geometry, material);

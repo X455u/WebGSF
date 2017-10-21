@@ -54,4 +54,4 @@ class GSFLoader {
     /* eslint-enable dot-notation */
   }
 }
-export const loader = new GSFLoader();
+export const LOADER = new GSFLoader();
