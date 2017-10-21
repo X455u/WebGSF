@@ -157,9 +157,6 @@ function initGame() {
 
     GAME.update(delta);
 
-    // Camera follow
-    let quaternion = (new THREE.Quaternion()).setFromAxisAngle(new THREE.Vector3(0, 1, 0), Math.PI);
-    quaternion.multiplyQuaternions(playerShip.quaternion, quaternion);
     CAMERA.update(delta);
 
     // update spotlight position and direction
