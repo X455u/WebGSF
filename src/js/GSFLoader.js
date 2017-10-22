@@ -1,5 +1,4 @@
 import * as THREE from 'three';
-import {SOUND_LISTENER} from './Game';
 
 class GSFLoader {
   constructor() {
@@ -55,6 +54,9 @@ class GSFLoader {
     });
     this.AUDIO_LOADER.load('./media/laser.mp3', (buffer) => {
       this.assets['laserSoundBuffer'] = buffer;
+    });
+    this.AUDIO_LOADER.load('./media/plasma.mp3', (buffer) => {
+      this.assets['plasmaSoundBuffer'] = buffer;
     });
     /* eslint-enable dot-notation */
   }

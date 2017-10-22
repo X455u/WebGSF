@@ -45,7 +45,7 @@ class Ship extends GameObject {
       if (this.hp === 0) {
         let explosion = new Explosion({position: this.position});
         GAME.addObject(explosion);
-        this.remove();
+        this.destroy();
       }
     });
   }

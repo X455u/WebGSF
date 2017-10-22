@@ -1,19 +1,19 @@
 import * as THREE from 'three';
-import LaserShot from './LaserShot';
+import PlasmaShot from './PlasmaShot';
 
-class SmallPulseLaser extends THREE.Object3D {
+class LargePlasmaCannon extends THREE.Object3D {
 
   constructor() {
     super();
-    this.reload = 1.0;
-    this.reloadTime = 0.5;
-    this.muzzleVelocity = 300;
+    this.reloadTime = 4;
+    this.reload = this.reloadTime;
+    this.muzzleVelocity = 200;
     this.owner = null;
   }
 
   shoot() {
     if (this.reload !== 0.0) return;
-    let shot = new LaserShot();
+    let shot = new PlasmaShot();
     shot.owner = this.owner;
     this.getWorldPosition(shot.position);
     this.getWorldQuaternion(shot.quaternion);
@@ -29,4 +29,4 @@ class SmallPulseLaser extends THREE.Object3D {
   }
 
 }
-export default SmallPulseLaser;
+export default LargePlasmaCannon;

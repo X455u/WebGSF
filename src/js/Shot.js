@@ -1,4 +1,3 @@
-import * as THREE from 'three';
 import GameObject from './GameObject';
 import {GAME} from './Game';
 
@@ -15,13 +14,13 @@ class Shot extends GameObject {
   update(delta) {
     this.lifetime -= delta;
     if (this.lifetime < 0) {
-      this.remove();
+      this.destroy();
       return;
     }
 
     let hitObject = this.checkCollision(this.quaternion, this.velocity * delta);
     if (hitObject) {
-      this.remove();
+      this.destroy();
       hitObject.dealDamage(this.damage);
     }
 

@@ -12,6 +12,8 @@ import {Howl} from 'howler';
 import {LOADER} from './GSFLoader';
 import {GAME, SCENE, SOUND_LISTENER} from './Game';
 import {CAMERA} from './GSFCamera';
+import Turret from './Turret';
+import {TURRET_AI} from './TurretAI';
 
 const DEBUG = false;
 
@@ -109,6 +111,18 @@ function initGame() {
   GAME.addStatic(mars, true);
 
   // Enemies
+  // Turrets
+  for (let i = 0; i < 10; i++) {
+    let turret = new Turret();
+    let direction = new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize();
+    turret.position.copy(direction).setLength(mars.hitRadius);
+    turret.position.add(mars.position);
+    turret.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction);
+    turret.AItarget = playerShip;
+    turret.ai = TURRET_AI;
+  }
+
+  // Fighters
   let enemies = [];
   setInterval(() => {
     let enemyShip = new Fighter();

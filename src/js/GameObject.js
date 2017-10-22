@@ -10,6 +10,7 @@ const VECTOR3_B = new THREE.Vector3();
 const VECTOR3_C = new THREE.Vector3();
 const VECTOR3_D = new THREE.Vector3();
 const VECTOR3_E = new THREE.Vector3();
+const VECTOR3_F = new THREE.Vector3();
 
 class GameObject extends THREE.Mesh {
   constructor(geometry, material) {
@@ -24,7 +25,7 @@ class GameObject extends THREE.Mesh {
 
   dealDamage() {}
 
-  remove() {
+  destroy() {
     this.removed = true;
   }
 
@@ -69,6 +70,7 @@ class GameObject extends THREE.Mesh {
       if (collidable === this || collidable === this.owner) continue;
       let collidableCenter = collidable.position;
       if (this.position.distanceTo(collidableCenter) > distance + collidable.hitRadius + this.hitRadius + extraHitRadius) continue;
+      if (direction.dot(VECTOR3_F.subVectors(collidableCenter, start)) < 0) continue;
       a1.subVectors(collidableCenter, start);
       a2.subVectors(collidableCenter, end);
       let radius = a1.cross(a2).length() / distance;
