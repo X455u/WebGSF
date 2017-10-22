@@ -8915,6 +8915,12 @@
 
 	var _GSFCamera = __webpack_require__(432);
 
+	var _Turret = __webpack_require__(446);
+
+	var _Turret2 = _interopRequireDefault(_Turret);
+
+	var _TurretAI = __webpack_require__(456);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
@@ -9015,6 +9021,18 @@
 	  _Game.GAME.addStatic(mars, true);
 
 	  // Enemies
+	  // Turrets
+	  for (var i = 0; i < 10; i++) {
+	    var turret = new _Turret2.default();
+	    var direction = new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize();
+	    turret.position.copy(direction).setLength(mars.hitRadius);
+	    turret.position.add(mars.position);
+	    turret.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction);
+	    turret.AItarget = playerShip;
+	    turret.ai = _TurretAI.TURRET_AI;
+	  }
+
+	  // Fighters
 	  var enemies = [];
 	  setInterval(function () {
 	    var enemyShip = new _Fighter2.default();
@@ -53769,8 +53787,6 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _Game = __webpack_require__(350);
-
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -53836,6 +53852,9 @@
 	      });
 	      this.AUDIO_LOADER.load('./media/laser.mp3', function (buffer) {
 	        _this.assets['laserSoundBuffer'] = buffer;
+	      });
+	      this.AUDIO_LOADER.load('./media/plasma.mp3', function (buffer) {
+	        _this.assets['plasmaSoundBuffer'] = buffer;
 	      });
 	      /* eslint-enable dot-notation */
 	    }
@@ -55769,7 +55788,7 @@
 	      if (_this.hp === 0) {
 	        var explosion = new _Explosion2.default({ position: _this.position });
 	        _Game.GAME.addObject(explosion);
-	        _this.remove();
+	        _this.destroy();
 	      }
 	    });
 	    return _this;
@@ -55907,6 +55926,7 @@
 	var VECTOR3_C = new THREE.Vector3();
 	var VECTOR3_D = new THREE.Vector3();
 	var VECTOR3_E = new THREE.Vector3();
+	var VECTOR3_F = new THREE.Vector3();
 
 	var GameObject = function (_THREE$Mesh) {
 	  (0, _inherits3.default)(GameObject, _THREE$Mesh);
@@ -55930,8 +55950,8 @@
 	    key: 'dealDamage',
 	    value: function dealDamage() {}
 	  }, {
-	    key: 'remove',
-	    value: function remove() {
+	    key: 'destroy',
+	    value: function destroy() {
 	      this.removed = true;
 	    }
 	  }, {
@@ -55988,6 +56008,7 @@
 	          if (collidable === this || collidable === this.owner) continue;
 	          var collidableCenter = collidable.position;
 	          if (this.position.distanceTo(collidableCenter) > distance + collidable.hitRadius + this.hitRadius + extraHitRadius) continue;
+	          if (direction.dot(VECTOR3_F.subVectors(collidableCenter, start)) < 0) continue;
 	          a1.subVectors(collidableCenter, start);
 	          a2.subVectors(collidableCenter, end);
 	          var radius = a1.cross(a2).length() / distance;
@@ -56688,7 +56709,6 @@
 	    _this.reload = 1.0;
 	    _this.reloadTime = 0.5;
 	    _this.muzzleVelocity = 300;
-	    _this.shotLifetime = 5.0;
 	    _this.owner = null;
 	    return _this;
 	  }
@@ -56736,9 +56756,17 @@
 
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 
+	var _createClass2 = __webpack_require__(330);
+
+	var _createClass3 = _interopRequireDefault(_createClass2);
+
 	var _possibleConstructorReturn2 = __webpack_require__(395);
 
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+	var _get2 = __webpack_require__(424);
+
+	var _get3 = _interopRequireDefault(_get2);
 
 	var _inherits2 = __webpack_require__(415);
 
@@ -56793,14 +56821,23 @@
 	    _this.velocity = 300;
 	    _this.damage = 5;
 
-	    var sound = new THREE.PositionalAudio(_Game.SOUND_LISTENER);
-	    sound.setBuffer(_GSFLoader.LOADER.get('laserSoundBuffer'));
-	    sound.setRefDistance(10);
-	    _this.add(sound);
-	    sound.play();
+	    _this.sound = new THREE.PositionalAudio(_Game.SOUND_LISTENER);
+	    _this.sound.setBuffer(_GSFLoader.LOADER.get('laserSoundBuffer'));
+	    _this.sound.setRefDistance(10);
+	    _this.add(_this.sound);
+	    _this.sound.play();
 	    return _this;
 	  }
 
+	  (0, _createClass3.default)(LaserShot, [{
+	    key: 'destroy',
+	    value: function destroy() {
+	      (0, _get3.default)(LaserShot.prototype.__proto__ || (0, _getPrototypeOf2.default)(LaserShot.prototype), 'destroy', this).call(this);
+	      this.remove(this.sound);
+	      _Game.SCENE.add(this.sound);
+	      this.sound.position.copy(this.position);
+	    }
+	  }]);
 	  return LaserShot;
 	}(_Shot3.default);
 
@@ -57126,17 +57163,11 @@
 
 	var _inherits3 = _interopRequireDefault(_inherits2);
 
-	var _three = __webpack_require__(327);
-
-	var THREE = _interopRequireWildcard(_three);
-
 	var _GameObject2 = __webpack_require__(429);
 
 	var _GameObject3 = _interopRequireDefault(_GameObject2);
 
 	var _Game = __webpack_require__(350);
-
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -57161,13 +57192,13 @@
 	    value: function update(delta) {
 	      this.lifetime -= delta;
 	      if (this.lifetime < 0) {
-	        this.remove();
+	        this.destroy();
 	        return;
 	      }
 
 	      var hitObject = this.checkCollision(this.quaternion, this.velocity * delta);
 	      if (hitObject) {
-	        this.remove();
+	        this.destroy();
 	        hitObject.dealDamage(this.damage);
 	      }
 
@@ -57621,9 +57652,9 @@
 	      (0, _get3.default)(Missile.prototype.__proto__ || (0, _getPrototypeOf2.default)(Missile.prototype), 'update', this).call(this, delta);
 	    }
 	  }, {
-	    key: 'remove',
-	    value: function remove() {
-	      (0, _get3.default)(Missile.prototype.__proto__ || (0, _getPrototypeOf2.default)(Missile.prototype), 'remove', this).call(this);
+	    key: 'destroy',
+	    value: function destroy() {
+	      (0, _get3.default)(Missile.prototype.__proto__ || (0, _getPrototypeOf2.default)(Missile.prototype), 'destroy', this).call(this);
 	      // let explosion = new Explosion({position: this.position});
 	      // GAME.addObject(explosion);
 	    }
@@ -73346,6 +73377,498 @@
 	})();
 
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
+
+/***/ }),
+/* 446 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _sign = __webpack_require__(447);
+
+	var _sign2 = _interopRequireDefault(_sign);
+
+	var _epsilon = __webpack_require__(451);
+
+	var _epsilon2 = _interopRequireDefault(_epsilon);
+
+	var _getPrototypeOf = __webpack_require__(391);
+
+	var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
+
+	var _classCallCheck2 = __webpack_require__(329);
+
+	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+	var _createClass2 = __webpack_require__(330);
+
+	var _createClass3 = _interopRequireDefault(_createClass2);
+
+	var _possibleConstructorReturn2 = __webpack_require__(395);
+
+	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+	var _inherits2 = __webpack_require__(415);
+
+	var _inherits3 = _interopRequireDefault(_inherits2);
+
+	var _three = __webpack_require__(327);
+
+	var THREE = _interopRequireWildcard(_three);
+
+	var _GameObject2 = __webpack_require__(429);
+
+	var _GameObject3 = _interopRequireDefault(_GameObject2);
+
+	var _Game = __webpack_require__(350);
+
+	var _LargePlasmaCannon = __webpack_require__(454);
+
+	var _LargePlasmaCannon2 = _interopRequireDefault(_LargePlasmaCannon);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var baseGeometry = new THREE.CylinderGeometry(3, 5, 5, 16);
+	var headGeometry = new THREE.CylinderGeometry(2, 3, 3, 8);
+	var gunGeometry = new THREE.CylinderGeometry(0.5, 0.5, 8, 8, 1, true);
+	gunGeometry.rotateX(0.5 * Math.PI);
+	gunGeometry.translate(0, 0, 4);
+	var baseMaterial = new THREE.MeshPhongMaterial({
+	  color: 0x444444
+	});
+	var headMaterial = new THREE.MeshPhongMaterial({
+	  color: 0x222222
+	});
+	var gunMaterial = new THREE.MeshPhongMaterial({
+	  color: 0x111111,
+	  side: THREE.DoubleSide
+	});
+
+	// Object pool
+	var VECTOR3_A = new THREE.Vector3();
+	var VECTOR3_B = new THREE.Vector3();
+	var VECTOR3_C = new THREE.Vector3();
+	var VECTOR3_D = new THREE.Vector3();
+
+	// Configurations
+	var GUN_ROTATION_MAX = 0.1 * Math.PI;
+	var GUN_ROTATION_MIN = -0.5 * Math.PI;
+
+	var Turret = function (_GameObject) {
+	  (0, _inherits3.default)(Turret, _GameObject);
+
+	  function Turret() {
+	    (0, _classCallCheck3.default)(this, Turret);
+
+	    var _this = (0, _possibleConstructorReturn3.default)(this, (Turret.__proto__ || (0, _getPrototypeOf2.default)(Turret)).call(this, baseGeometry, baseMaterial));
+
+	    _Game.GAME.addObject(_this, true);
+	    _this.headMesh = new THREE.Mesh(headGeometry, headMaterial);
+	    _this.gunMesh = new THREE.Mesh(gunGeometry, gunMaterial);
+
+	    _this.add(_this.headMesh);
+	    _this.headMesh.translateOnAxis(new THREE.Vector3(0, 1, 0), 4);
+	    _this.headMesh.add(_this.gunMesh);
+
+	    // AI
+	    _this.ai = null;
+	    _this.AItarget = null;
+
+	    // Stats
+	    _this.gun = new _LargePlasmaCannon2.default();
+	    _this.gun.owner = _this;
+	    _this.gunMesh.add(_this.gun);
+	    _this.hitRadius = 6;
+	    return _this;
+	  }
+
+	  (0, _createClass3.default)(Turret, [{
+	    key: 'update',
+	    value: function update(delta) {
+	      if (this.ai) this.ai.update(this, delta);
+	      this.gunMesh.rotation.x = Math.max(GUN_ROTATION_MIN, Math.min(this.gunMesh.rotation.x, GUN_ROTATION_MAX));
+
+	      if (this.gun) {
+	        this.gun.update(delta);
+	        if (this.isShooting) {
+	          this.gun.shoot();
+	          this.isShooting = false;
+	        }
+	      }
+	    }
+	  }, {
+	    key: 'shoot',
+	    value: function shoot() {
+	      var wasFalse = !this.isShooting;
+	      this.isShooting = true;
+	      return wasFalse;
+	    }
+	  }, {
+	    key: 'turnTowards',
+	    value: function turnTowards(target, delta) {
+	      var direction = VECTOR3_A.subVectors(target, this.headMesh.getWorldPosition());
+
+	      // Turn head
+	      var headQuaternion = this.headMesh.getWorldQuaternion();
+	      var headUp = VECTOR3_B.set(0, 1, 0).applyQuaternion(headQuaternion);
+	      var headDirection = VECTOR3_C.set(0, 0, 1).applyQuaternion(headQuaternion);
+	      var headTargetDirection = VECTOR3_D.copy(direction).projectOnPlane(headUp).normalize();
+	      var headAngle = headDirection.angleTo(headTargetDirection) || _epsilon2.default; // Workaround for being NaN sometimes
+	      var headLeft = VECTOR3_B.set(1, 0, 0).applyQuaternion(headQuaternion);
+	      var headTurnCoef = (0, _sign2.default)(headLeft.dot(headTargetDirection));
+	      this.headMesh.rotateY(headTurnCoef * Math.min(headAngle, this.turnSpeed * delta));
+
+	      // Turn gun
+	      var gunQuaternion = this.gunMesh.getWorldQuaternion();
+	      var gunLeft = VECTOR3_B.set(1, 0, 0).applyQuaternion(gunQuaternion);
+	      var gunDirection = VECTOR3_C.set(0, 0, 1).applyQuaternion(gunQuaternion);
+	      var gunTargetDirection = VECTOR3_D.copy(direction).projectOnPlane(gunLeft).normalize();
+	      var gunAngle = gunDirection.angleTo(gunTargetDirection) || _epsilon2.default; // Workaround for being NaN sometimes
+	      var gunUp = VECTOR3_B.set(0, 1, 0).applyQuaternion(gunQuaternion);
+	      var gunTurnCoef = -(0, _sign2.default)(gunUp.dot(gunTargetDirection));
+	      this.gunMesh.rotateX(gunTurnCoef * Math.min(gunAngle, this.turnSpeed * delta));
+	    }
+	  }]);
+	  return Turret;
+	}(_GameObject3.default);
+
+	exports.default = Turret;
+
+/***/ }),
+/* 447 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	module.exports = { "default": __webpack_require__(448), __esModule: true };
+
+/***/ }),
+/* 448 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	__webpack_require__(449);
+	module.exports = __webpack_require__(336).Math.sign;
+
+
+/***/ }),
+/* 449 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	// 20.2.2.28 Math.sign(x)
+	var $export = __webpack_require__(334);
+
+	$export($export.S, 'Math', { sign: __webpack_require__(450) });
+
+
+/***/ }),
+/* 450 */
+/***/ (function(module, exports) {
+
+	// 20.2.2.28 Math.sign(x)
+	module.exports = Math.sign || function sign(x) {
+	  // eslint-disable-next-line no-self-compare
+	  return (x = +x) == 0 || x != x ? x : x < 0 ? -1 : 1;
+	};
+
+
+/***/ }),
+/* 451 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	module.exports = { "default": __webpack_require__(452), __esModule: true };
+
+/***/ }),
+/* 452 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	__webpack_require__(453);
+	module.exports = Math.pow(2, -52);
+
+
+/***/ }),
+/* 453 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	// 20.1.2.1 Number.EPSILON
+	var $export = __webpack_require__(334);
+
+	$export($export.S, 'Number', { EPSILON: Math.pow(2, -52) });
+
+
+/***/ }),
+/* 454 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _getPrototypeOf = __webpack_require__(391);
+
+	var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
+
+	var _classCallCheck2 = __webpack_require__(329);
+
+	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+	var _createClass2 = __webpack_require__(330);
+
+	var _createClass3 = _interopRequireDefault(_createClass2);
+
+	var _possibleConstructorReturn2 = __webpack_require__(395);
+
+	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+	var _inherits2 = __webpack_require__(415);
+
+	var _inherits3 = _interopRequireDefault(_inherits2);
+
+	var _three = __webpack_require__(327);
+
+	var THREE = _interopRequireWildcard(_three);
+
+	var _PlasmaShot = __webpack_require__(455);
+
+	var _PlasmaShot2 = _interopRequireDefault(_PlasmaShot);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var LargePlasmaCannon = function (_THREE$Object3D) {
+	  (0, _inherits3.default)(LargePlasmaCannon, _THREE$Object3D);
+
+	  function LargePlasmaCannon() {
+	    (0, _classCallCheck3.default)(this, LargePlasmaCannon);
+
+	    var _this = (0, _possibleConstructorReturn3.default)(this, (LargePlasmaCannon.__proto__ || (0, _getPrototypeOf2.default)(LargePlasmaCannon)).call(this));
+
+	    _this.reloadTime = 4;
+	    _this.reload = _this.reloadTime;
+	    _this.muzzleVelocity = 200;
+	    _this.owner = null;
+	    return _this;
+	  }
+
+	  (0, _createClass3.default)(LargePlasmaCannon, [{
+	    key: 'shoot',
+	    value: function shoot() {
+	      if (this.reload !== 0.0) return;
+	      var shot = new _PlasmaShot2.default();
+	      shot.owner = this.owner;
+	      this.getWorldPosition(shot.position);
+	      this.getWorldQuaternion(shot.quaternion);
+	      this.reload = this.reloadTime;
+	      this.dispatchEvent({
+	        type: 'onShoot',
+	        shot: shot
+	      });
+	    }
+	  }, {
+	    key: 'update',
+	    value: function update(delta) {
+	      this.reload = Math.max(0.0, this.reload - delta);
+	    }
+	  }]);
+	  return LargePlasmaCannon;
+	}(THREE.Object3D);
+
+	exports.default = LargePlasmaCannon;
+
+/***/ }),
+/* 455 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _getPrototypeOf = __webpack_require__(391);
+
+	var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
+
+	var _classCallCheck2 = __webpack_require__(329);
+
+	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+	var _createClass2 = __webpack_require__(330);
+
+	var _createClass3 = _interopRequireDefault(_createClass2);
+
+	var _possibleConstructorReturn2 = __webpack_require__(395);
+
+	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+	var _get2 = __webpack_require__(424);
+
+	var _get3 = _interopRequireDefault(_get2);
+
+	var _inherits2 = __webpack_require__(415);
+
+	var _inherits3 = _interopRequireDefault(_inherits2);
+
+	var _three = __webpack_require__(327);
+
+	var THREE = _interopRequireWildcard(_three);
+
+	var _SubdivisionModifier = __webpack_require__(435);
+
+	var _SubdivisionModifier2 = _interopRequireDefault(_SubdivisionModifier);
+
+	var _Shot2 = __webpack_require__(436);
+
+	var _Shot3 = _interopRequireDefault(_Shot2);
+
+	var _GSFLoader = __webpack_require__(349);
+
+	var _Game = __webpack_require__(350);
+
+	var _SimpleParticleSystem = __webpack_require__(437);
+
+	var _SimpleParticleSystem2 = _interopRequireDefault(_SimpleParticleSystem);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var shotGeometry = new THREE.CylinderGeometry(0.5, 0.5, 6, 8, 3);
+	shotGeometry.rotateX(Math.PI / 2);
+	var modifier = new _SubdivisionModifier2.default(2);
+	modifier.modify(shotGeometry);
+	shotGeometry.faceVertexUvs = [];
+	shotGeometry.uvsNeedUpdate = true;
+	var shotMaterial = new THREE.MeshPhongMaterial({
+	  color: 0x000000,
+	  specular: 0x666666,
+	  emissive: 0x00ff00,
+	  shininess: 0,
+	  flatShading: false,
+	  opacity: 0.75,
+	  transparent: true
+	});
+
+	var PlasmaShot = function (_Shot) {
+	  (0, _inherits3.default)(PlasmaShot, _Shot);
+
+	  function PlasmaShot() {
+	    (0, _classCallCheck3.default)(this, PlasmaShot);
+
+	    var _this = (0, _possibleConstructorReturn3.default)(this, (PlasmaShot.__proto__ || (0, _getPrototypeOf2.default)(PlasmaShot)).call(this, shotGeometry, shotMaterial));
+
+	    _this.lifetimeLeft = 10;
+	    _this.velocity = 200;
+	    _this.damage = 50;
+
+	    _this.sound = new THREE.PositionalAudio(_Game.SOUND_LISTENER);
+	    _this.sound.setBuffer(_GSFLoader.LOADER.get('plasmaSoundBuffer'));
+	    _this.sound.setRefDistance(10);
+	    _this.add(_this.sound);
+	    _this.sound.play();
+
+	    var trail = new _SimpleParticleSystem2.default({
+	      particles: 200,
+	      destination: new THREE.Vector3(0, 0, -20),
+	      positionRandomness: 0.5,
+	      destinationRandomness: 0.5,
+	      color: new THREE.Color(0x00FF00),
+	      size: 200,
+	      lifetime: 0.2
+	    });
+	    _this.add(trail);
+	    return _this;
+	  }
+
+	  (0, _createClass3.default)(PlasmaShot, [{
+	    key: 'destroy',
+	    value: function destroy() {
+	      (0, _get3.default)(PlasmaShot.prototype.__proto__ || (0, _getPrototypeOf2.default)(PlasmaShot.prototype), 'destroy', this).call(this);
+	      this.remove(this.sound);
+	      _Game.SCENE.add(this.sound);
+	      this.sound.position.copy(this.position);
+	    }
+	  }]);
+	  return PlasmaShot;
+	}(_Shot3.default);
+
+	exports.default = PlasmaShot;
+
+/***/ }),
+/* 456 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.TURRET_AI = undefined;
+
+	var _classCallCheck2 = __webpack_require__(329);
+
+	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+	var _createClass2 = __webpack_require__(330);
+
+	var _createClass3 = _interopRequireDefault(_createClass2);
+
+	var _three = __webpack_require__(327);
+
+	var THREE = _interopRequireWildcard(_three);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var SHOOT_ANGLE = 0.05;
+
+	// Object pool
+	var VECTOR3_A = new THREE.Vector3();
+	var VECTOR3_B = new THREE.Vector3();
+	var VECTOR3_C = new THREE.Vector3();
+
+	var TurretAI = function () {
+	  function TurretAI() {
+	    (0, _classCallCheck3.default)(this, TurretAI);
+	  }
+
+	  (0, _createClass3.default)(TurretAI, [{
+	    key: 'update',
+	    value: function update(turret, delta) {
+	      var aimTarget = this.getAimTarget(turret.gun.getWorldPosition(), turret.AItarget.position, turret.AItarget.getVelocityVec(), turret.gun.muzzleVelocity);
+	      turret.turnTowards(aimTarget, delta);
+
+	      var facing = VECTOR3_A.set(0, 0, 1).applyQuaternion(turret.gun.getWorldQuaternion());
+	      var angleToTarget = facing.angleTo(VECTOR3_B.subVectors(aimTarget, turret.gun.getWorldPosition()));
+	      if (angleToTarget < SHOOT_ANGLE) turret.shoot();
+	    }
+	  }, {
+	    key: 'getAimTarget',
+	    value: function getAimTarget(gunPosition, targetPosition, targetVelocity, shotSpeed) {
+	      var thisToTarget = VECTOR3_A.copy(targetPosition).sub(gunPosition);
+	      var targetMoveAngle = thisToTarget.angleTo(targetVelocity); // 0 or PI when paralell to vector from this to target.
+	      var aimAdvanceAngle = Math.asin(Math.sin(targetMoveAngle) * targetVelocity.length() / shotSpeed);
+	      var aimAdvanceAxis = VECTOR3_B.crossVectors(thisToTarget, targetVelocity).normalize();
+	      var aimAdvanceVector = thisToTarget.applyAxisAngle(aimAdvanceAxis, aimAdvanceAngle);
+	      var aimTarget = VECTOR3_C.addVectors(gunPosition, aimAdvanceVector);
+	      if (!aimTarget.x || !aimTarget.y || !aimTarget.z) {
+	        return targetPosition;
+	      } else {
+	        return aimTarget;
+	      }
+	    }
+	  }]);
+	  return TurretAI;
+	}();
+
+	var TURRET_AI = exports.TURRET_AI = new TurretAI();
 
 /***/ })
 /******/ ]);
