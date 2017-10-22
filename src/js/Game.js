@@ -42,6 +42,7 @@ class Game {
 
   addStatic(object, isShootable) {
     SCENE.add(object);
+    this.objects.push(object);
     if (isShootable) COLLIDABLES.push(object);
   }
 

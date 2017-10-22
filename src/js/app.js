@@ -5,6 +5,7 @@ import {HUD} from './HUD';
 import Sun from './Sun';
 import Fighter from './Fighter';
 import SimpleMars from './SimpleMars';
+import SimpleEarth from './SimpleEarth';
 import Missile from './Missile';
 import {FIGHTER_AI} from './FighterAI';
 import {player} from './Player';
@@ -109,6 +110,11 @@ function initGame() {
   let mars = new SimpleMars(550, 4);
   mars.position.y = -600;
   GAME.addStatic(mars, true);
+
+  let earth = new SimpleEarth(1000, 5);
+  earth.position.x = 2000;
+  earth.position.z = 2000;
+  GAME.addStatic(earth, true);
 
   // Enemies
   // Turrets

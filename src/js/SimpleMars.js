@@ -8,12 +8,12 @@ class SimpleMars extends GameObject {
     geometry.computeBoundingBox();
     geometry.computeBoundingSphere();
 
-    let texture = LOADER.get('planetNormalMapBig');
+    let normalMap = LOADER.get('marsNormalMap');
     let material = new THREE.MeshPhongMaterial({
       color: 0xAAAAAA,
       shininess: 0,
       map: LOADER.get('marsTexture'),
-      normalMap: texture,
+      normalMap: normalMap,
       normalScale: new THREE.Vector2(0.2, 0.2)
     });
 

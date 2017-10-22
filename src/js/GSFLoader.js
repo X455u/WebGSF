@@ -34,11 +34,20 @@ class GSFLoader {
     // this.TEX_LOADER.load('./media/planet_nor.png', (normalMap) => {
     //   this.assets['planetNormalMap'] = normalMap;
     // });
-    this.TEX_LOADER.load('./media/planet_nor_big.png', (normalMap) => {
-      this.assets['planetNormalMapBig'] = normalMap;
-    });
     this.TEX_LOADER.load('./media/mars.jpg', (texture) => {
       this.assets['marsTexture'] = texture;
+    });
+    this.TEX_LOADER.load('./media/planet_nor_big.png', (normalMap) => {
+      this.assets['marsNormalMap'] = normalMap;
+    });
+    this.TEX_LOADER.load('./media/earthTexture.jpg', (texture) => {
+      this.assets['earthTexture'] = texture;
+    });
+    this.TEX_LOADER.load('./media/earthNormalMap.png', (normalMap) => {
+      this.assets['earthNormalMap'] = normalMap;
+    });
+    this.TEX_LOADER.load('./media/earthClouds.png', (texture) => {
+      this.assets['earthClouds'] = texture;
     });
     this.TEX_LOADER.load('./media/lensflare/lensflare0.png', (texture) => {
       this.assets['texFlare0'] = texture;
