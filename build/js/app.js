@@ -8899,6 +8899,10 @@
 
 	var _SimpleMars2 = _interopRequireDefault(_SimpleMars);
 
+	var _SimpleEarth = __webpack_require__(457);
+
+	var _SimpleEarth2 = _interopRequireDefault(_SimpleEarth);
+
 	var _Missile = __webpack_require__(439);
 
 	var _Missile2 = _interopRequireDefault(_Missile);
@@ -9019,6 +9023,11 @@
 	  var mars = new _SimpleMars2.default(550, 4);
 	  mars.position.y = -600;
 	  _Game.GAME.addStatic(mars, true);
+
+	  var earth = new _SimpleEarth2.default(1000, 5);
+	  earth.position.x = 4000;
+	  earth.position.z = 4000;
+	  _Game.GAME.addStatic(earth, true);
 
 	  // Enemies
 	  // Turrets
@@ -53832,11 +53841,20 @@
 	      // this.TEX_LOADER.load('./media/planet_nor.png', (normalMap) => {
 	      //   this.assets['planetNormalMap'] = normalMap;
 	      // });
-	      this.TEX_LOADER.load('./media/planet_nor_big.png', function (normalMap) {
-	        _this.assets['planetNormalMapBig'] = normalMap;
-	      });
 	      this.TEX_LOADER.load('./media/mars.jpg', function (texture) {
 	        _this.assets['marsTexture'] = texture;
+	      });
+	      this.TEX_LOADER.load('./media/planet_nor_big.png', function (normalMap) {
+	        _this.assets['marsNormalMap'] = normalMap;
+	      });
+	      this.TEX_LOADER.load('./media/earthTexture.jpg', function (texture) {
+	        _this.assets['earthTexture'] = texture;
+	      });
+	      this.TEX_LOADER.load('./media/earthNormalMap.png', function (normalMap) {
+	        _this.assets['earthNormalMap'] = normalMap;
+	      });
+	      this.TEX_LOADER.load('./media/earthClouds.png', function (texture) {
+	        _this.assets['earthClouds'] = texture;
 	      });
 	      this.TEX_LOADER.load('./media/lensflare/lensflare0.png', function (texture) {
 	        _this.assets['texFlare0'] = texture;
@@ -53964,6 +53982,7 @@
 	    key: 'addStatic',
 	    value: function addStatic(object, isShootable) {
 	      SCENE.add(object);
+	      this.objects.push(object);
 	      if (isShootable) COLLIDABLES.push(object);
 	    }
 	  }, {
@@ -57519,12 +57538,12 @@
 	    geometry.computeBoundingBox();
 	    geometry.computeBoundingSphere();
 
-	    var texture = _GSFLoader.LOADER.get('planetNormalMapBig');
+	    var normalMap = _GSFLoader.LOADER.get('marsNormalMap');
 	    var material = new THREE.MeshPhongMaterial({
 	      color: 0xAAAAAA,
 	      shininess: 0,
 	      map: _GSFLoader.LOADER.get('marsTexture'),
-	      normalMap: texture,
+	      normalMap: normalMap,
 	      normalScale: new THREE.Vector2(0.2, 0.2)
 	    });
 
@@ -73869,6 +73888,100 @@
 	}();
 
 	var TURRET_AI = exports.TURRET_AI = new TurretAI();
+
+/***/ }),
+/* 457 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _getPrototypeOf = __webpack_require__(391);
+
+	var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
+
+	var _classCallCheck2 = __webpack_require__(329);
+
+	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+	var _createClass2 = __webpack_require__(330);
+
+	var _createClass3 = _interopRequireDefault(_createClass2);
+
+	var _possibleConstructorReturn2 = __webpack_require__(395);
+
+	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+	var _inherits2 = __webpack_require__(415);
+
+	var _inherits3 = _interopRequireDefault(_inherits2);
+
+	var _three = __webpack_require__(327);
+
+	var THREE = _interopRequireWildcard(_three);
+
+	var _GameObject2 = __webpack_require__(429);
+
+	var _GameObject3 = _interopRequireDefault(_GameObject2);
+
+	var _GSFLoader = __webpack_require__(349);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var CLOUD_ROTATION_SPEED = 0.02;
+
+	var SimpleEarth = function (_GameObject) {
+	  (0, _inherits3.default)(SimpleEarth, _GameObject);
+
+	  function SimpleEarth(radius, detail) {
+	    (0, _classCallCheck3.default)(this, SimpleEarth);
+
+	    var geometry = new THREE.IcosahedronGeometry(radius, detail);
+	    geometry.computeBoundingBox();
+	    geometry.computeBoundingSphere();
+
+	    var normalMap = _GSFLoader.LOADER.get('earthNormalMap');
+	    var material = new THREE.MeshPhongMaterial({
+	      color: 0xAAAAAA,
+	      shininess: 0,
+	      map: _GSFLoader.LOADER.get('earthTexture'),
+	      normalMap: normalMap,
+	      normalScale: new THREE.Vector2(1, 1)
+	    });
+
+	    var _this = (0, _possibleConstructorReturn3.default)(this, (SimpleEarth.__proto__ || (0, _getPrototypeOf2.default)(SimpleEarth)).call(this, geometry, material));
+
+	    _this.hitRadius = radius;
+
+	    // Clouds
+	    var cloudGeometry = new THREE.IcosahedronGeometry(radius * 1.05, detail);
+	    var cloudMaterial = new THREE.MeshPhongMaterial({
+	      color: 0xFFFFFF,
+	      shininess: 0,
+	      map: _GSFLoader.LOADER.get('earthClouds'),
+	      transparent: true,
+	      opacity: 0.5
+	    });
+	    _this.clouds = new THREE.Mesh(cloudGeometry, cloudMaterial);
+	    _this.add(_this.clouds);
+	    return _this;
+	  }
+
+	  (0, _createClass3.default)(SimpleEarth, [{
+	    key: 'update',
+	    value: function update(delta) {
+	      this.clouds.rotateY(CLOUD_ROTATION_SPEED * delta);
+	    }
+	  }]);
+	  return SimpleEarth;
+	}(_GameObject3.default);
+
+	exports.default = SimpleEarth;
 
 /***/ })
 /******/ ]);
