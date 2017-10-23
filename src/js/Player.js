@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import keymaster from 'keymaster';
+import {HUD} from './HUD';
 
 function isMobile() {
   return window.DeviceMotionEvent !== undefined && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
@@ -20,10 +21,22 @@ class Player {
       this.setMobileEventListeners();
     }
     this.ship = null;
+    this.points = 0;
+  }
+
+  addPoints(points) {
+    this.points += points;
   }
 
   setShip(ship) {
     this.ship = ship;
+    ship.maxVelocity *= 1.5;
+    ship.turnSpeed *= 1.5;
+    ship.shieldRegen = 5;
+    ship.gun.reloadTime = 0.05;
+    ship.addEventListener('onShieldRegen', () => {
+      HUD.updateShield(ship.shield / ship.maxShield);
+    });
   }
 
   update() {
@@ -39,13 +52,13 @@ class Player {
       // Ship acceleration
       if (keymaster.isPressed('space')) this.ship.thrust();
       if (keymaster.isPressed('x')) this.ship.shoot();
+      if (keymaster.isPressed('c')) this.ship.shootMissile();
     } else {
       if (this.isThrusting) this.ship.thrust();
       if (this.isShooting) this.ship.shoot();
     }
 
     this.ship.turn(this.turnParameters.x, 0, this.turnParameters.z);
-
   }
 
   setMobileEventListeners() {

@@ -1,13 +1,14 @@
 import _ from 'lodash';
 import * as THREE from 'three';
 import SubdivisionModifier from './SubdivisionModifier';
-import {loader} from './GSFLoader';
+import {LOADER} from './GSFLoader';
+import GameObject from './GameObject';
 
 const DETAIL = 3;
 const NOISE = 0.3;
 const SMOOTHNESS = 2;
 
-class Planet extends THREE.Mesh {
+class Planet extends GameObject {
   constructor(radius) {
     let geometry = new THREE.IcosahedronGeometry(radius, 2);
     let modifier = new SubdivisionModifier(1);
@@ -35,7 +36,7 @@ class Planet extends THREE.Mesh {
     let material = new THREE.MeshPhongMaterial({
       color: 0x111111,
       shininess: 1,
-      normalMap: loader.get('planetNormalMap')
+      normalMap: LOADER.get('planetNormalMap')
     });
 
     super(geometry, material);

@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import {loader} from './GSFLoader';
+import {LOADER} from './GSFLoader';
 import {SCENE} from './Game';
 
 const FARTHEST = 500;
@@ -15,7 +15,7 @@ class Crosshair {
 
     let crosshairMaterial = new THREE.SpriteMaterial({
       color: 0x00ff00,
-      map: loader.get('crosshair'),
+      map: LOADER.get('crosshair'),
       blending: THREE.NormalBlending,
       depthWrite: false,
       depthTest: false

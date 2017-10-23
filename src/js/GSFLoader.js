@@ -1,10 +1,12 @@
 import * as THREE from 'three';
+import {SOUND_LISTENER} from './Game';
 
 class GSFLoader {
   constructor() {
     this.manager = new THREE.LoadingManager();
     this.JSON_LOADER = new THREE.JSONLoader(this.manager);
     this.TEX_LOADER = new THREE.TextureLoader(this.manager);
+    this.AUDIO_LOADER = new THREE.AudioLoader(this.manager);
     this.assets = {};
   }
 
@@ -30,8 +32,14 @@ class GSFLoader {
     this.TEX_LOADER.load('./media/background.jpg', (texture) => {
       this.assets['backgroundTexture'] = texture;
     });
-    this.TEX_LOADER.load('./media/planet_nor.png', (normalMap) => {
-      this.assets['planetNormalMap'] = normalMap;
+    // this.TEX_LOADER.load('./media/planet_nor.png', (normalMap) => {
+    //   this.assets['planetNormalMap'] = normalMap;
+    // });
+    this.TEX_LOADER.load('./media/planet_nor_big.png', (normalMap) => {
+      this.assets['planetNormalMapBig'] = normalMap;
+    });
+    this.TEX_LOADER.load('./media/mars.jpg', (texture) => {
+      this.assets['marsTexture'] = texture;
     });
     this.TEX_LOADER.load('./media/lensflare/lensflare0.png', (texture) => {
       this.assets['texFlare0'] = texture;
@@ -45,7 +53,10 @@ class GSFLoader {
     this.TEX_LOADER.load('./media/crosshair.png', (texture) => {
       this.assets['crosshair'] = texture;
     });
+    this.AUDIO_LOADER.load('./media/laser.mp3', (buffer) => {
+      this.assets['laserSoundBuffer'] = buffer;
+    });
     /* eslint-enable dot-notation */
   }
 }
-export const loader = new GSFLoader();
+export const LOADER = new GSFLoader();

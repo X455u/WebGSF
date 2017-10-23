@@ -1,12 +1,12 @@
-import * as THREE from 'three';
-import {PLANETS} from './Game';
+import GameObject from './GameObject';
+import Explosion from './Explosion';
+import {GAME} from './Game';
 
-const RAYCASTER = new THREE.Raycaster();
-
-class Ship extends THREE.Mesh {
+class Ship extends GameObject {
 
   constructor(geometry, material, stats) {
     super(geometry, material);
+    GAME.addObject(this, true);
 
     // Stats
     this.maxVelocity = stats.maxVelocity;
@@ -14,8 +14,10 @@ class Ship extends THREE.Mesh {
     this.turnSpeed = stats.turnSpeed;
     this.maxHp = stats.maxHp;
     this.maxShield = stats.maxShield;
+    this.shieldRegen = 0;
     if (stats.gun) {
       this.gun = stats.gun;
+      this.gun.owner = this;
       this.add(stats.gun);
     }
 
@@ -35,8 +37,17 @@ class Ship extends THREE.Mesh {
 
     // AI
     this.ai = null;
-    this.attacking = true;
-    this.target = null;
+    this.AIattacking = true;
+    this.AItarget = null;
+
+    // Events
+    this.addEventListener('onDamage', () => {
+      if (this.hp === 0) {
+        let explosion = new Explosion({position: this.position});
+        GAME.addObject(explosion);
+        this.remove();
+      }
+    });
   }
 
   thrust() {
@@ -55,7 +66,7 @@ class Ship extends THREE.Mesh {
     this.turnParameters.z = Math.min(Math.max(-1, z_), 1);
   }
 
-  damage(damage) {
+  dealDamage(damage) {
     this.shield -= damage;
     if (this.shield < 0) {
       this.hp += this.shield;
@@ -69,11 +80,12 @@ class Ship extends THREE.Mesh {
   }
 
   update(delta) {
-    if (this.ai && this.target) this.ai.update(this, delta);
+    if (this.ai && this.AItarget) this.ai.update(this, delta);
 
-    this.rotateX(this.turnParameters.x * this.turnSpeed * 2 * Math.PI * delta);
-    this.rotateY(this.turnParameters.y * this.turnSpeed * 2 * Math.PI * delta);
-    this.rotateZ(this.turnParameters.z * this.turnSpeed * 2 * Math.PI * delta);
+    let turnAmount = this.turnSpeed * 2 * Math.PI * delta;
+    this.rotateX(this.turnParameters.x * turnAmount);
+    this.rotateY(this.turnParameters.y * turnAmount);
+    this.rotateZ(this.turnParameters.z * turnAmount);
 
     if (this.isThrusting) {
       this.velocity += this.acceleration * delta;
@@ -92,43 +104,19 @@ class Ship extends THREE.Mesh {
       }
     }
 
-    RAYCASTER.near = 0;
-    RAYCASTER.far = this.velocity * delta;
-    let direction = new THREE.Vector3(0, 0, 1);
-    direction.applyQuaternion(this.quaternion);
-    RAYCASTER.set(this.position, direction);
-    let intersections = RAYCASTER.intersectObjects(PLANETS);
-    if (intersections.length !== 0) {
-      this.damage(1000);
+    let hitObject = this.checkCollision(this.quaternion, this.velocity * delta);
+    if (hitObject) {
+      this.dealDamage(Infinity);
+      hitObject.dealDamage(Infinity);
+    }
+
+    if (this.shield !== this.maxShield) {
+      this.shield = Math.min(this.maxShield, this.shield + this.shieldRegen * delta);
+      this.dispatchEvent({
+        type: 'onShieldRegen'
+      });
     }
   }
-
-  turnTowards(target, delta) {
-    let matrix = new THREE.Matrix4();
-    let up = (new THREE.Vector3(0, 1, 0)).applyQuaternion(this.quaternion);
-    matrix.lookAt(target, this.position, up);
-
-    let quaternion = new THREE.Quaternion();
-    quaternion.setFromRotationMatrix(matrix);
-
-    let direction = new THREE.Vector3(0, 0, 1);
-    direction.applyQuaternion(this.quaternion);
-    direction.normalize();
-
-    let targetDirection = new THREE.Vector3();
-    targetDirection.subVectors(target, this.position);
-    targetDirection.normalize();
-
-    let angle = direction.angleTo(targetDirection);
-    this.quaternion.slerp(quaternion, this.turnSpeed * delta * 2 * Math.PI / angle);
-  }
-
-  getVelocityVec() {
-    let direction = (new THREE.Vector3(0, 0, 1)).applyQuaternion(this.quaternion);
-    let velocityVec = direction.clone().multiplyScalar(this.velocity);
-    return velocityVec;
-  }
-
 }
 
 export default Ship;
