@@ -159,7 +159,6 @@ function initGame() {
     missile.quaternion.copy(playerShip.quaternion);
     missile.translateY(-1);
     missile.owner = playerShip;
-    missile.target = enemies[0];
   };
 
   // Sounds
