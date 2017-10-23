@@ -48,7 +48,7 @@ class Missile extends Shot {
   }
 
   update(delta) {
-    if (this.target) {
+    if (this.target && !this.target.removed) {
       this.turnTowards(this.target.position, delta);
     } else {
       let newTarget = this.checkCollision(this.quaternion, 50, 20);
