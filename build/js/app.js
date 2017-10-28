@@ -8899,19 +8899,19 @@
 
 	var _SimpleMars2 = _interopRequireDefault(_SimpleMars);
 
-	var _SimpleEarth = __webpack_require__(457);
+	var _SimpleEarth = __webpack_require__(439);
 
 	var _SimpleEarth2 = _interopRequireDefault(_SimpleEarth);
 
-	var _Missile = __webpack_require__(439);
+	var _Missile = __webpack_require__(440);
 
 	var _Missile2 = _interopRequireDefault(_Missile);
 
-	var _FighterAI = __webpack_require__(440);
+	var _FighterAI = __webpack_require__(441);
 
-	var _Player = __webpack_require__(441);
+	var _Player = __webpack_require__(442);
 
-	var _howler = __webpack_require__(445);
+	var _howler = __webpack_require__(446);
 
 	var _GSFLoader = __webpack_require__(349);
 
@@ -8919,11 +8919,11 @@
 
 	var _GSFCamera = __webpack_require__(432);
 
-	var _Turret = __webpack_require__(446);
+	var _Turret = __webpack_require__(447);
 
 	var _Turret2 = _interopRequireDefault(_Turret);
 
-	var _TurretAI = __webpack_require__(456);
+	var _TurretAI = __webpack_require__(457);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -9025,8 +9025,8 @@
 	  _Game.GAME.addStatic(mars, true);
 
 	  var earth = new _SimpleEarth2.default(1000, 5);
-	  earth.position.x = 4000;
-	  earth.position.z = 4000;
+	  earth.position.x = 2000;
+	  earth.position.z = 2000;
 	  _Game.GAME.addStatic(earth, true);
 
 	  // Enemies
@@ -9072,7 +9072,6 @@
 	    missile.quaternion.copy(playerShip.quaternion);
 	    missile.translateY(-1);
 	    missile.owner = playerShip;
-	    missile.target = enemies[0];
 	  };
 
 	  // Sounds
@@ -53835,6 +53834,33 @@
 	          });
 	        });
 	      });
+	      this.JSON_LOADER.load('./media/railgun_base.json', function (geometry) {
+	        _this.assets['railgunBaseGeometry'] = geometry;
+	        geometry.scale(2, 2, 2);
+	      });
+	      this.JSON_LOADER.load('./media/railgun_head.json', function (geometry) {
+	        _this.assets['railgunHeadGeometry'] = geometry;
+	        geometry.scale(2, 2, 2);
+	        geometry.translate(0, -4, 0);
+	        geometry.rotateY(Math.PI);
+	      });
+	      this.JSON_LOADER.load('./media/railgun_gun.json', function (geometry) {
+	        _this.assets['railgunGunGeometry'] = geometry;
+	        geometry.scale(2, 2, 2);
+	        geometry.translate(0, -10, 0);
+	        geometry.rotateY(Math.PI);
+	        geometry.rotateX(0.155 * Math.PI);
+	        geometry.translate(0, 0, 2);
+	      });
+	      this.TEX_LOADER.load('./media/railgun_ao.png', function (aoMap) {
+	        _this.TEX_LOADER.load('./media/railgun_nor.png', function (normalMap) {
+	          _this.assets['railgunMaterial'] = new THREE.MeshPhongMaterial({
+	            aoMap: aoMap,
+	            normalMap: normalMap,
+	            color: 0x444444
+	          });
+	        });
+	      });
 	      this.TEX_LOADER.load('./media/background.jpg', function (texture) {
 	        _this.assets['backgroundTexture'] = texture;
 	      });
@@ -53850,7 +53876,7 @@
 	      this.TEX_LOADER.load('./media/earthTexture.jpg', function (texture) {
 	        _this.assets['earthTexture'] = texture;
 	      });
-	      this.TEX_LOADER.load('./media/earthNormalMap.png', function (normalMap) {
+	      this.TEX_LOADER.load('./media/earthNormalMap.jpg', function (normalMap) {
 	        _this.assets['earthNormalMap'] = normalMap;
 	      });
 	      this.TEX_LOADER.load('./media/earthClouds.png', function (texture) {
@@ -57584,6 +57610,102 @@
 
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 
+	var _inherits2 = __webpack_require__(415);
+
+	var _inherits3 = _interopRequireDefault(_inherits2);
+
+	var _three = __webpack_require__(327);
+
+	var THREE = _interopRequireWildcard(_three);
+
+	var _GameObject2 = __webpack_require__(429);
+
+	var _GameObject3 = _interopRequireDefault(_GameObject2);
+
+	var _GSFLoader = __webpack_require__(349);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var CLOUD_ROTATION_SPEED = 0.02;
+
+	var SimpleEarth = function (_GameObject) {
+	  (0, _inherits3.default)(SimpleEarth, _GameObject);
+
+	  function SimpleEarth(radius, detail) {
+	    (0, _classCallCheck3.default)(this, SimpleEarth);
+
+	    var geometry = new THREE.IcosahedronGeometry(radius, detail);
+	    geometry.computeBoundingBox();
+	    geometry.computeBoundingSphere();
+
+	    var normalMap = _GSFLoader.LOADER.get('earthNormalMap');
+	    var material = new THREE.MeshPhongMaterial({
+	      color: 0xAAAAAA,
+	      shininess: 0,
+	      map: _GSFLoader.LOADER.get('earthTexture'),
+	      normalMap: normalMap,
+	      normalScale: new THREE.Vector2(1, 1)
+	    });
+
+	    var _this = (0, _possibleConstructorReturn3.default)(this, (SimpleEarth.__proto__ || (0, _getPrototypeOf2.default)(SimpleEarth)).call(this, geometry, material));
+
+	    _this.hitRadius = radius;
+
+	    // Clouds
+	    var cloudGeometry = new THREE.IcosahedronGeometry(radius * 1.05, detail);
+	    var cloudMaterial = new THREE.MeshPhongMaterial({
+	      color: 0xFFFFFF,
+	      shininess: 0,
+	      map: _GSFLoader.LOADER.get('earthClouds'),
+	      side: THREE.DoubleSide,
+	      transparent: true,
+	      opacity: 0.5,
+	      depthWrite: false
+	    });
+	    _this.clouds = new THREE.Mesh(cloudGeometry, cloudMaterial);
+	    _this.add(_this.clouds);
+	    return _this;
+	  }
+
+	  (0, _createClass3.default)(SimpleEarth, [{
+	    key: 'update',
+	    value: function update(delta) {
+	      this.clouds.rotateY(CLOUD_ROTATION_SPEED * delta);
+	    }
+	  }]);
+	  return SimpleEarth;
+	}(_GameObject3.default);
+
+	exports.default = SimpleEarth;
+
+/***/ }),
+/* 440 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _getPrototypeOf = __webpack_require__(391);
+
+	var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
+
+	var _classCallCheck2 = __webpack_require__(329);
+
+	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+	var _createClass2 = __webpack_require__(330);
+
+	var _createClass3 = _interopRequireDefault(_createClass2);
+
+	var _possibleConstructorReturn2 = __webpack_require__(395);
+
+	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
 	var _get2 = __webpack_require__(424);
 
 	var _get3 = _interopRequireDefault(_get2);
@@ -57609,6 +57731,10 @@
 	var _Explosion2 = _interopRequireDefault(_Explosion);
 
 	var _Game = __webpack_require__(350);
+
+	var _Ship = __webpack_require__(428);
+
+	var _Ship2 = _interopRequireDefault(_Ship);
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -57653,7 +57779,7 @@
 	      destination: new THREE.Vector3(0, 0, -2),
 	      positionRandomness: 0.2,
 	      destinationRandomness: 0.5,
-	      color: new THREE.Color(0xFFFFAA),
+	      color: new THREE.Color(0xFF0000),
 	      size: 100,
 	      lifetime: 0.2
 	    });
@@ -57665,8 +57791,13 @@
 	  (0, _createClass3.default)(Missile, [{
 	    key: 'update',
 	    value: function update(delta) {
-	      if (this.target) {
+	      if (this.target && !this.target.removed) {
 	        this.turnTowards(this.target.position, delta);
+	      } else {
+	        var newTarget = this.checkCollision(this.quaternion, 50, 20);
+	        if (newTarget instanceof _Ship2.default) {
+	          this.target = newTarget;
+	        }
 	      }
 	      (0, _get3.default)(Missile.prototype.__proto__ || (0, _getPrototypeOf2.default)(Missile.prototype), 'update', this).call(this, delta);
 	    }
@@ -57674,8 +57805,8 @@
 	    key: 'destroy',
 	    value: function destroy() {
 	      (0, _get3.default)(Missile.prototype.__proto__ || (0, _getPrototypeOf2.default)(Missile.prototype), 'destroy', this).call(this);
-	      // let explosion = new Explosion({position: this.position});
-	      // GAME.addObject(explosion);
+	      var explosion = new _Explosion2.default({ position: this.position });
+	      _Game.GAME.addObject(explosion);
 	    }
 	  }]);
 	  return Missile;
@@ -57684,7 +57815,7 @@
 	exports.default = Missile;
 
 /***/ }),
-/* 440 */
+/* 441 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -57778,7 +57909,7 @@
 	var FIGHTER_AI = exports.FIGHTER_AI = new FighterAI();
 
 /***/ }),
-/* 441 */
+/* 442 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -57796,11 +57927,11 @@
 
 	var _createClass3 = _interopRequireDefault(_createClass2);
 
-	var _lodash = __webpack_require__(442);
+	var _lodash = __webpack_require__(443);
 
 	var _lodash2 = _interopRequireDefault(_lodash);
 
-	var _keymaster = __webpack_require__(444);
+	var _keymaster = __webpack_require__(445);
 
 	var _keymaster2 = _interopRequireDefault(_keymaster);
 
@@ -57914,7 +58045,7 @@
 	var player = exports.player = new Player();
 
 /***/ }),
-/* 442 */
+/* 443 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(module, global) {/**
@@ -70269,10 +70400,10 @@
 	  }
 	}.call(this));
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(443)(module), (function() { return this; }())))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(444)(module), (function() { return this; }())))
 
 /***/ }),
-/* 443 */
+/* 444 */
 /***/ (function(module, exports) {
 
 	module.exports = function(module) {
@@ -70288,7 +70419,7 @@
 
 
 /***/ }),
-/* 444 */
+/* 445 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	//     keymaster.js
@@ -70590,7 +70721,7 @@
 
 
 /***/ }),
-/* 445 */
+/* 446 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(global) {/*!
@@ -73398,7 +73529,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ }),
-/* 446 */
+/* 447 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -73407,11 +73538,11 @@
 	  value: true
 	});
 
-	var _sign = __webpack_require__(447);
+	var _sign = __webpack_require__(448);
 
 	var _sign2 = _interopRequireDefault(_sign);
 
-	var _epsilon = __webpack_require__(451);
+	var _epsilon = __webpack_require__(452);
 
 	var _epsilon2 = _interopRequireDefault(_epsilon);
 
@@ -73445,28 +73576,21 @@
 
 	var _Game = __webpack_require__(350);
 
-	var _LargePlasmaCannon = __webpack_require__(454);
+	var _LargePlasmaCannon = __webpack_require__(455);
 
 	var _LargePlasmaCannon2 = _interopRequireDefault(_LargePlasmaCannon);
+
+	var _GSFLoader = __webpack_require__(349);
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	var baseGeometry = new THREE.CylinderGeometry(3, 5, 5, 16);
-	var headGeometry = new THREE.CylinderGeometry(2, 3, 3, 8);
-	var gunGeometry = new THREE.CylinderGeometry(0.5, 0.5, 8, 8, 1, true);
-	gunGeometry.rotateX(0.5 * Math.PI);
-	gunGeometry.translate(0, 0, 4);
-	var baseMaterial = new THREE.MeshPhongMaterial({
+	var headMaterial = new THREE.MeshPhongMaterial({
 	  color: 0x444444
 	});
-	var headMaterial = new THREE.MeshPhongMaterial({
-	  color: 0x222222
-	});
 	var gunMaterial = new THREE.MeshPhongMaterial({
-	  color: 0x111111,
-	  side: THREE.DoubleSide
+	  color: 0x444444
 	});
 
 	// Object pool
@@ -73485,15 +73609,17 @@
 	  function Turret() {
 	    (0, _classCallCheck3.default)(this, Turret);
 
-	    var _this = (0, _possibleConstructorReturn3.default)(this, (Turret.__proto__ || (0, _getPrototypeOf2.default)(Turret)).call(this, baseGeometry, baseMaterial));
+	    var _this = (0, _possibleConstructorReturn3.default)(this, (Turret.__proto__ || (0, _getPrototypeOf2.default)(Turret)).call(this, _GSFLoader.LOADER.get('railgunBaseGeometry'), _GSFLoader.LOADER.get('railgunMaterial')));
 
 	    _Game.GAME.addObject(_this, true);
-	    _this.headMesh = new THREE.Mesh(headGeometry, headMaterial);
-	    _this.gunMesh = new THREE.Mesh(gunGeometry, gunMaterial);
+	    _this.headMesh = new THREE.Mesh(_GSFLoader.LOADER.get('railgunHeadGeometry'), headMaterial);
+	    _this.gunMesh = new THREE.Mesh(_GSFLoader.LOADER.get('railgunGunGeometry'), gunMaterial);
 
 	    _this.add(_this.headMesh);
 	    _this.headMesh.translateOnAxis(new THREE.Vector3(0, 1, 0), 4);
 	    _this.headMesh.add(_this.gunMesh);
+	    _this.gunMesh.translateOnAxis(new THREE.Vector3(0, 0, 1), -2);
+	    _this.gunMesh.translateOnAxis(new THREE.Vector3(0, 1, 0), 5.5);
 
 	    // AI
 	    _this.ai = null;
@@ -73531,13 +73657,14 @@
 	  }, {
 	    key: 'turnTowards',
 	    value: function turnTowards(target, delta) {
-	      var direction = VECTOR3_A.subVectors(target, this.headMesh.getWorldPosition());
+	      var directionFromHead = VECTOR3_A.subVectors(target, this.headMesh.getWorldPosition());
+	      var directionFromGun = VECTOR3_A.subVectors(target, this.gunMesh.getWorldPosition());
 
 	      // Turn head
 	      var headQuaternion = this.headMesh.getWorldQuaternion();
 	      var headUp = VECTOR3_B.set(0, 1, 0).applyQuaternion(headQuaternion);
 	      var headDirection = VECTOR3_C.set(0, 0, 1).applyQuaternion(headQuaternion);
-	      var headTargetDirection = VECTOR3_D.copy(direction).projectOnPlane(headUp).normalize();
+	      var headTargetDirection = VECTOR3_D.copy(directionFromHead).projectOnPlane(headUp).normalize();
 	      var headAngle = headDirection.angleTo(headTargetDirection) || _epsilon2.default; // Workaround for being NaN sometimes
 	      var headLeft = VECTOR3_B.set(1, 0, 0).applyQuaternion(headQuaternion);
 	      var headTurnCoef = (0, _sign2.default)(headLeft.dot(headTargetDirection));
@@ -73547,7 +73674,7 @@
 	      var gunQuaternion = this.gunMesh.getWorldQuaternion();
 	      var gunLeft = VECTOR3_B.set(1, 0, 0).applyQuaternion(gunQuaternion);
 	      var gunDirection = VECTOR3_C.set(0, 0, 1).applyQuaternion(gunQuaternion);
-	      var gunTargetDirection = VECTOR3_D.copy(direction).projectOnPlane(gunLeft).normalize();
+	      var gunTargetDirection = VECTOR3_D.copy(directionFromGun).projectOnPlane(gunLeft).normalize();
 	      var gunAngle = gunDirection.angleTo(gunTargetDirection) || _epsilon2.default; // Workaround for being NaN sometimes
 	      var gunUp = VECTOR3_B.set(0, 1, 0).applyQuaternion(gunQuaternion);
 	      var gunTurnCoef = -(0, _sign2.default)(gunUp.dot(gunTargetDirection));
@@ -73560,31 +73687,31 @@
 	exports.default = Turret;
 
 /***/ }),
-/* 447 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	module.exports = { "default": __webpack_require__(448), __esModule: true };
-
-/***/ }),
 /* 448 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	__webpack_require__(449);
-	module.exports = __webpack_require__(336).Math.sign;
-
+	module.exports = { "default": __webpack_require__(449), __esModule: true };
 
 /***/ }),
 /* 449 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	// 20.2.2.28 Math.sign(x)
-	var $export = __webpack_require__(334);
-
-	$export($export.S, 'Math', { sign: __webpack_require__(450) });
+	__webpack_require__(450);
+	module.exports = __webpack_require__(336).Math.sign;
 
 
 /***/ }),
 /* 450 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	// 20.2.2.28 Math.sign(x)
+	var $export = __webpack_require__(334);
+
+	$export($export.S, 'Math', { sign: __webpack_require__(451) });
+
+
+/***/ }),
+/* 451 */
 /***/ (function(module, exports) {
 
 	// 20.2.2.28 Math.sign(x)
@@ -73595,21 +73722,21 @@
 
 
 /***/ }),
-/* 451 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	module.exports = { "default": __webpack_require__(452), __esModule: true };
-
-/***/ }),
 /* 452 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	__webpack_require__(453);
+	module.exports = { "default": __webpack_require__(453), __esModule: true };
+
+/***/ }),
+/* 453 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	__webpack_require__(454);
 	module.exports = Math.pow(2, -52);
 
 
 /***/ }),
-/* 453 */
+/* 454 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	// 20.1.2.1 Number.EPSILON
@@ -73619,7 +73746,7 @@
 
 
 /***/ }),
-/* 454 */
+/* 455 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -73652,7 +73779,7 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _PlasmaShot = __webpack_require__(455);
+	var _PlasmaShot = __webpack_require__(456);
 
 	var _PlasmaShot2 = _interopRequireDefault(_PlasmaShot);
 
@@ -73701,7 +73828,7 @@
 	exports.default = LargePlasmaCannon;
 
 /***/ }),
-/* 455 */
+/* 456 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -73820,7 +73947,7 @@
 	exports.default = PlasmaShot;
 
 /***/ }),
-/* 456 */
+/* 457 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -73888,100 +74015,6 @@
 	}();
 
 	var TURRET_AI = exports.TURRET_AI = new TurretAI();
-
-/***/ }),
-/* 457 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _getPrototypeOf = __webpack_require__(391);
-
-	var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
-
-	var _classCallCheck2 = __webpack_require__(329);
-
-	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
-
-	var _createClass2 = __webpack_require__(330);
-
-	var _createClass3 = _interopRequireDefault(_createClass2);
-
-	var _possibleConstructorReturn2 = __webpack_require__(395);
-
-	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
-
-	var _inherits2 = __webpack_require__(415);
-
-	var _inherits3 = _interopRequireDefault(_inherits2);
-
-	var _three = __webpack_require__(327);
-
-	var THREE = _interopRequireWildcard(_three);
-
-	var _GameObject2 = __webpack_require__(429);
-
-	var _GameObject3 = _interopRequireDefault(_GameObject2);
-
-	var _GSFLoader = __webpack_require__(349);
-
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	var CLOUD_ROTATION_SPEED = 0.02;
-
-	var SimpleEarth = function (_GameObject) {
-	  (0, _inherits3.default)(SimpleEarth, _GameObject);
-
-	  function SimpleEarth(radius, detail) {
-	    (0, _classCallCheck3.default)(this, SimpleEarth);
-
-	    var geometry = new THREE.IcosahedronGeometry(radius, detail);
-	    geometry.computeBoundingBox();
-	    geometry.computeBoundingSphere();
-
-	    var normalMap = _GSFLoader.LOADER.get('earthNormalMap');
-	    var material = new THREE.MeshPhongMaterial({
-	      color: 0xAAAAAA,
-	      shininess: 0,
-	      map: _GSFLoader.LOADER.get('earthTexture'),
-	      normalMap: normalMap,
-	      normalScale: new THREE.Vector2(1, 1)
-	    });
-
-	    var _this = (0, _possibleConstructorReturn3.default)(this, (SimpleEarth.__proto__ || (0, _getPrototypeOf2.default)(SimpleEarth)).call(this, geometry, material));
-
-	    _this.hitRadius = radius;
-
-	    // Clouds
-	    var cloudGeometry = new THREE.IcosahedronGeometry(radius * 1.05, detail);
-	    var cloudMaterial = new THREE.MeshPhongMaterial({
-	      color: 0xFFFFFF,
-	      shininess: 0,
-	      map: _GSFLoader.LOADER.get('earthClouds'),
-	      transparent: true,
-	      opacity: 0.5
-	    });
-	    _this.clouds = new THREE.Mesh(cloudGeometry, cloudMaterial);
-	    _this.add(_this.clouds);
-	    return _this;
-	  }
-
-	  (0, _createClass3.default)(SimpleEarth, [{
-	    key: 'update',
-	    value: function update(delta) {
-	      this.clouds.rotateY(CLOUD_ROTATION_SPEED * delta);
-	    }
-	  }]);
-	  return SimpleEarth;
-	}(_GameObject3.default);
-
-	exports.default = SimpleEarth;
 
 /***/ })
 /******/ ]);
