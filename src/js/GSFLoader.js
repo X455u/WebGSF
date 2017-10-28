@@ -28,6 +28,33 @@ class GSFLoader {
         });
       });
     });
+    this.JSON_LOADER.load('./media/railgun_base.json', (geometry) => {
+      this.assets['railgunBaseGeometry'] = geometry;
+      geometry.scale(2, 2, 2);
+    });
+    this.JSON_LOADER.load('./media/railgun_head.json', (geometry) => {
+      this.assets['railgunHeadGeometry'] = geometry;
+      geometry.scale(2, 2, 2);
+      geometry.translate(0, -4, 0);
+      geometry.rotateY(Math.PI);
+    });
+    this.JSON_LOADER.load('./media/railgun_gun.json', (geometry) => {
+      this.assets['railgunGunGeometry'] = geometry;
+      geometry.scale(2, 2, 2);
+      geometry.translate(0, -10, 0);
+      geometry.rotateY(Math.PI);
+      geometry.rotateX(0.155 * Math.PI);
+      geometry.translate(0, 0, 2);
+    });
+    this.TEX_LOADER.load('./media/railgun_ao.png', (aoMap) => {
+      this.TEX_LOADER.load('./media/railgun_nor.png', (normalMap) => {
+        this.assets['railgunMaterial'] = new THREE.MeshPhongMaterial({
+          aoMap: aoMap,
+          normalMap: normalMap,
+          color: 0x444444
+        });
+      });
+    });
     this.TEX_LOADER.load('./media/background.jpg', (texture) => {
       this.assets['backgroundTexture'] = texture;
     });
@@ -43,7 +70,7 @@ class GSFLoader {
     this.TEX_LOADER.load('./media/earthTexture.jpg', (texture) => {
       this.assets['earthTexture'] = texture;
     });
-    this.TEX_LOADER.load('./media/earthNormalMap.png', (normalMap) => {
+    this.TEX_LOADER.load('./media/earthNormalMap.jpg', (normalMap) => {
       this.assets['earthNormalMap'] = normalMap;
     });
     this.TEX_LOADER.load('./media/earthClouds.png', (texture) => {

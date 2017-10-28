@@ -1,23 +1,14 @@
 import * as THREE from 'three';
-
 import GameObject from './GameObject';
 import {GAME} from './Game';
 import LargePlasmaCannon from './LargePlasmaCannon';
+import {LOADER} from './GSFLoader';
 
-let baseGeometry = new THREE.CylinderGeometry(3, 5, 5, 16);
-let headGeometry = new THREE.CylinderGeometry(2, 3, 3, 8);
-let gunGeometry = new THREE.CylinderGeometry(0.5, 0.5, 8, 8, 1, true);
-gunGeometry.rotateX(0.5 * Math.PI);
-gunGeometry.translate(0, 0, 4);
-let baseMaterial = new THREE.MeshPhongMaterial({
+let headMaterial = new THREE.MeshPhongMaterial({
   color: 0x444444
 });
-let headMaterial = new THREE.MeshPhongMaterial({
-  color: 0x222222
-});
 let gunMaterial = new THREE.MeshPhongMaterial({
-  color: 0x111111,
-  side: THREE.DoubleSide
+  color: 0x444444
 });
 
 // Object pool
@@ -32,14 +23,16 @@ const GUN_ROTATION_MIN = -0.5 * Math.PI;
 
 class Turret extends GameObject {
   constructor() {
-    super(baseGeometry, baseMaterial);
+    super(LOADER.get('railgunBaseGeometry'), LOADER.get('railgunMaterial'));
     GAME.addObject(this, true);
-    this.headMesh = new THREE.Mesh(headGeometry, headMaterial);
-    this.gunMesh = new THREE.Mesh(gunGeometry, gunMaterial);
+    this.headMesh = new THREE.Mesh(LOADER.get('railgunHeadGeometry'), headMaterial);
+    this.gunMesh = new THREE.Mesh(LOADER.get('railgunGunGeometry'), gunMaterial);
 
     this.add(this.headMesh);
     this.headMesh.translateOnAxis(new THREE.Vector3(0, 1, 0), 4);
     this.headMesh.add(this.gunMesh);
+    this.gunMesh.translateOnAxis(new THREE.Vector3(0, 0, 1), -2);
+    this.gunMesh.translateOnAxis(new THREE.Vector3(0, 1, 0), 5.5);
 
     // AI
     this.ai = null;
@@ -72,13 +65,14 @@ class Turret extends GameObject {
   }
 
   turnTowards(target, delta) {
-    let direction = VECTOR3_A.subVectors(target, this.headMesh.getWorldPosition());
+    let directionFromHead = VECTOR3_A.subVectors(target, this.headMesh.getWorldPosition());
+    let directionFromGun = VECTOR3_A.subVectors(target, this.gunMesh.getWorldPosition());
 
     // Turn head
     let headQuaternion = this.headMesh.getWorldQuaternion();
     let headUp = VECTOR3_B.set(0, 1, 0).applyQuaternion(headQuaternion);
     let headDirection = VECTOR3_C.set(0, 0, 1).applyQuaternion(headQuaternion);
-    let headTargetDirection = VECTOR3_D.copy(direction).projectOnPlane(headUp).normalize();
+    let headTargetDirection = VECTOR3_D.copy(directionFromHead).projectOnPlane(headUp).normalize();
     let headAngle = headDirection.angleTo(headTargetDirection) || Number.EPSILON; // Workaround for being NaN sometimes
     let headLeft = VECTOR3_B.set(1, 0, 0).applyQuaternion(headQuaternion);
     let headTurnCoef = Math.sign(headLeft.dot(headTargetDirection));
@@ -88,7 +82,7 @@ class Turret extends GameObject {
     let gunQuaternion = this.gunMesh.getWorldQuaternion();
     let gunLeft = VECTOR3_B.set(1, 0, 0).applyQuaternion(gunQuaternion);
     let gunDirection = VECTOR3_C.set(0, 0, 1).applyQuaternion(gunQuaternion);
-    let gunTargetDirection = VECTOR3_D.copy(direction).projectOnPlane(gunLeft).normalize();
+    let gunTargetDirection = VECTOR3_D.copy(directionFromGun).projectOnPlane(gunLeft).normalize();
     let gunAngle = gunDirection.angleTo(gunTargetDirection) || Number.EPSILON; // Workaround for being NaN sometimes
     let gunUp = VECTOR3_B.set(0, 1, 0).applyQuaternion(gunQuaternion);
     let gunTurnCoef = -Math.sign(gunUp.dot(gunTargetDirection));
