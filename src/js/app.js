@@ -2,19 +2,14 @@ import * as THREE from 'three';
 
 import Crosshair from './Crosshair';
 import {HUD} from './HUD';
-import Sun from './Sun';
 import Fighter from './Fighter';
-import SimpleMars from './SimpleMars';
-import SimpleEarth from './SimpleEarth';
 import Missile from './Missile';
-import {FIGHTER_AI} from './FighterAI';
 import {player} from './Player';
 import {Howl} from 'howler';
 import {LOADER} from './GSFLoader';
 import {GAME, SCENE, SOUND_LISTENER} from './Game';
 import {CAMERA} from './GSFCamera';
-import Turret from './Turret';
-import {TURRET_AI} from './TurretAI';
+import TestLevel from './TestLevel';
 
 import '../hud/menu.css';
 const menu = require('../hud/menu.html');
@@ -91,21 +86,6 @@ function initGame() {
 
   let crosshair = new Crosshair(CAMERA, playerShip);
 
-  // Sun
-  let sun = new Sun();
-  sun.position.z = 10000;
-  SCENE.add(sun);
-
-  // Background
-  let material = new THREE.MeshBasicMaterial({
-    map: LOADER.get('backgroundTexture'),
-    side: THREE.BackSide,
-    color: 0x555555
-  });
-  let geometry = new THREE.SphereGeometry(100000, 32, 32);
-  let stars = new THREE.Mesh(geometry, material);
-  SCENE.add(stars);
-
   // Format debugging text
   let text;
   let fps = 60.0;
@@ -115,47 +95,6 @@ function initGame() {
     text.innerHTML = 'Loading...';
     document.body.appendChild(text);
   }
-
-  // Planets
-  let mars = new SimpleMars(550, 4);
-  mars.position.y = -600;
-  GAME.addStatic(mars, true);
-
-  let earth = new SimpleEarth(1000, 5);
-  earth.position.x = 2000;
-  earth.position.z = 2000;
-  GAME.addStatic(earth, true);
-
-  // Enemies
-  // Turrets
-  for (let i = 0; i < 10; i++) {
-    let turret = new Turret();
-    let direction = new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize();
-    turret.position.copy(direction).setLength(mars.hitRadius);
-    turret.position.add(mars.position);
-    turret.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction);
-    turret.AItarget = playerShip;
-    turret.ai = TURRET_AI;
-  }
-
-  // Fighters
-  let enemies = [];
-  setInterval(() => {
-    let enemyShip = new Fighter();
-    enemyShip.position.subVectors(mars.position, playerShip.position).setLength(mars.hitRadius + 30);
-    enemyShip.position.add(mars.position);
-    enemyShip.AItarget = playerShip;
-    enemyShip.ai = FIGHTER_AI;
-    enemies.push(enemyShip);
-    enemyShip.addEventListener('onDamage', () => {
-      if (enemyShip.hp === 0 && enemies.indexOf(enemyShip) > -1) {
-        let index = enemies.indexOf(enemyShip);
-        if (index > -1) enemies.splice(index, 1);
-        player.addPoints(100);
-        points.innerHTML = 'Points: ' + Math.floor(player.points);
-      }
-    });
-  }, 10000);
 
   playerShip.addEventListener('onDamage', () => {
     HUD.updateHP(playerShip.hp / playerShip.maxHp);
@@ -173,6 +112,24 @@ function initGame() {
 
   // Sounds
   CAMERA.add(SOUND_LISTENER);
+
+  let enemies = [];
+  for (let gameObject of GAME.objects) {
+    if (gameObject instanceof Fighter && gameObject !== playerShip) {
+      enemies.push(gameObject);
+    }
+  }
+  let testLevel = new TestLevel(playerShip);
+  testLevel.enemySpawnedCallback = (enemy) => {
+    enemy.addEventListener('onDamage', () => {
+      if (enemy.hp === 0 && enemies.indexOf(enemy) > -1) {
+        let index = enemies.indexOf(enemy);
+        if (index > -1) enemies.splice(index, 1);
+        player.addPoints(100);
+        points.innerHTML = 'Points: ' + Math.floor(player.points);
+      }
+    });
+  };
 
   // Game Loop
   let previousTime;
