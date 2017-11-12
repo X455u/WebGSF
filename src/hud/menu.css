@@ -1,0 +1,39 @@
+.menu {
+  border: 2px solid skyblue;
+  border-radius: 2vmin;
+  background-color: rgba(150, 200, 255, 0.75);
+  color: black;
+  position: fixed;
+  top: 30%;
+  left: 40%;
+  width: 20%;
+  height: 40%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+  transition: opacity linear 1s, scale linear 1s;
+}
+
+.menu[hidden] {
+  opacity: 0;
+  scale: 4;
+}
+
+.button {
+  font-size: 5vmin;
+  font-family: fantasy;
+  border: 2px solid white;
+  border-radius: 0.2em;
+  background-color: rgba(255, 255, 255, 0.75);
+  cursor: pointer;
+  padding: 0.5em;
+}
+
+.button:hover:not([disabled]) {
+  background-color: white;
+}
+
+.button[disabled] {
+  opacity: 0.5;
+}

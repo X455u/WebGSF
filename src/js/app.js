@@ -16,11 +16,21 @@ import {CAMERA} from './GSFCamera';
 import Turret from './Turret';
 import {TURRET_AI} from './TurretAI';
 
+import '../hud/menu.css';
+const menu = require('../hud/menu.html');
+
 const DEBUG = false;
 
 const SPOTLIGHT_VECTOR = new THREE.Vector3(0, 0, 300);
 
 const MAX_DELTA = 0.1; // s
+
+let main = document.createElement('div');
+main.className = 'main';
+main.innerHTML = menu;
+document.body.appendChild(main);
+let newGameButton = document.getElementById('newGame');
+newGameButton.setAttribute('disabled', '');
 
 // Loading
 let loadingText = document.createElement('div');
@@ -204,8 +214,15 @@ function initGame() {
   render();
 }
 
+newGameButton.addEventListener('click', () => {
+  if (newGameButton.hasAttribute('disabled')) return;
+  newGameButton.setAttribute('disabled', '');
+  document.getElementById('menu').setAttribute('hidden', '');
+  setTimeout(initGame, 1); // Allows css animations to start
+});
+
 LOADER.manager.onLoad = () => {
   document.body.removeChild(loadingText);
-  initGame();
+  newGameButton.removeAttribute('disabled');
 };
 LOADER.load();
