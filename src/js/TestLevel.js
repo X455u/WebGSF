@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 
+import Level from './Level';
 import {GAME, SCENE} from './Game';
 import {LOADER} from './GSFLoader';
 import Sun from './Sun';
@@ -13,12 +14,18 @@ import {TURRET_AI} from './TurretAI';
 /**
  * Calls this.enemySpawnedCallback when spawning enemy fighters.
  */
-class TestLevel {
+class TestLevel extends Level {
   constructor(playerShip) {
+    let assets = 14;
+    super(assets, (assetsLoaded) => {
+      console.log(`Loaded: ${assetsLoaded} / ${assets}`);
+    });
+
     // Sun
     let sun = new Sun();
     sun.position.z = 10000;
     SCENE.add(sun);
+    this.assetLoaded();
 
     // Background
     let material = new THREE.MeshBasicMaterial({
@@ -29,16 +36,19 @@ class TestLevel {
     let geometry = new THREE.SphereGeometry(100000, 32, 32);
     let stars = new THREE.Mesh(geometry, material);
     SCENE.add(stars);
+    this.assetLoaded();
 
     // Planets
     let mars = new SimpleMars(550, 4);
     mars.position.y = -600;
     GAME.addStatic(mars, true);
+    this.assetLoaded();
 
     let earth = new SimpleEarth(1000, 5);
     earth.position.x = 2000;
     earth.position.z = 2000;
     GAME.addStatic(earth, true);
+    this.assetLoaded();
 
     // Enemies
     // Turrets
@@ -50,6 +60,7 @@ class TestLevel {
       turret.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction);
       turret.AItarget = playerShip;
       turret.ai = TURRET_AI;
+      this.assetLoaded();
     }
 
     // Fighters
