@@ -26,6 +26,9 @@ main.innerHTML = menu;
 document.body.appendChild(main);
 let newGameButton = document.getElementById('newGame');
 newGameButton.setAttribute('disabled', '');
+document.getElementById('menu').addEventListener('transitionend', (e) => {
+  e.srcElement.style.display = 'none';
+}, {once: true});
 
 // Loading
 let loadingText = document.createElement('div');
@@ -120,6 +123,9 @@ function initGame() {
     }
   }
   let testLevel = new TestLevel(playerShip);
+  testLevel.assetLoadedCallback = (assetsLoaded, assetKey) => {
+    newGameButton.innerHTML = `Loaded: ${assetKey} ${assetsLoaded}/${Object.keys(testLevel.assets).length}`;
+  };
   testLevel.enemySpawnedCallback = (enemy) => {
     enemy.addEventListener('onDamage', () => {
       if (enemy.hp === 0 && enemies.indexOf(enemy) > -1) {
@@ -167,15 +173,17 @@ function initGame() {
     requestAnimationFrame(render);
   }
 
-  previousTime = new Date().getTime();
-  render();
+  testLevel.load().then(() => {
+    previousTime = new Date().getTime();
+    render();
+    document.getElementById('menu').setAttribute('hidden', '');
+  });
 }
 
 newGameButton.addEventListener('click', () => {
   if (newGameButton.hasAttribute('disabled')) return;
   newGameButton.setAttribute('disabled', '');
-  document.getElementById('menu').setAttribute('hidden', '');
-  setTimeout(initGame, 1); // Allows css animations to start
+  initGame();
 });
 
 LOADER.manager.onLoad = () => {
