@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 
 import Level from './Level';
-import {GAME, SCENE} from './Game';
+import {SCENE} from './Game';
 import {LOADER} from './GSFLoader';
 import Sun from './Sun';
 import SimpleMars from './SimpleMars';
@@ -23,7 +23,6 @@ class TestLevel extends Level {
       sun: () => {
         let sun = new Sun();
         sun.position.z = 10000;
-        SCENE.add(sun);
         return sun;
       },
       background: () => {
@@ -40,14 +39,12 @@ class TestLevel extends Level {
       mars: () => {
         let mars = new SimpleMars(550, 4);
         mars.position.y = -600;
-        GAME.addStatic(mars, true);
         return mars;
       },
       earth: () => {
         let earth = new SimpleEarth(1000, 5);
         earth.position.x = 2000;
         earth.position.z = 2000;
-        GAME.addStatic(earth, true);
         return earth;
       },
       turrets: () => {

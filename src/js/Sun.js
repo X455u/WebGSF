@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import {LOADER} from './GSFLoader';
+import {SCENE} from './Game';
 
 function lensFlareUpdateCallback(object) {
   let f, fl = object.lensFlares.length;
@@ -33,6 +34,7 @@ class Sun extends THREE.PointLight {
     lensFlare.add(texFlare3, 70, 1.0, THREE.AdditiveBlending);
     lensFlare.customUpdateCallback = lensFlareUpdateCallback;
     this.add(lensFlare);
+    SCENE.add(this);
   }
 
 }

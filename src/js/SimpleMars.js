@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import GameObject from './GameObject';
 import {LOADER} from './GSFLoader';
+import {GAME} from './Game';
 
 class SimpleMars extends GameObject {
   constructor(radius, detail) {
@@ -19,6 +20,7 @@ class SimpleMars extends GameObject {
 
     super(geometry, material);
 
+    GAME.addStatic(this, true);
     this.hitRadius = radius;
   }
 }
