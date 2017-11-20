@@ -5,7 +5,7 @@ class Level {
   }
 
   assetLoaded(assetKey) {
-    this.assetLoadedCallback(++this.assetsLoaded, assetKey);
+    if (this.assetLoadedCallback) this.assetLoadedCallback(++this.assetsLoaded, assetKey);
   }
 
   load() {
@@ -27,6 +27,14 @@ class Level {
       loadAsset(0);
     });
     return loadPromise;
+  }
+
+  update(/* delta */) {
+    // Override to update level specific objects not updated other ways.
+  }
+
+  clear() {
+    // Override to clear level specific objects not known by GAME.
   }
 }
 export default Level;

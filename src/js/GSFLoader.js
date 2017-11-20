@@ -4,6 +4,7 @@ class GSFLoader {
   constructor() {
     this.manager = new THREE.LoadingManager();
     this.JSON_LOADER = new THREE.JSONLoader(this.manager);
+    this.BUFFER_GEOMETRY_LOADER = new THREE.BufferGeometryLoader(this.manager);
     this.TEX_LOADER = new THREE.TextureLoader(this.manager);
     this.AUDIO_LOADER = new THREE.AudioLoader(this.manager);
     this.assets = {};
@@ -17,7 +18,6 @@ class GSFLoader {
     /* eslint-disable dot-notation */
     this.JSON_LOADER.load('./media/nicce_fighter.json', (geometry) => {
       geometry.scale(0.5, 0.5, 0.5);
-      geometry.rotateY(Math.PI);
       this.assets['fighterGeometry'] = geometry;
     });
     this.TEX_LOADER.load('./media/spaceship_comp.png', (texture) => {
@@ -30,28 +30,31 @@ class GSFLoader {
     });
     this.JSON_LOADER.load('./media/railgun_base.json', (geometry) => {
       this.assets['railgunBaseGeometry'] = geometry;
-      geometry.scale(2, 2, 2);
+      // geometry.scale(2, 2, 2);
     });
     this.JSON_LOADER.load('./media/railgun_head.json', (geometry) => {
       this.assets['railgunHeadGeometry'] = geometry;
-      geometry.scale(2, 2, 2);
-      geometry.translate(0, -4, 0);
-      geometry.rotateY(Math.PI);
+      geometry.translate(0, -3.1, 0);
+      // geometry.scale(2, 2, 2);
     });
     this.JSON_LOADER.load('./media/railgun_gun.json', (geometry) => {
       this.assets['railgunGunGeometry'] = geometry;
-      geometry.scale(2, 2, 2);
-      geometry.translate(0, -10, 0);
-      geometry.rotateY(Math.PI);
-      geometry.rotateX(0.155 * Math.PI);
-      geometry.translate(0, 0, 2);
+      geometry.translate(0, -4.7, -0.9);
+      geometry.rotateX(-28 / 360 * 2 * Math.PI);
+      // geometry.scale(2, 2, 2);
     });
     this.TEX_LOADER.load('./media/railgun_ao.png', (aoMap) => {
       this.TEX_LOADER.load('./media/railgun_nor.png', (normalMap) => {
-        this.assets['railgunMaterial'] = new THREE.MeshPhongMaterial({
-          aoMap: aoMap,
-          normalMap: normalMap,
-          color: 0x444444
+        this.TEX_LOADER.load('./media/railgun_comp.png', (texture) => {
+          this.TEX_LOADER.load('./media/railgun_spec.png', (specular) => {
+            this.assets['railgunMaterial'] = new THREE.MeshPhongMaterial({
+              map: texture,
+              aoMap: aoMap,
+              normalMap: normalMap,
+              specularMap: specular,
+              color: 0x444444
+            });
+          });
         });
       });
     });

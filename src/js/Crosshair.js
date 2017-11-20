@@ -26,6 +26,7 @@ class Crosshair {
   }
 
   update(objects) {
+    if (!this.source) return;
     let direction = new THREE.Vector3(0, 0, 1);
     direction.applyQuaternion(this.source.quaternion);
     this.raycaster.set(this.source.position, direction);

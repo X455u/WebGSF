@@ -17,7 +17,7 @@ class TurretAI {
     let aimTarget = this.getAimTarget(turret.gun.getWorldPosition(), turret.AItarget.position, turret.AItarget.getVelocityVec(), turret.gun.muzzleVelocity);
     turret.turnTowards(aimTarget, delta);
 
-    let facing = VECTOR3_A.set(0, 0, 1).applyQuaternion(turret.gun.getWorldQuaternion());
+    let facing = VECTOR3_A.set(0, 0, -1).applyQuaternion(turret.gun.getWorldQuaternion());
     let angleToTarget = facing.angleTo(VECTOR3_B.subVectors(aimTarget, turret.gun.getWorldPosition()));
     if (angleToTarget < SHOOT_ANGLE) turret.shoot();
   }

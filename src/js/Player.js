@@ -1,6 +1,9 @@
 import _ from 'lodash';
 import keymaster from 'keymaster';
+import Crosshair from './Crosshair';
+import {CAMERA} from './GSFCamera';
 import {HUD} from './HUD';
+import {COLLIDABLES} from './Game';
 
 function isMobile() {
   return window.DeviceMotionEvent !== undefined && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
@@ -22,6 +25,9 @@ class Player {
     }
     this.ship = null;
     this.points = 0;
+
+    this.crosshair = null;
+    this.spotlight = null;
   }
 
   addPoints(points) {
@@ -30,6 +36,7 @@ class Player {
 
   setShip(ship) {
     this.ship = ship;
+    this.crosshair.source = ship;
     ship.maxVelocity *= 1.5;
     ship.turnSpeed *= 1.5;
     ship.shieldRegen = 5;
@@ -46,7 +53,7 @@ class Player {
       // Ship steering
       this.turnParameters = _({x: ['down', 'up'], z: ['left', 'right']}).map(
         (keys, k) => [k, _(keys).map(
-          (key, index) => (keymaster.isPressed(key) ? 1 : 0) * (index === 0 ? -1 : 1)
+          (key, index) => (keymaster.isPressed(key) ? 1 : 0) * (index === 0 ? 1 : -1)
         ).sum()]
       ).object().value();
       // Ship acceleration
@@ -59,6 +66,8 @@ class Player {
     }
 
     this.ship.turn(this.turnParameters.x, 0, this.turnParameters.z);
+
+    this.crosshair.update(COLLIDABLES);
   }
 
   setMobileEventListeners() {
@@ -86,4 +95,4 @@ class Player {
     document.body.addEventListener('touchmove', event => event.preventDefault(), false);
   }
 }
-export const player = new Player();
+export const PLAYER = new Player();

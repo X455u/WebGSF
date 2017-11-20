@@ -2,6 +2,8 @@ import * as THREE from 'three';
 
 import Level from './Level';
 import {SCENE} from './Game';
+import {PLAYER} from './Player';
+import {CAMERA} from './GSFCamera';
 import {LOADER} from './GSFLoader';
 import Sun from './Sun';
 import SimpleMars from './SimpleMars';
@@ -10,14 +12,14 @@ import Fighter from './Fighter';
 import {FIGHTER_AI} from './FighterAI';
 import Turret from './Turret';
 import {TURRET_AI} from './TurretAI';
+import Crosshair from './Crosshair';
 
 /**
  * Calls this.enemySpawnedCallback when spawning enemy fighters.
  */
 class TestLevel extends Level {
-  constructor(playerShip) {
+  constructor() {
     super();
-    this.playerShip = playerShip;
 
     this.assets = {
       sun: () => {
@@ -47,6 +49,13 @@ class TestLevel extends Level {
         earth.position.z = 2000;
         return earth;
       },
+      playerShip: () => {
+        let playerShip = new Fighter();
+        PLAYER.crosshair = new Crosshair(CAMERA);
+        PLAYER.setShip(playerShip);
+        CAMERA.setTarget(playerShip);
+        return playerShip;
+      },
       turrets: () => {
         let turrets = [];
         for (let i = 0; i < 10; i++) {
@@ -59,6 +68,11 @@ class TestLevel extends Level {
           turret.ai = TURRET_AI;
           turrets.push(turret);
         }
+        let turret = new Turret();
+        turret.position.set(0, 0, 10);
+        turret.AItarget = this.playerShip;
+        turret.ai = TURRET_AI;
+        turrets.push(turret);
         return turrets;
       },
       fighterSpawner: () => {

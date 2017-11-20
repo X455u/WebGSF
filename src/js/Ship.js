@@ -94,7 +94,7 @@ class Ship extends GameObject {
       this.velocity -= this.acceleration * delta;
     }
     this.velocity = Math.min(Math.max(0, this.velocity), this.maxVelocity);
-    this.translateZ(this.velocity * delta);
+    this.translateZ(-this.velocity * delta);
 
     if (this.gun) {
       this.gun.update(delta);

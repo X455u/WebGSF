@@ -24,7 +24,7 @@ class Shot extends GameObject {
       hitObject.dealDamage(this.damage);
     }
 
-    this.translateZ(this.velocity * delta);
+    this.translateZ(-this.velocity * delta);
   }
 }
 export default Shot;

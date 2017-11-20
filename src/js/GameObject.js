@@ -32,12 +32,12 @@ class GameObject extends THREE.Mesh {
   turnTowards(target, delta) {
     let matrix = MATRIX;
     let up = VECTOR3_A.set(0, 1, 0).applyQuaternion(this.quaternion);
-    matrix.lookAt(target, this.position, up);
+    matrix.lookAt(this.position, target, up);
 
     let quaternion = QUATERNION;
     quaternion.setFromRotationMatrix(matrix);
 
-    let direction = VECTOR3_B.set(0, 0, 1);
+    let direction = VECTOR3_B.set(0, 0, -1);
     direction.applyQuaternion(this.quaternion);
     direction.normalize();
 

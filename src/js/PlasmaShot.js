@@ -37,7 +37,7 @@ class PlasmaShot extends Shot {
 
     let trail = new SimpleParticleSystem({
       particles: 200,
-      destination: new THREE.Vector3(0, 0, -20),
+      destination: new THREE.Vector3(0, 0, 20),
       positionRandomness: 0.5,
       destinationRandomness: 0.5,
       color: new THREE.Color(0x00FF00),
