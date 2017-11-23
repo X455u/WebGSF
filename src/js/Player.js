@@ -44,6 +44,7 @@ class Player {
     ship.addEventListener('onShieldRegen', () => {
       HUD.updateShield(ship.shield / ship.maxShield);
     });
+    ship.activateSpotlight();
   }
 
   update() {

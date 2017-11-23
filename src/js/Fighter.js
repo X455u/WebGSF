@@ -52,11 +52,6 @@ class Fighter extends Ship {
       this.thrusters.push(thruster);
     }
 
-    this.spotlight = new THREE.SpotLight(0xffffff, 2, 300, 0.9, 0.75, 1.5);
-    this.spotlight.position.set(0, 0, 0);
-    this.add(this.spotlight);
-    SCENE.add(this.spotlight.target);
-
     this.hitRadius = 1;
   }
 
@@ -65,12 +60,19 @@ class Fighter extends Ship {
     for (let thruster of this.thrusters) {
       thruster.update(delta);
     }
-    this.spotlight.target.position.copy(VECTOR3_A.set(0, 0, -1).applyQuaternion(this.quaternion).add(this.position));
+    if (this.spotlight) this.spotlight.target.position.copy(VECTOR3_A.set(0, 0, -1).applyQuaternion(this.quaternion).add(this.position));
   }
 
   destroy() {
     super.destroy();
-    SCENE.remove(this.spotlight.target);
+    if (this.spotlight) SCENE.remove(this.spotlight.target);
+  }
+
+  activateSpotlight() {
+    this.spotlight = new THREE.SpotLight(0xffffff, 2, 300, 0.9, 0.75, 1.5);
+    this.spotlight.position.set(0, 0, 0);
+    this.add(this.spotlight);
+    SCENE.add(this.spotlight.target);
   }
 }
 export default Fighter;

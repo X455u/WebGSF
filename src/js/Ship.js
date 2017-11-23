@@ -117,6 +117,10 @@ class Ship extends GameObject {
       });
     }
   }
+
+  activateSpotlight() {
+    // For player only
+  }
 }
 
 export default Ship;
