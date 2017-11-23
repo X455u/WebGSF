@@ -1,7 +1,6 @@
 import _ from 'lodash';
 import keymaster from 'keymaster';
 import {HUD} from './HUD';
-import {COLLIDABLES} from './Game';
 
 function isMobile() {
   return window.DeviceMotionEvent !== undefined && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
@@ -34,7 +33,7 @@ class Player {
 
   setShip(ship) {
     this.ship = ship;
-    this.crosshair.source = ship;
+    this.crosshair.setSourceObject(ship);
     ship.maxVelocity *= 1.5;
     ship.turnSpeed *= 1.5;
     ship.shieldRegen = 5;
@@ -66,7 +65,7 @@ class Player {
 
     this.ship.turn(this.turnParameters.x, 0, this.turnParameters.z);
 
-    this.crosshair.update(COLLIDABLES);
+    this.crosshair.update();
   }
 
   setMobileEventListeners() {
