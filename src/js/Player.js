@@ -1,6 +1,8 @@
 import _ from 'lodash';
 import keymaster from 'keymaster';
 import {HUD} from './HUD';
+import {GAME} from './Game';
+import MenuLevel from './MenuLevel';
 
 function isMobile() {
   return window.DeviceMotionEvent !== undefined && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
@@ -42,6 +44,22 @@ class Player {
       HUD.updateShield(ship.shield / ship.maxShield);
     });
     ship.activateSpotlight();
+
+    ship.addEventListener('onDeath', () => {
+      document.body.style.opacity = 0;
+      document.body.addEventListener('transitionend', () => {
+        GAME.loadLevel(new MenuLevel());
+        setTimeout(() => {
+          document.body.style.opacity = 1;
+          let menu = document.getElementById('menu');
+          menu.removeAttribute('hidden');
+          menu.style.display = '';
+          let newGameButton = document.getElementById('newGame');
+          newGameButton.removeAttribute('disabled');
+          newGameButton.innerHTML = 'New Game';
+        }, 1000);
+      }, {once: true});
+    });
   }
 
   update() {

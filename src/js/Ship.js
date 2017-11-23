@@ -46,6 +46,9 @@ class Ship extends GameObject {
         let explosion = new Explosion({position: this.position});
         GAME.addObject(explosion);
         this.destroy();
+        this.dispatchEvent({
+          type: 'onDeath'
+        });
       }
     });
   }

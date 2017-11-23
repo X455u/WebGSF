@@ -74,6 +74,7 @@ class Game {
   clear() {
     CAMERA.position.set(0, 0, 0);
     CAMERA.quaternion.set(0, 0, 0, 1);
+    CAMERA.target = null;
     SCENE.children = [];
     COLLIDABLES.length = 0;
     this.objects = [];
