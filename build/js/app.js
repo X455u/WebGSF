@@ -8893,19 +8893,19 @@
 
 	var _Player = __webpack_require__(454);
 
-	var _howler = __webpack_require__(460);
+	var _howler = __webpack_require__(468);
 
-	var _GSFLoader = __webpack_require__(459);
+	var _GSFLoader = __webpack_require__(460);
 
 	var _Game = __webpack_require__(429);
 
 	var _GSFCamera = __webpack_require__(449);
 
-	var _TestLevel = __webpack_require__(461);
+	var _TestLevel = __webpack_require__(469);
 
 	var _TestLevel2 = _interopRequireDefault(_TestLevel);
 
-	var _MenuLevel = __webpack_require__(482);
+	var _MenuLevel = __webpack_require__(458);
 
 	var _MenuLevel2 = _interopRequireDefault(_MenuLevel);
 
@@ -55398,7 +55398,7 @@
 
 	      var start = VECTOR3_A.copy(this.position);
 	      var end = VECTOR3_B.copy(start);
-	      var direction = VECTOR3_C.set(0, 0, 1);
+	      var direction = VECTOR3_C.set(0, 0, -1);
 	      direction.applyQuaternion(quaternion);
 	      direction.multiplyScalar(distance);
 	      end.add(direction);
@@ -55664,6 +55664,7 @@
 	    value: function clear() {
 	      _GSFCamera.CAMERA.position.set(0, 0, 0);
 	      _GSFCamera.CAMERA.quaternion.set(0, 0, 0, 1);
+	      _GSFCamera.CAMERA.target = null;
 	      SCENE.children = [];
 	      COLLIDABLES.length = 0;
 	      this.objects = [];
@@ -56456,10 +56457,6 @@
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	// Object pool
-	var VECTOR3_A = new THREE.Vector3();
-	var QUATERNION = new THREE.Quaternion();
 
 	var GSFCamera = function (_THREE$PerspectiveCam) {
 	  (0, _inherits3.default)(GSFCamera, _THREE$PerspectiveCam);
@@ -57379,6 +57376,9 @@
 	        var explosion = new _Explosion2.default({ position: _this.position });
 	        _Game.GAME.addObject(explosion);
 	        _this.destroy();
+	        _this.dispatchEvent({
+	          type: 'onDeath'
+	        });
 	      }
 	    });
 	    return _this;
@@ -57457,6 +57457,11 @@
 	        });
 	      }
 	    }
+	  }, {
+	    key: 'activateSpotlight',
+	    value: function activateSpotlight() {
+	      // For player only
+	    }
 	  }]);
 	  return Ship;
 	}(_GameObject3.default);
@@ -57490,15 +57495,13 @@
 
 	var _keymaster2 = _interopRequireDefault(_keymaster);
 
-	var _Crosshair = __webpack_require__(458);
-
-	var _Crosshair2 = _interopRequireDefault(_Crosshair);
-
-	var _GSFCamera = __webpack_require__(449);
-
 	var _HUD = __webpack_require__(363);
 
 	var _Game = __webpack_require__(429);
+
+	var _MenuLevel = __webpack_require__(458);
+
+	var _MenuLevel2 = _interopRequireDefault(_MenuLevel);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -57539,13 +57542,30 @@
 	    key: 'setShip',
 	    value: function setShip(ship) {
 	      this.ship = ship;
-	      this.crosshair.source = ship;
+	      this.crosshair.setSourceObject(ship);
 	      ship.maxVelocity *= 1.5;
 	      ship.turnSpeed *= 1.5;
 	      ship.shieldRegen = 5;
 	      ship.gun.reloadTime = 0.05;
 	      ship.addEventListener('onShieldRegen', function () {
 	        _HUD.HUD.updateShield(ship.shield / ship.maxShield);
+	      });
+	      ship.activateSpotlight();
+
+	      ship.addEventListener('onDeath', function () {
+	        document.body.style.opacity = 0;
+	        document.body.addEventListener('transitionend', function () {
+	          _Game.GAME.loadLevel(new _MenuLevel2.default());
+	          setTimeout(function () {
+	            document.body.style.opacity = 1;
+	            var menu = document.getElementById('menu');
+	            menu.removeAttribute('hidden');
+	            menu.style.display = '';
+	            var newGameButton = document.getElementById('newGame');
+	            newGameButton.removeAttribute('disabled');
+	            newGameButton.innerHTML = 'New Game';
+	          }, 1000);
+	        }, { once: true });
 	      });
 	    }
 	  }, {
@@ -57571,7 +57591,7 @@
 
 	      this.ship.turn(this.turnParameters.x, 0, this.turnParameters.z);
 
-	      this.crosshair.update(_Game.COLLIDABLES);
+	      this.crosshair.update();
 	    }
 	  }, {
 	    key: 'setMobileEventListeners',
@@ -57579,9 +57599,9 @@
 	      var _this = this;
 
 	      this.motionControlled = true;
-	      var invertCoefficient = -1;
+	      var invertCoefficient = 1;
 	      if (isAndroid()) {
-	        invertCoefficient = 1;
+	        invertCoefficient = -1;
 	      }
 	      // Accelerometer
 	      window.ondevicemotion = function (event) {
@@ -70299,6 +70319,10 @@
 	  value: true
 	});
 
+	var _getPrototypeOf = __webpack_require__(370);
+
+	var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
+
 	var _classCallCheck2 = __webpack_require__(364);
 
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
@@ -70307,65 +70331,197 @@
 
 	var _createClass3 = _interopRequireDefault(_createClass2);
 
+	var _possibleConstructorReturn2 = __webpack_require__(374);
+
+	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+	var _inherits2 = __webpack_require__(414);
+
+	var _inherits3 = _interopRequireDefault(_inherits2);
+
 	var _three = __webpack_require__(362);
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _GSFLoader = __webpack_require__(459);
+	var _Level2 = __webpack_require__(459);
+
+	var _Level3 = _interopRequireDefault(_Level2);
 
 	var _Game = __webpack_require__(429);
+
+	var _GSFLoader = __webpack_require__(460);
+
+	var _Sun = __webpack_require__(461);
+
+	var _Sun2 = _interopRequireDefault(_Sun);
+
+	var _SimpleEarth = __webpack_require__(462);
+
+	var _SimpleEarth2 = _interopRequireDefault(_SimpleEarth);
+
+	var _Fighter = __webpack_require__(463);
+
+	var _Fighter2 = _interopRequireDefault(_Fighter);
+
+	var _FighterAI = __webpack_require__(467);
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	var FARTHEST = 500;
-	var SCALING_FACTOR = 10;
+	// import {CAMERA} from './GSFCamera';
 
-	var Crosshair = function () {
-	  function Crosshair(camera, source) {
-	    (0, _classCallCheck3.default)(this, Crosshair);
+	var MenuLevel = function (_Level) {
+	  (0, _inherits3.default)(MenuLevel, _Level);
 
-	    this.camera = camera;
-	    this.source = source;
-	    this.raycaster = new THREE.Raycaster();
-	    this.raycaster.far = FARTHEST;
+	  function MenuLevel(playerShip) {
+	    (0, _classCallCheck3.default)(this, MenuLevel);
 
-	    var crosshairMaterial = new THREE.SpriteMaterial({
-	      color: 0x00ff00,
-	      map: _GSFLoader.LOADER.get('crosshair'),
-	      blending: THREE.NormalBlending,
-	      depthWrite: false,
-	      depthTest: false
-	    });
-	    this.sprite = new THREE.Sprite(crosshairMaterial);
-	    this.sprite.renderDepth = 0;
-	    _Game.SCENE.add(this.sprite);
+	    var _this = (0, _possibleConstructorReturn3.default)(this, (MenuLevel.__proto__ || (0, _getPrototypeOf2.default)(MenuLevel)).call(this));
+
+	    _this.playerShip = playerShip;
+
+	    _this.assets = {
+	      sun: function sun() {
+	        var sun = new _Sun2.default();
+	        sun.position.x = -6000;
+	        sun.position.y = 4000;
+	        sun.position.z = -6000;
+	        return sun;
+	      },
+	      background: function background() {
+	        var material = new THREE.MeshBasicMaterial({
+	          map: _GSFLoader.LOADER.get('backgroundTexture'),
+	          side: THREE.BackSide,
+	          color: 0x555555
+	        });
+	        var geometry = new THREE.SphereGeometry(100000, 32, 32);
+	        var stars = new THREE.Mesh(geometry, material);
+	        _Game.SCENE.add(stars);
+	        return stars;
+	      },
+	      earth: function earth() {
+	        var earth = new _SimpleEarth2.default(1000, 5);
+	        earth.position.y = -1100;
+	        earth.position.z = -500;
+	        earth.rotateX(Math.random() * 2 * Math.PI);
+	        earth.rotateY(Math.random() * 2 * Math.PI);
+	        earth.rotateZ(Math.random() * 2 * Math.PI);
+	        return earth;
+	      },
+	      fighters: function fighters() {
+	        var fighters = [];
+	        for (var i = 0; i < 10; i++) {
+	          var ship1 = new _Fighter2.default();
+	          ship1.position.set(-75 + 10 * (Math.random() - 0.5), 0 + 10 * (Math.random() - 0.5), -20 + 10 * (Math.random() - 0.5));
+	          ship1.ai = _FighterAI.FIGHTER_AI;
+	          var ship2 = new _Fighter2.default();
+	          ship2.position.set(75 + 10 * (Math.random() - 0.5), 0 + 10 * (Math.random() - 0.5), -20 + 10 * (Math.random() - 0.5));
+	          ship2.ai = _FighterAI.FIGHTER_AI;
+	          ship1.AItarget = ship2;
+	          ship2.AItarget = ship1;
+	        }
+	        return fighters;
+	      }
+	    };
+	    return _this;
 	  }
 
-	  (0, _createClass3.default)(Crosshair, [{
+	  (0, _createClass3.default)(MenuLevel, [{
 	    key: 'update',
-	    value: function update(objects) {
-	      if (!this.source) return;
-	      var direction = new THREE.Vector3(0, 0, 1);
-	      direction.applyQuaternion(this.source.quaternion);
-	      this.raycaster.set(this.source.position, direction);
-	      var intersections = this.raycaster.intersectObjects(objects);
-	      var point = intersections.length > 0 ? intersections[0].point : this.raycaster.ray.at(FARTHEST);
-	      this.sprite.position.copy(point);
-	      var v = new THREE.Vector3();
-	      var scale = v.subVectors(this.sprite.position, this.camera.position).length() / SCALING_FACTOR;
-	      this.sprite.scale.x = scale;
-	      this.sprite.scale.y = scale;
+	    value: function update(delta) {
+	      this.earth.rotateY(0.02 * delta);
 	    }
+	  }, {
+	    key: 'clear',
+	    value: function clear() {}
 	  }]);
-	  return Crosshair;
-	}();
+	  return MenuLevel;
+	}(_Level3.default);
 
-	exports.default = Crosshair;
+	exports.default = MenuLevel;
 
 /***/ }),
 /* 459 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _promise = __webpack_require__(430);
+
+	var _promise2 = _interopRequireDefault(_promise);
+
+	var _keys = __webpack_require__(327);
+
+	var _keys2 = _interopRequireDefault(_keys);
+
+	var _classCallCheck2 = __webpack_require__(364);
+
+	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+	var _createClass2 = __webpack_require__(365);
+
+	var _createClass3 = _interopRequireDefault(_createClass2);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var Level = function () {
+	  function Level() {
+	    (0, _classCallCheck3.default)(this, Level);
+
+	    this.assets = {};
+	    this.assetsLoaded = 0;
+	  }
+
+	  (0, _createClass3.default)(Level, [{
+	    key: "assetLoaded",
+	    value: function assetLoaded(assetKey) {
+	      if (this.assetLoadedCallback) this.assetLoadedCallback(++this.assetsLoaded, assetKey);
+	    }
+	  }, {
+	    key: "load",
+	    value: function load() {
+	      var assetKeys = (0, _keys2.default)(this.assets);
+	      var self = this;
+	      var loadPromise = new _promise2.default(function (resolve) {
+	        function loadAsset(assetIndex) {
+	          if (assetKeys[assetIndex]) {
+	            var assetKey = assetKeys[assetIndex];
+	            setTimeout(function () {
+	              self[assetKey] = self.assets[assetKey]();
+	              self.assetLoaded(assetKey);
+	              loadAsset(assetIndex + 1);
+	            });
+	          } else {
+	            resolve();
+	          }
+	        }
+	        loadAsset(0);
+	      });
+	      return loadPromise;
+	    }
+	  }, {
+	    key: "update",
+	    value: function update() /* delta */{
+	      // Override to update level specific objects not updated other ways.
+	    }
+	  }, {
+	    key: "clear",
+	    value: function clear() {
+	      // Override to clear level specific objects not known by GAME.
+	    }
+	  }]);
+	  return Level;
+	}();
+
+	exports.default = Level;
+
+/***/ }),
+/* 460 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -70504,7 +70660,950 @@
 	var LOADER = exports.LOADER = new GSFLoader();
 
 /***/ }),
-/* 460 */
+/* 461 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _getPrototypeOf = __webpack_require__(370);
+
+	var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
+
+	var _classCallCheck2 = __webpack_require__(364);
+
+	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+	var _possibleConstructorReturn2 = __webpack_require__(374);
+
+	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+	var _inherits2 = __webpack_require__(414);
+
+	var _inherits3 = _interopRequireDefault(_inherits2);
+
+	var _three = __webpack_require__(362);
+
+	var THREE = _interopRequireWildcard(_three);
+
+	var _GSFLoader = __webpack_require__(460);
+
+	var _Game = __webpack_require__(429);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function lensFlareUpdateCallback(object) {
+	  var f = void 0,
+	      fl = object.lensFlares.length;
+	  var flare = void 0;
+	  var vecX = -object.positionScreen.x * 2;
+	  var vecY = -object.positionScreen.y * 2;
+	  for (f = 0; f < fl; f++) {
+	    flare = object.lensFlares[f];
+	    flare.x = object.positionScreen.x + vecX * flare.distance;
+	    flare.y = object.positionScreen.y + vecY * flare.distance;
+	    flare.rotation = 0;
+	  }
+	  object.lensFlares[2].y += 0.025;
+	  object.lensFlares[3].rotation = object.positionScreen.x * 0.5 + THREE.Math.degToRad(45);
+	}
+
+	var Sun = function (_THREE$PointLight) {
+	  (0, _inherits3.default)(Sun, _THREE$PointLight);
+
+	  function Sun() {
+	    (0, _classCallCheck3.default)(this, Sun);
+
+	    var _this = (0, _possibleConstructorReturn3.default)(this, (Sun.__proto__ || (0, _getPrototypeOf2.default)(Sun)).call(this, 0xffffff, 3));
+
+	    var texFlare0 = _GSFLoader.LOADER.get('texFlare0');
+	    var texFlare2 = _GSFLoader.LOADER.get('texFlare2');
+	    var texFlare3 = _GSFLoader.LOADER.get('texFlare3');
+	    var lensFlare = new THREE.LensFlare(texFlare0, 700, 0.0, THREE.AdditiveBlending, new THREE.Color(0xffffff));
+	    lensFlare.add(texFlare2, 512, 0.0, THREE.AdditiveBlending);
+	    lensFlare.add(texFlare2, 512, 0.0, THREE.AdditiveBlending);
+	    lensFlare.add(texFlare2, 512, 0.0, THREE.AdditiveBlending);
+	    lensFlare.add(texFlare3, 60, 0.6, THREE.AdditiveBlending);
+	    lensFlare.add(texFlare3, 70, 0.7, THREE.AdditiveBlending);
+	    lensFlare.add(texFlare3, 120, 0.9, THREE.AdditiveBlending);
+	    lensFlare.add(texFlare3, 70, 1.0, THREE.AdditiveBlending);
+	    lensFlare.customUpdateCallback = lensFlareUpdateCallback;
+	    _this.add(lensFlare);
+	    _Game.SCENE.add(_this);
+	    return _this;
+	  }
+
+	  return Sun;
+	}(THREE.PointLight);
+
+	exports.default = Sun;
+
+/***/ }),
+/* 462 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _getPrototypeOf = __webpack_require__(370);
+
+	var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
+
+	var _classCallCheck2 = __webpack_require__(364);
+
+	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+	var _createClass2 = __webpack_require__(365);
+
+	var _createClass3 = _interopRequireDefault(_createClass2);
+
+	var _possibleConstructorReturn2 = __webpack_require__(374);
+
+	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+	var _inherits2 = __webpack_require__(414);
+
+	var _inherits3 = _interopRequireDefault(_inherits2);
+
+	var _three = __webpack_require__(362);
+
+	var THREE = _interopRequireWildcard(_three);
+
+	var _GameObject2 = __webpack_require__(423);
+
+	var _GameObject3 = _interopRequireDefault(_GameObject2);
+
+	var _GSFLoader = __webpack_require__(460);
+
+	var _Game = __webpack_require__(429);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var CLOUD_ROTATION_SPEED = 0.02;
+
+	var SimpleEarth = function (_GameObject) {
+	  (0, _inherits3.default)(SimpleEarth, _GameObject);
+
+	  function SimpleEarth(radius, detail) {
+	    (0, _classCallCheck3.default)(this, SimpleEarth);
+
+	    var geometry = new THREE.IcosahedronGeometry(radius, detail);
+	    geometry.computeBoundingBox();
+	    geometry.computeBoundingSphere();
+
+	    var normalMap = _GSFLoader.LOADER.get('earthNormalMap');
+	    var material = new THREE.MeshPhongMaterial({
+	      color: 0xAAAAAA,
+	      shininess: 0,
+	      map: _GSFLoader.LOADER.get('earthTexture'),
+	      normalMap: normalMap,
+	      normalScale: new THREE.Vector2(1, 1)
+	    });
+
+	    var _this = (0, _possibleConstructorReturn3.default)(this, (SimpleEarth.__proto__ || (0, _getPrototypeOf2.default)(SimpleEarth)).call(this, geometry, material));
+
+	    _Game.GAME.addStatic(_this, true);
+	    _this.hitRadius = radius;
+
+	    // Clouds
+	    var cloudGeometry = new THREE.IcosahedronGeometry(radius * 1.05, detail);
+	    var cloudMaterial = new THREE.MeshPhongMaterial({
+	      color: 0xFFFFFF,
+	      shininess: 0,
+	      map: _GSFLoader.LOADER.get('earthClouds'),
+	      side: THREE.DoubleSide,
+	      transparent: true,
+	      opacity: 0.5,
+	      depthWrite: false
+	    });
+	    _this.clouds = new THREE.Mesh(cloudGeometry, cloudMaterial);
+	    _this.add(_this.clouds);
+	    return _this;
+	  }
+
+	  (0, _createClass3.default)(SimpleEarth, [{
+	    key: 'update',
+	    value: function update(delta) {
+	      this.clouds.rotateY(CLOUD_ROTATION_SPEED * delta);
+	    }
+	  }]);
+	  return SimpleEarth;
+	}(_GameObject3.default);
+
+	exports.default = SimpleEarth;
+
+/***/ }),
+/* 463 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _getIterator2 = __webpack_require__(424);
+
+	var _getIterator3 = _interopRequireDefault(_getIterator2);
+
+	var _getPrototypeOf = __webpack_require__(370);
+
+	var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
+
+	var _classCallCheck2 = __webpack_require__(364);
+
+	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+	var _createClass2 = __webpack_require__(365);
+
+	var _createClass3 = _interopRequireDefault(_createClass2);
+
+	var _possibleConstructorReturn2 = __webpack_require__(374);
+
+	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+	var _get2 = __webpack_require__(410);
+
+	var _get3 = _interopRequireDefault(_get2);
+
+	var _inherits2 = __webpack_require__(414);
+
+	var _inherits3 = _interopRequireDefault(_inherits2);
+
+	var _three = __webpack_require__(362);
+
+	var THREE = _interopRequireWildcard(_three);
+
+	var _GSFLoader = __webpack_require__(460);
+
+	var _Ship2 = __webpack_require__(453);
+
+	var _Ship3 = _interopRequireDefault(_Ship2);
+
+	var _SmallPulseLaser = __webpack_require__(464);
+
+	var _SmallPulseLaser2 = _interopRequireDefault(_SmallPulseLaser);
+
+	var _SimpleParticleSystem = __webpack_require__(450);
+
+	var _SimpleParticleSystem2 = _interopRequireDefault(_SimpleParticleSystem);
+
+	var _Game = __webpack_require__(429);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	// Object pool
+	var VECTOR3_A = new THREE.Vector3();
+
+	var Fighter = function (_Ship) {
+	  (0, _inherits3.default)(Fighter, _Ship);
+
+	  function Fighter() {
+	    (0, _classCallCheck3.default)(this, Fighter);
+
+	    var _this = (0, _possibleConstructorReturn3.default)(this, (Fighter.__proto__ || (0, _getPrototypeOf2.default)(Fighter)).call(this, _GSFLoader.LOADER.get('fighterGeometry'), _GSFLoader.LOADER.get('fighterMaterial'), {
+	      maxVelocity: 50,
+	      acceleration: 80,
+	      turnSpeed: 0.25,
+	      gun: new _SmallPulseLaser2.default(),
+	      maxHp: 100,
+	      maxShield: 50
+	    }));
+
+	    _this.weaponSide = 1;
+	    _this.gun.translateX(0.7 * _this.weaponSide);
+	    _this.gun.translateZ(1);
+
+	    _this.gun.addEventListener('onShoot', function () {
+	      _this.weaponSide *= -1;
+	      _this.gun.translateX(1.4 * _this.weaponSide);
+	    });
+
+	    _this.thrusterPositions = [new THREE.Vector3(-0.8, 0.25, 1), // Up-left
+	    new THREE.Vector3(0.8, 0.25, 1), // Up-right
+	    new THREE.Vector3(-0.8, -0.25, 1), // Down-left
+	    new THREE.Vector3(0.8, -0.25, 1) // Down-right
+	    ];
+
+	    _this.thrusters = [];
+	    var _iteratorNormalCompletion = true;
+	    var _didIteratorError = false;
+	    var _iteratorError = undefined;
+
+	    try {
+	      for (var _iterator = (0, _getIterator3.default)(_this.thrusterPositions), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	        var thrusterPosition = _step.value;
+
+	        var thruster = new _SimpleParticleSystem2.default({
+	          particles: 200,
+	          destination: new THREE.Vector3(0, 0, 2),
+	          positionRandomness: 0.2,
+	          destinationRandomness: 0.5,
+	          color: new THREE.Color(0xFFFFAA),
+	          size: 100,
+	          lifetime: 0.2
+	        });
+	        _this.add(thruster);
+	        thruster.translateX(thrusterPosition.x);
+	        thruster.translateY(thrusterPosition.y);
+	        thruster.translateZ(thrusterPosition.z);
+	        _this.thrusters.push(thruster);
+	      }
+	    } catch (err) {
+	      _didIteratorError = true;
+	      _iteratorError = err;
+	    } finally {
+	      try {
+	        if (!_iteratorNormalCompletion && _iterator.return) {
+	          _iterator.return();
+	        }
+	      } finally {
+	        if (_didIteratorError) {
+	          throw _iteratorError;
+	        }
+	      }
+	    }
+
+	    _this.hitRadius = 1;
+	    return _this;
+	  }
+
+	  (0, _createClass3.default)(Fighter, [{
+	    key: 'update',
+	    value: function update(delta) {
+	      (0, _get3.default)(Fighter.prototype.__proto__ || (0, _getPrototypeOf2.default)(Fighter.prototype), 'update', this).call(this, delta);
+	      var _iteratorNormalCompletion2 = true;
+	      var _didIteratorError2 = false;
+	      var _iteratorError2 = undefined;
+
+	      try {
+	        for (var _iterator2 = (0, _getIterator3.default)(this.thrusters), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+	          var thruster = _step2.value;
+
+	          thruster.update(delta);
+	        }
+	      } catch (err) {
+	        _didIteratorError2 = true;
+	        _iteratorError2 = err;
+	      } finally {
+	        try {
+	          if (!_iteratorNormalCompletion2 && _iterator2.return) {
+	            _iterator2.return();
+	          }
+	        } finally {
+	          if (_didIteratorError2) {
+	            throw _iteratorError2;
+	          }
+	        }
+	      }
+
+	      if (this.spotlight) this.spotlight.target.position.copy(VECTOR3_A.set(0, 0, -1).applyQuaternion(this.quaternion).add(this.position));
+	    }
+	  }, {
+	    key: 'destroy',
+	    value: function destroy() {
+	      (0, _get3.default)(Fighter.prototype.__proto__ || (0, _getPrototypeOf2.default)(Fighter.prototype), 'destroy', this).call(this);
+	      if (this.spotlight) _Game.SCENE.remove(this.spotlight.target);
+	    }
+	  }, {
+	    key: 'activateSpotlight',
+	    value: function activateSpotlight() {
+	      this.spotlight = new THREE.SpotLight(0xffffff, 2, 300, 0.9, 0.75, 1.5);
+	      this.spotlight.position.set(0, 0, 0);
+	      this.add(this.spotlight);
+	      _Game.SCENE.add(this.spotlight.target);
+	    }
+	  }]);
+	  return Fighter;
+	}(_Ship3.default);
+
+	exports.default = Fighter;
+
+/***/ }),
+/* 464 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _getPrototypeOf = __webpack_require__(370);
+
+	var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
+
+	var _classCallCheck2 = __webpack_require__(364);
+
+	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+	var _createClass2 = __webpack_require__(365);
+
+	var _createClass3 = _interopRequireDefault(_createClass2);
+
+	var _possibleConstructorReturn2 = __webpack_require__(374);
+
+	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+	var _inherits2 = __webpack_require__(414);
+
+	var _inherits3 = _interopRequireDefault(_inherits2);
+
+	var _three = __webpack_require__(362);
+
+	var THREE = _interopRequireWildcard(_three);
+
+	var _LaserShot = __webpack_require__(465);
+
+	var _LaserShot2 = _interopRequireDefault(_LaserShot);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var SmallPulseLaser = function (_THREE$Object3D) {
+	  (0, _inherits3.default)(SmallPulseLaser, _THREE$Object3D);
+
+	  function SmallPulseLaser() {
+	    (0, _classCallCheck3.default)(this, SmallPulseLaser);
+
+	    var _this = (0, _possibleConstructorReturn3.default)(this, (SmallPulseLaser.__proto__ || (0, _getPrototypeOf2.default)(SmallPulseLaser)).call(this));
+
+	    _this.reload = 1.0;
+	    _this.reloadTime = 0.5;
+	    _this.muzzleVelocity = 300;
+	    _this.owner = null;
+	    return _this;
+	  }
+
+	  (0, _createClass3.default)(SmallPulseLaser, [{
+	    key: 'shoot',
+	    value: function shoot() {
+	      if (this.reload !== 0.0) return;
+	      var shot = new _LaserShot2.default();
+	      shot.owner = this.owner;
+	      this.getWorldPosition(shot.position);
+	      this.getWorldQuaternion(shot.quaternion);
+	      this.reload = this.reloadTime;
+	      this.dispatchEvent({
+	        type: 'onShoot',
+	        shot: shot
+	      });
+	    }
+	  }, {
+	    key: 'update',
+	    value: function update(delta) {
+	      this.reload = Math.max(0.0, this.reload - delta);
+	    }
+	  }]);
+	  return SmallPulseLaser;
+	}(THREE.Object3D);
+
+	exports.default = SmallPulseLaser;
+
+/***/ }),
+/* 465 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _getPrototypeOf = __webpack_require__(370);
+
+	var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
+
+	var _classCallCheck2 = __webpack_require__(364);
+
+	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+	var _createClass2 = __webpack_require__(365);
+
+	var _createClass3 = _interopRequireDefault(_createClass2);
+
+	var _possibleConstructorReturn2 = __webpack_require__(374);
+
+	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+	var _get2 = __webpack_require__(410);
+
+	var _get3 = _interopRequireDefault(_get2);
+
+	var _inherits2 = __webpack_require__(414);
+
+	var _inherits3 = _interopRequireDefault(_inherits2);
+
+	var _three = __webpack_require__(362);
+
+	var THREE = _interopRequireWildcard(_three);
+
+	var _SubdivisionModifier = __webpack_require__(466);
+
+	var _SubdivisionModifier2 = _interopRequireDefault(_SubdivisionModifier);
+
+	var _Shot2 = __webpack_require__(422);
+
+	var _Shot3 = _interopRequireDefault(_Shot2);
+
+	var _GSFLoader = __webpack_require__(460);
+
+	var _Game = __webpack_require__(429);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var shotGeometry = new THREE.CylinderGeometry(0.05, 0.05, 5, 8, 1);
+	shotGeometry.rotateX(Math.PI / 2);
+	shotGeometry.translate(0, 0, -2.5);
+	var modifier = new _SubdivisionModifier2.default(1);
+	modifier.modify(shotGeometry);
+	shotGeometry.faceVertexUvs = [];
+	shotGeometry.uvsNeedUpdate = true;
+	var shotMaterial = new THREE.MeshPhongMaterial({
+	  color: 0x000000,
+	  specular: 0x666666,
+	  emissive: 0xff0000,
+	  shininess: 0,
+	  flatShading: false,
+	  opacity: 0.75,
+	  transparent: true
+	});
+
+	var LaserShot = function (_Shot) {
+	  (0, _inherits3.default)(LaserShot, _Shot);
+
+	  function LaserShot() {
+	    (0, _classCallCheck3.default)(this, LaserShot);
+
+	    var _this = (0, _possibleConstructorReturn3.default)(this, (LaserShot.__proto__ || (0, _getPrototypeOf2.default)(LaserShot)).call(this, shotGeometry, shotMaterial));
+
+	    _this.lifetimeLeft = 5;
+	    _this.velocity = 300;
+	    _this.damage = 5;
+
+	    _this.sound = new THREE.PositionalAudio(_Game.SOUND_LISTENER);
+	    _this.sound.setBuffer(_GSFLoader.LOADER.get('laserSoundBuffer'));
+	    _this.sound.setRefDistance(10);
+	    _this.add(_this.sound);
+	    _this.sound.play();
+	    return _this;
+	  }
+
+	  (0, _createClass3.default)(LaserShot, [{
+	    key: 'destroy',
+	    value: function destroy() {
+	      (0, _get3.default)(LaserShot.prototype.__proto__ || (0, _getPrototypeOf2.default)(LaserShot.prototype), 'destroy', this).call(this);
+	      this.remove(this.sound);
+	      _Game.SCENE.add(this.sound);
+	      this.sound.position.copy(this.position);
+	    }
+	  }]);
+	  return LaserShot;
+	}(_Shot3.default);
+
+	exports.default = LaserShot;
+
+/***/ }),
+/* 466 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _classCallCheck2 = __webpack_require__(364);
+
+	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+	var _createClass2 = __webpack_require__(365);
+
+	var _createClass3 = _interopRequireDefault(_createClass2);
+
+	var _three = __webpack_require__(362);
+
+	var THREE = _interopRequireWildcard(_three);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var WARNINGS = !true; // Set to true for development
+	/* eslint no-console: 0 */
+	/*
+	 * THREE.js SUBDIVISION MODIFIER EXAMPLE BY
+	 *    zz85 / http://twitter.com/blurspline / http://www.lab4games.net/zz85/blog
+	 *
+	 * SOURCE: https://github.com/mrdoob/three.js/blob/master/examples/js/modifiers/SubdivisionModifier.js
+	 *
+	 * REWRITTEN WITH ES6 SYNTAX
+	 *
+	 */
+
+	var ABC = ['a', 'b', 'c'];
+
+	function getEdge(a, b, map) {
+	  var vertexIndexA = Math.min(a, b);
+	  var vertexIndexB = Math.max(a, b);
+	  var key = vertexIndexA + '_' + vertexIndexB;
+	  return map[key];
+	}
+
+	function processEdge(a, b, vertices, map, face, metaVertices) {
+	  var vertexIndexA = Math.min(a, b);
+	  var vertexIndexB = Math.max(a, b);
+	  var key = vertexIndexA + '_' + vertexIndexB;
+	  var edge = void 0;
+
+	  if (key in map) {
+	    edge = map[key];
+	  } else {
+	    var vertexA = vertices[vertexIndexA];
+	    var vertexB = vertices[vertexIndexB];
+	    edge = {
+	      a: vertexA, // pointer reference
+	      b: vertexB,
+	      newEdge: null,
+	      // aIndex: a, // numbered reference
+	      // bIndex: b,
+	      faces: [] // pointers to face
+	    };
+	    map[key] = edge;
+	  }
+
+	  edge.faces.push(face);
+
+	  metaVertices[a].edges.push(edge);
+	  metaVertices[b].edges.push(edge);
+	}
+
+	function generateLookups(vertices, faces, metaVertices, edges) {
+
+	  var i = void 0,
+	      il = void 0,
+	      face = void 0;
+
+	  for (i = 0, il = vertices.length; i < il; i++) {
+	    metaVertices[i] = { edges: [] };
+	  }
+
+	  for (i = 0, il = faces.length; i < il; i++) {
+	    face = faces[i];
+	    processEdge(face.a, face.b, vertices, edges, face, metaVertices);
+	    processEdge(face.b, face.c, vertices, edges, face, metaVertices);
+	    processEdge(face.c, face.a, vertices, edges, face, metaVertices);
+	  }
+	}
+
+	function newFace(newFaces, a, b, c) {
+	  newFaces.push(new THREE.Face3(a, b, c));
+	}
+
+	var SubdivisionModifier = function () {
+	  function SubdivisionModifier(subdivisions) {
+	    (0, _classCallCheck3.default)(this, SubdivisionModifier);
+
+	    this.subdivisions = subdivisions === undefined ? 1 : subdivisions;
+	  }
+
+	  (0, _createClass3.default)(SubdivisionModifier, [{
+	    key: 'modify',
+	    value: function modify(geometry) {
+	      var repeats = this.subdivisions;
+	      while (repeats-- > 0) {
+	        this.smooth(geometry);
+	      }
+	      geometry.computeFaceNormals();
+	      geometry.computeVertexNormals();
+	    }
+	  }, {
+	    key: 'smooth',
+	    value: function smooth(geometry) {
+	      var tmp = new THREE.Vector3();
+	      var oldVertices = void 0,
+	          oldFaces = void 0;
+	      var newVertices = void 0,
+	          newFaces = void 0;
+	      var n = void 0,
+	          i = void 0,
+	          il = void 0,
+	          j = void 0,
+	          k = void 0;
+	      var metaVertices = void 0,
+	          sourceEdges = void 0;
+	      var newEdgeVertices = void 0,
+	          newSourceVertices = void 0;
+
+	      oldVertices = geometry.vertices; // { x, y, z}
+	      oldFaces = geometry.faces; // { a: oldVertex1, b: oldVertex2, c: oldVertex3 }
+
+	      // Step 0: Preprocess Geometry to Generate edges Lookup
+
+	      metaVertices = new Array(oldVertices.length);
+	      sourceEdges = {}; // Edge => { oldVertex1, oldVertex2, faces[]  }
+	      generateLookups(oldVertices, oldFaces, metaVertices, sourceEdges);
+
+	      // Step 1: For each edge, create a new Edge Vertex, then position it.
+
+	      newEdgeVertices = [];
+	      var other = void 0,
+	          currentEdge = void 0,
+	          newEdge = void 0,
+	          face = void 0;
+	      var edgeVertexWeight = void 0,
+	          adjacentVertexWeight = void 0,
+	          connectedFaces = void 0;
+
+	      for (i in sourceEdges) {
+	        currentEdge = sourceEdges[i];
+	        newEdge = new THREE.Vector3();
+
+	        edgeVertexWeight = 3 / 8;
+	        adjacentVertexWeight = 1 / 8;
+
+	        connectedFaces = currentEdge.faces.length;
+
+	        // check how many linked faces. 2 should be correct.
+	        if (connectedFaces !== 2) {
+	          // if length is not 2, handle condition
+	          edgeVertexWeight = 0.5;
+	          adjacentVertexWeight = 0;
+
+	          if (connectedFaces !== 1) {
+	            if (WARNINGS) {
+	              console.warn('Subdivision Modifier: Number of connected faces != 2, is: ', connectedFaces, currentEdge);
+	            }
+	          }
+	        }
+
+	        newEdge.addVectors(currentEdge.a, currentEdge.b).multiplyScalar(edgeVertexWeight);
+	        tmp.set(0, 0, 0);
+
+	        for (j = 0; j < connectedFaces; j++) {
+	          face = currentEdge.faces[j];
+	          for (k = 0; k < 3; k++) {
+	            other = oldVertices[face[ABC[k]]];
+	            if (other !== currentEdge.a && other !== currentEdge.b) {
+	              break;
+	            }
+	          }
+	          tmp.add(other);
+	        }
+
+	        tmp.multiplyScalar(adjacentVertexWeight);
+	        newEdge.add(tmp);
+
+	        currentEdge.newEdge = newEdgeVertices.length;
+	        newEdgeVertices.push(newEdge);
+
+	        // console.log(currentEdge, newEdge);
+	      }
+
+	      // Step 2: Reposition each source vertices.
+
+	      var beta = void 0,
+	          sourceVertexWeight = void 0,
+	          connectingVertexWeight = void 0;
+	      var connectingEdge = void 0,
+	          connectingEdges = void 0,
+	          oldVertex = void 0,
+	          newSourceVertex = void 0;
+	      newSourceVertices = [];
+
+	      for (i = 0, il = oldVertices.length; i < il; i++) {
+	        oldVertex = oldVertices[i];
+	        // find all connecting edges (using lookupTable)
+	        connectingEdges = metaVertices[i].edges;
+	        n = connectingEdges.length;
+
+	        if (n === 3) {
+	          beta = 3 / 16;
+	        } else if (n > 3) {
+	          beta = 3 / (8 * n); // Warren's modified formula
+	        }
+	        // Loop's original beta formula
+	        // beta = 1 / n * ( 5/8 - Math.pow( 3/8 + 1/4 * Math.cos( 2 * Math. PI / n ), 2) );
+	        sourceVertexWeight = 1 - n * beta;
+	        connectingVertexWeight = beta;
+	        if (n <= 2) {
+	          // crease and boundary rules
+	          // console.warn('crease and boundary rules');
+	          if (n === 2) {
+	            if (WARNINGS) {
+	              console.warn('2 connecting edges', connectingEdges);
+	            }
+	            sourceVertexWeight = 3 / 4;
+	            connectingVertexWeight = 1 / 8;
+	            // sourceVertexWeight = 1;
+	            // connectingVertexWeight = 0;
+	          } else if (n === 1) {
+	            if (WARNINGS) {
+	              console.warn('only 1 connecting edge');
+	            }
+	          } else if (n === 0) {
+	            if (WARNINGS) {
+	              console.warn('0 connecting edges');
+	            }
+	          }
+	        }
+
+	        newSourceVertex = oldVertex.clone().multiplyScalar(sourceVertexWeight);
+	        tmp.set(0, 0, 0);
+	        for (j = 0; j < n; j++) {
+	          connectingEdge = connectingEdges[j];
+	          other = connectingEdge.a !== oldVertex ? connectingEdge.a : connectingEdge.b;
+	          tmp.add(other);
+	        }
+
+	        tmp.multiplyScalar(connectingVertexWeight);
+	        newSourceVertex.add(tmp);
+	        newSourceVertices.push(newSourceVertex);
+	      }
+
+	      // Step 3: Generate Faces between source vertecies and edge vertices.
+
+	      newVertices = newSourceVertices.concat(newEdgeVertices);
+	      var sl = newSourceVertices.length,
+	          edge1 = void 0,
+	          edge2 = void 0,
+	          edge3 = void 0;
+	      newFaces = [];
+
+	      for (i = 0, il = oldFaces.length; i < il; i++) {
+	        face = oldFaces[i];
+	        // find the 3 new edges vertex of each old face
+	        edge1 = getEdge(face.a, face.b, sourceEdges).newEdge + sl;
+	        edge2 = getEdge(face.b, face.c, sourceEdges).newEdge + sl;
+	        edge3 = getEdge(face.c, face.a, sourceEdges).newEdge + sl;
+	        // create 4 faces.
+	        newFace(newFaces, edge1, edge2, edge3);
+	        newFace(newFaces, face.a, edge1, edge3);
+	        newFace(newFaces, face.b, edge2, edge1);
+	        newFace(newFaces, face.c, edge3, edge2);
+	      }
+
+	      // Overwrite old arrays
+	      geometry.vertices = newVertices;
+	      geometry.faces = newFaces;
+	    }
+	  }]);
+	  return SubdivisionModifier;
+	}();
+
+	exports.default = SubdivisionModifier;
+
+/***/ }),
+/* 467 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.FIGHTER_AI = undefined;
+
+	var _classCallCheck2 = __webpack_require__(364);
+
+	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+	var _createClass2 = __webpack_require__(365);
+
+	var _createClass3 = _interopRequireDefault(_createClass2);
+
+	var _three = __webpack_require__(362);
+
+	var THREE = _interopRequireWildcard(_three);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var CLOSE_DISTANCE = 50;
+	var FAR_DISTANCE = 200;
+	var COLLISION_CHECK_DISTANCE = 30;
+	var SAFETY_DISTANCE = 10;
+	var SHOOT_ANGLE = 0.05;
+
+	// Object pool
+	var VECTOR3_A = new THREE.Vector3();
+	var VECTOR3_B = new THREE.Vector3();
+	var VECTOR3_C = new THREE.Vector3();
+
+	var FighterAI = function () {
+	  function FighterAI() {
+	    (0, _classCallCheck3.default)(this, FighterAI);
+	  }
+
+	  (0, _createClass3.default)(FighterAI, [{
+	    key: 'update',
+	    value: function update(ship, delta) {
+	      var hitObject = ship.checkCollision(ship.quaternion, COLLISION_CHECK_DISTANCE, SAFETY_DISTANCE);
+	      if (hitObject) {
+	        var away = VECTOR3_A.subVectors(ship.position, hitObject.position);
+	        away.add(ship.position);
+	        ship.turnTowards(away, delta);
+	      } else {
+	        if (ship.AIattacking) {
+	          var aimTarget = this.getAimTarget(ship.position, ship.AItarget.position, ship.AItarget.getVelocityVec(), ship.gun.muzzleVelocity);
+	          ship.turnTowards(aimTarget, delta);
+
+	          var facing = VECTOR3_A.set(0, 0, -1).applyQuaternion(ship.quaternion);
+	          var angleToTarget = facing.angleTo(VECTOR3_B.subVectors(aimTarget, ship.position));
+	          if (angleToTarget < SHOOT_ANGLE) ship.shoot();
+	          if (ship.position.distanceTo(ship.AItarget.position) < CLOSE_DISTANCE) {
+	            ship.AIattacking = false;
+	          }
+	        } else {
+	          var _away = VECTOR3_A.subVectors(ship.position, ship.AItarget.position);
+	          _away.add(ship.position);
+	          ship.turnTowards(_away, delta);
+	          if (ship.position.distanceTo(ship.AItarget.position) > FAR_DISTANCE) {
+	            ship.AIattacking = true;
+	          }
+	        }
+	      }
+	      ship.thrust();
+	    }
+	  }, {
+	    key: 'getAimTarget',
+	    value: function getAimTarget(shipPosition, targetPosition, targetVelocity, shotSpeed) {
+	      var thisToTarget = VECTOR3_A.copy(targetPosition).sub(shipPosition);
+	      var targetMoveAngle = thisToTarget.angleTo(targetVelocity); // 0 or PI when paralell to vector from this to target.
+	      var aimAdvanceAngle = Math.asin(Math.sin(targetMoveAngle) * targetVelocity.length() / shotSpeed);
+	      var aimAdvanceAxis = VECTOR3_B.crossVectors(thisToTarget, targetVelocity).normalize();
+	      var aimAdvanceVector = thisToTarget.applyAxisAngle(aimAdvanceAxis, aimAdvanceAngle);
+	      var aimTarget = VECTOR3_C.addVectors(shipPosition, aimAdvanceVector);
+	      if (!aimTarget.x || !aimTarget.y || !aimTarget.z) {
+	        return targetPosition;
+	      } else {
+	        return aimTarget;
+	      }
+	    }
+	  }]);
+	  return FighterAI;
+	}();
+
+	var FIGHTER_AI = exports.FIGHTER_AI = new FighterAI();
+
+/***/ }),
+/* 468 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(global) {/*!
@@ -73312,7 +74411,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ }),
-/* 461 */
+/* 469 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -73345,7 +74444,7 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _Level2 = __webpack_require__(462);
+	var _Level2 = __webpack_require__(459);
 
 	var _Level3 = _interopRequireDefault(_Level2);
 
@@ -73355,25 +74454,25 @@
 
 	var _GSFCamera = __webpack_require__(449);
 
-	var _GSFLoader = __webpack_require__(459);
+	var _GSFLoader = __webpack_require__(460);
 
-	var _Sun = __webpack_require__(463);
+	var _Sun = __webpack_require__(461);
 
 	var _Sun2 = _interopRequireDefault(_Sun);
 
-	var _SimpleMars = __webpack_require__(464);
+	var _SimpleMars = __webpack_require__(470);
 
 	var _SimpleMars2 = _interopRequireDefault(_SimpleMars);
 
-	var _SimpleEarth = __webpack_require__(465);
+	var _SimpleEarth = __webpack_require__(462);
 
 	var _SimpleEarth2 = _interopRequireDefault(_SimpleEarth);
 
-	var _Fighter = __webpack_require__(466);
+	var _Fighter = __webpack_require__(463);
 
 	var _Fighter2 = _interopRequireDefault(_Fighter);
 
-	var _FighterAI = __webpack_require__(470);
+	var _FighterAI = __webpack_require__(467);
 
 	var _Turret = __webpack_require__(471);
 
@@ -73381,7 +74480,7 @@
 
 	var _TurretAI = __webpack_require__(481);
 
-	var _Crosshair = __webpack_require__(458);
+	var _Crosshair = __webpack_require__(482);
 
 	var _Crosshair2 = _interopRequireDefault(_Crosshair);
 
@@ -73438,21 +74537,15 @@
 	      turrets: function turrets() {
 	        var turrets = [];
 	        for (var i = 0; i < 10; i++) {
-	          var _turret = new _Turret2.default();
+	          var turret = new _Turret2.default();
 	          var direction = new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize();
-	          _turret.position.copy(direction).setLength(_this.mars.hitRadius);
-	          _turret.position.add(_this.mars.position);
-	          _turret.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction);
-	          _turret.AItarget = _this.playerShip;
-	          _turret.ai = _TurretAI.TURRET_AI;
-	          turrets.push(_turret);
+	          turret.position.copy(direction).setLength(_this.mars.hitRadius);
+	          turret.position.add(_this.mars.position);
+	          turret.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction);
+	          turret.AItarget = _this.playerShip;
+	          turret.ai = _TurretAI.TURRET_AI;
+	          turrets.push(turret);
 	        }
-	        var turret = new _Turret2.default();
-	        turret.position.set(0, 0, 10);
-	        turret.AItarget = _this.playerShip;
-	        turret.ai = _TurretAI.TURRET_AI;
-	        turrets.push(turret);
-	        return turrets;
 	      },
 	      fighterSpawner: function fighterSpawner() {
 	        var enemies = [];
@@ -73483,170 +74576,7 @@
 	exports.default = TestLevel;
 
 /***/ }),
-/* 462 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _promise = __webpack_require__(430);
-
-	var _promise2 = _interopRequireDefault(_promise);
-
-	var _keys = __webpack_require__(327);
-
-	var _keys2 = _interopRequireDefault(_keys);
-
-	var _classCallCheck2 = __webpack_require__(364);
-
-	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
-
-	var _createClass2 = __webpack_require__(365);
-
-	var _createClass3 = _interopRequireDefault(_createClass2);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	var Level = function () {
-	  function Level() {
-	    (0, _classCallCheck3.default)(this, Level);
-
-	    this.assets = {};
-	    this.assetsLoaded = 0;
-	  }
-
-	  (0, _createClass3.default)(Level, [{
-	    key: "assetLoaded",
-	    value: function assetLoaded(assetKey) {
-	      if (this.assetLoadedCallback) this.assetLoadedCallback(++this.assetsLoaded, assetKey);
-	    }
-	  }, {
-	    key: "load",
-	    value: function load() {
-	      var assetKeys = (0, _keys2.default)(this.assets);
-	      var self = this;
-	      var loadPromise = new _promise2.default(function (resolve) {
-	        function loadAsset(assetIndex) {
-	          if (assetKeys[assetIndex]) {
-	            var assetKey = assetKeys[assetIndex];
-	            setTimeout(function () {
-	              self[assetKey] = self.assets[assetKey]();
-	              self.assetLoaded(assetKey);
-	              loadAsset(assetIndex + 1);
-	            });
-	          } else {
-	            resolve();
-	          }
-	        }
-	        loadAsset(0);
-	      });
-	      return loadPromise;
-	    }
-	  }, {
-	    key: "update",
-	    value: function update() /* delta */{
-	      // Override to update level specific objects not updated other ways.
-	    }
-	  }, {
-	    key: "clear",
-	    value: function clear() {
-	      // Override to clear level specific objects not known by GAME.
-	    }
-	  }]);
-	  return Level;
-	}();
-
-	exports.default = Level;
-
-/***/ }),
-/* 463 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _getPrototypeOf = __webpack_require__(370);
-
-	var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
-
-	var _classCallCheck2 = __webpack_require__(364);
-
-	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
-
-	var _possibleConstructorReturn2 = __webpack_require__(374);
-
-	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
-
-	var _inherits2 = __webpack_require__(414);
-
-	var _inherits3 = _interopRequireDefault(_inherits2);
-
-	var _three = __webpack_require__(362);
-
-	var THREE = _interopRequireWildcard(_three);
-
-	var _GSFLoader = __webpack_require__(459);
-
-	var _Game = __webpack_require__(429);
-
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function lensFlareUpdateCallback(object) {
-	  var f = void 0,
-	      fl = object.lensFlares.length;
-	  var flare = void 0;
-	  var vecX = -object.positionScreen.x * 2;
-	  var vecY = -object.positionScreen.y * 2;
-	  for (f = 0; f < fl; f++) {
-	    flare = object.lensFlares[f];
-	    flare.x = object.positionScreen.x + vecX * flare.distance;
-	    flare.y = object.positionScreen.y + vecY * flare.distance;
-	    flare.rotation = 0;
-	  }
-	  object.lensFlares[2].y += 0.025;
-	  object.lensFlares[3].rotation = object.positionScreen.x * 0.5 + THREE.Math.degToRad(45);
-	}
-
-	var Sun = function (_THREE$PointLight) {
-	  (0, _inherits3.default)(Sun, _THREE$PointLight);
-
-	  function Sun() {
-	    (0, _classCallCheck3.default)(this, Sun);
-
-	    var _this = (0, _possibleConstructorReturn3.default)(this, (Sun.__proto__ || (0, _getPrototypeOf2.default)(Sun)).call(this, 0xffffff, 3));
-
-	    var texFlare0 = _GSFLoader.LOADER.get('texFlare0');
-	    var texFlare2 = _GSFLoader.LOADER.get('texFlare2');
-	    var texFlare3 = _GSFLoader.LOADER.get('texFlare3');
-	    var lensFlare = new THREE.LensFlare(texFlare0, 700, 0.0, THREE.AdditiveBlending, new THREE.Color(0xffffff));
-	    lensFlare.add(texFlare2, 512, 0.0, THREE.AdditiveBlending);
-	    lensFlare.add(texFlare2, 512, 0.0, THREE.AdditiveBlending);
-	    lensFlare.add(texFlare2, 512, 0.0, THREE.AdditiveBlending);
-	    lensFlare.add(texFlare3, 60, 0.6, THREE.AdditiveBlending);
-	    lensFlare.add(texFlare3, 70, 0.7, THREE.AdditiveBlending);
-	    lensFlare.add(texFlare3, 120, 0.9, THREE.AdditiveBlending);
-	    lensFlare.add(texFlare3, 70, 1.0, THREE.AdditiveBlending);
-	    lensFlare.customUpdateCallback = lensFlareUpdateCallback;
-	    _this.add(lensFlare);
-	    _Game.SCENE.add(_this);
-	    return _this;
-	  }
-
-	  return Sun;
-	}(THREE.PointLight);
-
-	exports.default = Sun;
-
-/***/ }),
-/* 464 */
+/* 470 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -73679,7 +74609,7 @@
 
 	var _GameObject3 = _interopRequireDefault(_GameObject2);
 
-	var _GSFLoader = __webpack_require__(459);
+	var _GSFLoader = __webpack_require__(460);
 
 	var _Game = __webpack_require__(429);
 
@@ -73717,862 +74647,6 @@
 	}(_GameObject3.default);
 
 	exports.default = SimpleMars;
-
-/***/ }),
-/* 465 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _getPrototypeOf = __webpack_require__(370);
-
-	var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
-
-	var _classCallCheck2 = __webpack_require__(364);
-
-	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
-
-	var _createClass2 = __webpack_require__(365);
-
-	var _createClass3 = _interopRequireDefault(_createClass2);
-
-	var _possibleConstructorReturn2 = __webpack_require__(374);
-
-	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
-
-	var _inherits2 = __webpack_require__(414);
-
-	var _inherits3 = _interopRequireDefault(_inherits2);
-
-	var _three = __webpack_require__(362);
-
-	var THREE = _interopRequireWildcard(_three);
-
-	var _GameObject2 = __webpack_require__(423);
-
-	var _GameObject3 = _interopRequireDefault(_GameObject2);
-
-	var _GSFLoader = __webpack_require__(459);
-
-	var _Game = __webpack_require__(429);
-
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	var CLOUD_ROTATION_SPEED = 0.02;
-
-	var SimpleEarth = function (_GameObject) {
-	  (0, _inherits3.default)(SimpleEarth, _GameObject);
-
-	  function SimpleEarth(radius, detail) {
-	    (0, _classCallCheck3.default)(this, SimpleEarth);
-
-	    var geometry = new THREE.IcosahedronGeometry(radius, detail);
-	    geometry.computeBoundingBox();
-	    geometry.computeBoundingSphere();
-
-	    var normalMap = _GSFLoader.LOADER.get('earthNormalMap');
-	    var material = new THREE.MeshPhongMaterial({
-	      color: 0xAAAAAA,
-	      shininess: 0,
-	      map: _GSFLoader.LOADER.get('earthTexture'),
-	      normalMap: normalMap,
-	      normalScale: new THREE.Vector2(1, 1)
-	    });
-
-	    var _this = (0, _possibleConstructorReturn3.default)(this, (SimpleEarth.__proto__ || (0, _getPrototypeOf2.default)(SimpleEarth)).call(this, geometry, material));
-
-	    _Game.GAME.addStatic(_this, true);
-	    _this.hitRadius = radius;
-
-	    // Clouds
-	    var cloudGeometry = new THREE.IcosahedronGeometry(radius * 1.05, detail);
-	    var cloudMaterial = new THREE.MeshPhongMaterial({
-	      color: 0xFFFFFF,
-	      shininess: 0,
-	      map: _GSFLoader.LOADER.get('earthClouds'),
-	      side: THREE.DoubleSide,
-	      transparent: true,
-	      opacity: 0.5,
-	      depthWrite: false
-	    });
-	    _this.clouds = new THREE.Mesh(cloudGeometry, cloudMaterial);
-	    _this.add(_this.clouds);
-	    return _this;
-	  }
-
-	  (0, _createClass3.default)(SimpleEarth, [{
-	    key: 'update',
-	    value: function update(delta) {
-	      this.clouds.rotateY(CLOUD_ROTATION_SPEED * delta);
-	    }
-	  }]);
-	  return SimpleEarth;
-	}(_GameObject3.default);
-
-	exports.default = SimpleEarth;
-
-/***/ }),
-/* 466 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _getIterator2 = __webpack_require__(424);
-
-	var _getIterator3 = _interopRequireDefault(_getIterator2);
-
-	var _getPrototypeOf = __webpack_require__(370);
-
-	var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
-
-	var _classCallCheck2 = __webpack_require__(364);
-
-	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
-
-	var _createClass2 = __webpack_require__(365);
-
-	var _createClass3 = _interopRequireDefault(_createClass2);
-
-	var _possibleConstructorReturn2 = __webpack_require__(374);
-
-	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
-
-	var _get2 = __webpack_require__(410);
-
-	var _get3 = _interopRequireDefault(_get2);
-
-	var _inherits2 = __webpack_require__(414);
-
-	var _inherits3 = _interopRequireDefault(_inherits2);
-
-	var _three = __webpack_require__(362);
-
-	var THREE = _interopRequireWildcard(_three);
-
-	var _GSFLoader = __webpack_require__(459);
-
-	var _Ship2 = __webpack_require__(453);
-
-	var _Ship3 = _interopRequireDefault(_Ship2);
-
-	var _SmallPulseLaser = __webpack_require__(467);
-
-	var _SmallPulseLaser2 = _interopRequireDefault(_SmallPulseLaser);
-
-	var _SimpleParticleSystem = __webpack_require__(450);
-
-	var _SimpleParticleSystem2 = _interopRequireDefault(_SimpleParticleSystem);
-
-	var _Game = __webpack_require__(429);
-
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	// Object pool
-	var VECTOR3_A = new THREE.Vector3();
-
-	var Fighter = function (_Ship) {
-	  (0, _inherits3.default)(Fighter, _Ship);
-
-	  function Fighter() {
-	    (0, _classCallCheck3.default)(this, Fighter);
-
-	    var _this = (0, _possibleConstructorReturn3.default)(this, (Fighter.__proto__ || (0, _getPrototypeOf2.default)(Fighter)).call(this, _GSFLoader.LOADER.get('fighterGeometry'), _GSFLoader.LOADER.get('fighterMaterial'), {
-	      maxVelocity: 50,
-	      acceleration: 80,
-	      turnSpeed: 0.25,
-	      gun: new _SmallPulseLaser2.default(),
-	      maxHp: 100,
-	      maxShield: 50
-	    }));
-
-	    _this.weaponSide = 1;
-	    _this.gun.translateX(0.7 * _this.weaponSide);
-	    _this.gun.translateZ(1);
-
-	    _this.gun.addEventListener('onShoot', function () {
-	      _this.weaponSide *= -1;
-	      _this.gun.translateX(1.4 * _this.weaponSide);
-	    });
-
-	    _this.thrusterPositions = [new THREE.Vector3(-0.8, 0.25, 1), // Up-left
-	    new THREE.Vector3(0.8, 0.25, 1), // Up-right
-	    new THREE.Vector3(-0.8, -0.25, 1), // Down-left
-	    new THREE.Vector3(0.8, -0.25, 1) // Down-right
-	    ];
-
-	    _this.thrusters = [];
-	    var _iteratorNormalCompletion = true;
-	    var _didIteratorError = false;
-	    var _iteratorError = undefined;
-
-	    try {
-	      for (var _iterator = (0, _getIterator3.default)(_this.thrusterPositions), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-	        var thrusterPosition = _step.value;
-
-	        var thruster = new _SimpleParticleSystem2.default({
-	          particles: 200,
-	          destination: new THREE.Vector3(0, 0, 2),
-	          positionRandomness: 0.2,
-	          destinationRandomness: 0.5,
-	          color: new THREE.Color(0xFFFFAA),
-	          size: 100,
-	          lifetime: 0.2
-	        });
-	        _this.add(thruster);
-	        thruster.translateX(thrusterPosition.x);
-	        thruster.translateY(thrusterPosition.y);
-	        thruster.translateZ(thrusterPosition.z);
-	        _this.thrusters.push(thruster);
-	      }
-	    } catch (err) {
-	      _didIteratorError = true;
-	      _iteratorError = err;
-	    } finally {
-	      try {
-	        if (!_iteratorNormalCompletion && _iterator.return) {
-	          _iterator.return();
-	        }
-	      } finally {
-	        if (_didIteratorError) {
-	          throw _iteratorError;
-	        }
-	      }
-	    }
-
-	    _this.spotlight = new THREE.SpotLight(0xffffff, 2, 300, 0.9, 0.75, 1.5);
-	    _this.spotlight.position.set(0, 0, 0);
-	    _this.add(_this.spotlight);
-	    _Game.SCENE.add(_this.spotlight.target);
-
-	    _this.hitRadius = 1;
-	    return _this;
-	  }
-
-	  (0, _createClass3.default)(Fighter, [{
-	    key: 'update',
-	    value: function update(delta) {
-	      (0, _get3.default)(Fighter.prototype.__proto__ || (0, _getPrototypeOf2.default)(Fighter.prototype), 'update', this).call(this, delta);
-	      var _iteratorNormalCompletion2 = true;
-	      var _didIteratorError2 = false;
-	      var _iteratorError2 = undefined;
-
-	      try {
-	        for (var _iterator2 = (0, _getIterator3.default)(this.thrusters), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-	          var thruster = _step2.value;
-
-	          thruster.update(delta);
-	        }
-	      } catch (err) {
-	        _didIteratorError2 = true;
-	        _iteratorError2 = err;
-	      } finally {
-	        try {
-	          if (!_iteratorNormalCompletion2 && _iterator2.return) {
-	            _iterator2.return();
-	          }
-	        } finally {
-	          if (_didIteratorError2) {
-	            throw _iteratorError2;
-	          }
-	        }
-	      }
-
-	      this.spotlight.target.position.copy(VECTOR3_A.set(0, 0, -1).applyQuaternion(this.quaternion).add(this.position));
-	    }
-	  }, {
-	    key: 'destroy',
-	    value: function destroy() {
-	      (0, _get3.default)(Fighter.prototype.__proto__ || (0, _getPrototypeOf2.default)(Fighter.prototype), 'destroy', this).call(this);
-	      _Game.SCENE.remove(this.spotlight.target);
-	    }
-	  }]);
-	  return Fighter;
-	}(_Ship3.default);
-
-	exports.default = Fighter;
-
-/***/ }),
-/* 467 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _getPrototypeOf = __webpack_require__(370);
-
-	var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
-
-	var _classCallCheck2 = __webpack_require__(364);
-
-	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
-
-	var _createClass2 = __webpack_require__(365);
-
-	var _createClass3 = _interopRequireDefault(_createClass2);
-
-	var _possibleConstructorReturn2 = __webpack_require__(374);
-
-	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
-
-	var _inherits2 = __webpack_require__(414);
-
-	var _inherits3 = _interopRequireDefault(_inherits2);
-
-	var _three = __webpack_require__(362);
-
-	var THREE = _interopRequireWildcard(_three);
-
-	var _LaserShot = __webpack_require__(468);
-
-	var _LaserShot2 = _interopRequireDefault(_LaserShot);
-
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	var SmallPulseLaser = function (_THREE$Object3D) {
-	  (0, _inherits3.default)(SmallPulseLaser, _THREE$Object3D);
-
-	  function SmallPulseLaser() {
-	    (0, _classCallCheck3.default)(this, SmallPulseLaser);
-
-	    var _this = (0, _possibleConstructorReturn3.default)(this, (SmallPulseLaser.__proto__ || (0, _getPrototypeOf2.default)(SmallPulseLaser)).call(this));
-
-	    _this.reload = 1.0;
-	    _this.reloadTime = 0.5;
-	    _this.muzzleVelocity = 300;
-	    _this.owner = null;
-	    return _this;
-	  }
-
-	  (0, _createClass3.default)(SmallPulseLaser, [{
-	    key: 'shoot',
-	    value: function shoot() {
-	      if (this.reload !== 0.0) return;
-	      var shot = new _LaserShot2.default();
-	      shot.owner = this.owner;
-	      this.getWorldPosition(shot.position);
-	      this.getWorldQuaternion(shot.quaternion);
-	      this.reload = this.reloadTime;
-	      this.dispatchEvent({
-	        type: 'onShoot',
-	        shot: shot
-	      });
-	    }
-	  }, {
-	    key: 'update',
-	    value: function update(delta) {
-	      this.reload = Math.max(0.0, this.reload - delta);
-	    }
-	  }]);
-	  return SmallPulseLaser;
-	}(THREE.Object3D);
-
-	exports.default = SmallPulseLaser;
-
-/***/ }),
-/* 468 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _getPrototypeOf = __webpack_require__(370);
-
-	var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
-
-	var _classCallCheck2 = __webpack_require__(364);
-
-	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
-
-	var _createClass2 = __webpack_require__(365);
-
-	var _createClass3 = _interopRequireDefault(_createClass2);
-
-	var _possibleConstructorReturn2 = __webpack_require__(374);
-
-	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
-
-	var _get2 = __webpack_require__(410);
-
-	var _get3 = _interopRequireDefault(_get2);
-
-	var _inherits2 = __webpack_require__(414);
-
-	var _inherits3 = _interopRequireDefault(_inherits2);
-
-	var _three = __webpack_require__(362);
-
-	var THREE = _interopRequireWildcard(_three);
-
-	var _SubdivisionModifier = __webpack_require__(469);
-
-	var _SubdivisionModifier2 = _interopRequireDefault(_SubdivisionModifier);
-
-	var _Shot2 = __webpack_require__(422);
-
-	var _Shot3 = _interopRequireDefault(_Shot2);
-
-	var _GSFLoader = __webpack_require__(459);
-
-	var _Game = __webpack_require__(429);
-
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	var shotGeometry = new THREE.CylinderGeometry(0.05, 0.05, 5, 8, 1);
-	shotGeometry.rotateX(Math.PI / 2);
-	shotGeometry.translate(0, 0, -2.5);
-	var modifier = new _SubdivisionModifier2.default(1);
-	modifier.modify(shotGeometry);
-	shotGeometry.faceVertexUvs = [];
-	shotGeometry.uvsNeedUpdate = true;
-	var shotMaterial = new THREE.MeshPhongMaterial({
-	  color: 0x000000,
-	  specular: 0x666666,
-	  emissive: 0xff0000,
-	  shininess: 0,
-	  flatShading: false,
-	  opacity: 0.75,
-	  transparent: true
-	});
-
-	var LaserShot = function (_Shot) {
-	  (0, _inherits3.default)(LaserShot, _Shot);
-
-	  function LaserShot() {
-	    (0, _classCallCheck3.default)(this, LaserShot);
-
-	    var _this = (0, _possibleConstructorReturn3.default)(this, (LaserShot.__proto__ || (0, _getPrototypeOf2.default)(LaserShot)).call(this, shotGeometry, shotMaterial));
-
-	    _this.lifetimeLeft = 5;
-	    _this.velocity = 300;
-	    _this.damage = 5;
-
-	    _this.sound = new THREE.PositionalAudio(_Game.SOUND_LISTENER);
-	    _this.sound.setBuffer(_GSFLoader.LOADER.get('laserSoundBuffer'));
-	    _this.sound.setRefDistance(10);
-	    _this.add(_this.sound);
-	    _this.sound.play();
-	    return _this;
-	  }
-
-	  (0, _createClass3.default)(LaserShot, [{
-	    key: 'destroy',
-	    value: function destroy() {
-	      (0, _get3.default)(LaserShot.prototype.__proto__ || (0, _getPrototypeOf2.default)(LaserShot.prototype), 'destroy', this).call(this);
-	      this.remove(this.sound);
-	      _Game.SCENE.add(this.sound);
-	      this.sound.position.copy(this.position);
-	    }
-	  }]);
-	  return LaserShot;
-	}(_Shot3.default);
-
-	exports.default = LaserShot;
-
-/***/ }),
-/* 469 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _classCallCheck2 = __webpack_require__(364);
-
-	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
-
-	var _createClass2 = __webpack_require__(365);
-
-	var _createClass3 = _interopRequireDefault(_createClass2);
-
-	var _three = __webpack_require__(362);
-
-	var THREE = _interopRequireWildcard(_three);
-
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	var WARNINGS = !true; // Set to true for development
-	/* eslint no-console: 0 */
-	/*
-	 * THREE.js SUBDIVISION MODIFIER EXAMPLE BY
-	 *    zz85 / http://twitter.com/blurspline / http://www.lab4games.net/zz85/blog
-	 *
-	 * SOURCE: https://github.com/mrdoob/three.js/blob/master/examples/js/modifiers/SubdivisionModifier.js
-	 *
-	 * REWRITTEN WITH ES6 SYNTAX
-	 *
-	 */
-
-	var ABC = ['a', 'b', 'c'];
-
-	function getEdge(a, b, map) {
-	  var vertexIndexA = Math.min(a, b);
-	  var vertexIndexB = Math.max(a, b);
-	  var key = vertexIndexA + '_' + vertexIndexB;
-	  return map[key];
-	}
-
-	function processEdge(a, b, vertices, map, face, metaVertices) {
-	  var vertexIndexA = Math.min(a, b);
-	  var vertexIndexB = Math.max(a, b);
-	  var key = vertexIndexA + '_' + vertexIndexB;
-	  var edge = void 0;
-
-	  if (key in map) {
-	    edge = map[key];
-	  } else {
-	    var vertexA = vertices[vertexIndexA];
-	    var vertexB = vertices[vertexIndexB];
-	    edge = {
-	      a: vertexA, // pointer reference
-	      b: vertexB,
-	      newEdge: null,
-	      // aIndex: a, // numbered reference
-	      // bIndex: b,
-	      faces: [] // pointers to face
-	    };
-	    map[key] = edge;
-	  }
-
-	  edge.faces.push(face);
-
-	  metaVertices[a].edges.push(edge);
-	  metaVertices[b].edges.push(edge);
-	}
-
-	function generateLookups(vertices, faces, metaVertices, edges) {
-
-	  var i = void 0,
-	      il = void 0,
-	      face = void 0;
-
-	  for (i = 0, il = vertices.length; i < il; i++) {
-	    metaVertices[i] = { edges: [] };
-	  }
-
-	  for (i = 0, il = faces.length; i < il; i++) {
-	    face = faces[i];
-	    processEdge(face.a, face.b, vertices, edges, face, metaVertices);
-	    processEdge(face.b, face.c, vertices, edges, face, metaVertices);
-	    processEdge(face.c, face.a, vertices, edges, face, metaVertices);
-	  }
-	}
-
-	function newFace(newFaces, a, b, c) {
-	  newFaces.push(new THREE.Face3(a, b, c));
-	}
-
-	var SubdivisionModifier = function () {
-	  function SubdivisionModifier(subdivisions) {
-	    (0, _classCallCheck3.default)(this, SubdivisionModifier);
-
-	    this.subdivisions = subdivisions === undefined ? 1 : subdivisions;
-	  }
-
-	  (0, _createClass3.default)(SubdivisionModifier, [{
-	    key: 'modify',
-	    value: function modify(geometry) {
-	      var repeats = this.subdivisions;
-	      while (repeats-- > 0) {
-	        this.smooth(geometry);
-	      }
-	      geometry.computeFaceNormals();
-	      geometry.computeVertexNormals();
-	    }
-	  }, {
-	    key: 'smooth',
-	    value: function smooth(geometry) {
-	      var tmp = new THREE.Vector3();
-	      var oldVertices = void 0,
-	          oldFaces = void 0;
-	      var newVertices = void 0,
-	          newFaces = void 0;
-	      var n = void 0,
-	          i = void 0,
-	          il = void 0,
-	          j = void 0,
-	          k = void 0;
-	      var metaVertices = void 0,
-	          sourceEdges = void 0;
-	      var newEdgeVertices = void 0,
-	          newSourceVertices = void 0;
-
-	      oldVertices = geometry.vertices; // { x, y, z}
-	      oldFaces = geometry.faces; // { a: oldVertex1, b: oldVertex2, c: oldVertex3 }
-
-	      // Step 0: Preprocess Geometry to Generate edges Lookup
-
-	      metaVertices = new Array(oldVertices.length);
-	      sourceEdges = {}; // Edge => { oldVertex1, oldVertex2, faces[]  }
-	      generateLookups(oldVertices, oldFaces, metaVertices, sourceEdges);
-
-	      // Step 1: For each edge, create a new Edge Vertex, then position it.
-
-	      newEdgeVertices = [];
-	      var other = void 0,
-	          currentEdge = void 0,
-	          newEdge = void 0,
-	          face = void 0;
-	      var edgeVertexWeight = void 0,
-	          adjacentVertexWeight = void 0,
-	          connectedFaces = void 0;
-
-	      for (i in sourceEdges) {
-	        currentEdge = sourceEdges[i];
-	        newEdge = new THREE.Vector3();
-
-	        edgeVertexWeight = 3 / 8;
-	        adjacentVertexWeight = 1 / 8;
-
-	        connectedFaces = currentEdge.faces.length;
-
-	        // check how many linked faces. 2 should be correct.
-	        if (connectedFaces !== 2) {
-	          // if length is not 2, handle condition
-	          edgeVertexWeight = 0.5;
-	          adjacentVertexWeight = 0;
-
-	          if (connectedFaces !== 1) {
-	            if (WARNINGS) {
-	              console.warn('Subdivision Modifier: Number of connected faces != 2, is: ', connectedFaces, currentEdge);
-	            }
-	          }
-	        }
-
-	        newEdge.addVectors(currentEdge.a, currentEdge.b).multiplyScalar(edgeVertexWeight);
-	        tmp.set(0, 0, 0);
-
-	        for (j = 0; j < connectedFaces; j++) {
-	          face = currentEdge.faces[j];
-	          for (k = 0; k < 3; k++) {
-	            other = oldVertices[face[ABC[k]]];
-	            if (other !== currentEdge.a && other !== currentEdge.b) {
-	              break;
-	            }
-	          }
-	          tmp.add(other);
-	        }
-
-	        tmp.multiplyScalar(adjacentVertexWeight);
-	        newEdge.add(tmp);
-
-	        currentEdge.newEdge = newEdgeVertices.length;
-	        newEdgeVertices.push(newEdge);
-
-	        // console.log(currentEdge, newEdge);
-	      }
-
-	      // Step 2: Reposition each source vertices.
-
-	      var beta = void 0,
-	          sourceVertexWeight = void 0,
-	          connectingVertexWeight = void 0;
-	      var connectingEdge = void 0,
-	          connectingEdges = void 0,
-	          oldVertex = void 0,
-	          newSourceVertex = void 0;
-	      newSourceVertices = [];
-
-	      for (i = 0, il = oldVertices.length; i < il; i++) {
-	        oldVertex = oldVertices[i];
-	        // find all connecting edges (using lookupTable)
-	        connectingEdges = metaVertices[i].edges;
-	        n = connectingEdges.length;
-
-	        if (n === 3) {
-	          beta = 3 / 16;
-	        } else if (n > 3) {
-	          beta = 3 / (8 * n); // Warren's modified formula
-	        }
-	        // Loop's original beta formula
-	        // beta = 1 / n * ( 5/8 - Math.pow( 3/8 + 1/4 * Math.cos( 2 * Math. PI / n ), 2) );
-	        sourceVertexWeight = 1 - n * beta;
-	        connectingVertexWeight = beta;
-	        if (n <= 2) {
-	          // crease and boundary rules
-	          // console.warn('crease and boundary rules');
-	          if (n === 2) {
-	            if (WARNINGS) {
-	              console.warn('2 connecting edges', connectingEdges);
-	            }
-	            sourceVertexWeight = 3 / 4;
-	            connectingVertexWeight = 1 / 8;
-	            // sourceVertexWeight = 1;
-	            // connectingVertexWeight = 0;
-	          } else if (n === 1) {
-	            if (WARNINGS) {
-	              console.warn('only 1 connecting edge');
-	            }
-	          } else if (n === 0) {
-	            if (WARNINGS) {
-	              console.warn('0 connecting edges');
-	            }
-	          }
-	        }
-
-	        newSourceVertex = oldVertex.clone().multiplyScalar(sourceVertexWeight);
-	        tmp.set(0, 0, 0);
-	        for (j = 0; j < n; j++) {
-	          connectingEdge = connectingEdges[j];
-	          other = connectingEdge.a !== oldVertex ? connectingEdge.a : connectingEdge.b;
-	          tmp.add(other);
-	        }
-
-	        tmp.multiplyScalar(connectingVertexWeight);
-	        newSourceVertex.add(tmp);
-	        newSourceVertices.push(newSourceVertex);
-	      }
-
-	      // Step 3: Generate Faces between source vertecies and edge vertices.
-
-	      newVertices = newSourceVertices.concat(newEdgeVertices);
-	      var sl = newSourceVertices.length,
-	          edge1 = void 0,
-	          edge2 = void 0,
-	          edge3 = void 0;
-	      newFaces = [];
-
-	      for (i = 0, il = oldFaces.length; i < il; i++) {
-	        face = oldFaces[i];
-	        // find the 3 new edges vertex of each old face
-	        edge1 = getEdge(face.a, face.b, sourceEdges).newEdge + sl;
-	        edge2 = getEdge(face.b, face.c, sourceEdges).newEdge + sl;
-	        edge3 = getEdge(face.c, face.a, sourceEdges).newEdge + sl;
-	        // create 4 faces.
-	        newFace(newFaces, edge1, edge2, edge3);
-	        newFace(newFaces, face.a, edge1, edge3);
-	        newFace(newFaces, face.b, edge2, edge1);
-	        newFace(newFaces, face.c, edge3, edge2);
-	      }
-
-	      // Overwrite old arrays
-	      geometry.vertices = newVertices;
-	      geometry.faces = newFaces;
-	    }
-	  }]);
-	  return SubdivisionModifier;
-	}();
-
-	exports.default = SubdivisionModifier;
-
-/***/ }),
-/* 470 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.FIGHTER_AI = undefined;
-
-	var _classCallCheck2 = __webpack_require__(364);
-
-	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
-
-	var _createClass2 = __webpack_require__(365);
-
-	var _createClass3 = _interopRequireDefault(_createClass2);
-
-	var _three = __webpack_require__(362);
-
-	var THREE = _interopRequireWildcard(_three);
-
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	var CLOSE_DISTANCE = 50;
-	var FAR_DISTANCE = 200;
-	var COLLISION_CHECK_DISTANCE = 30;
-	var SAFETY_DISTANCE = 10;
-	var SHOOT_ANGLE = 0.05;
-
-	// Object pool
-	var VECTOR3_A = new THREE.Vector3();
-	var VECTOR3_B = new THREE.Vector3();
-	var VECTOR3_C = new THREE.Vector3();
-
-	var FighterAI = function () {
-	  function FighterAI() {
-	    (0, _classCallCheck3.default)(this, FighterAI);
-	  }
-
-	  (0, _createClass3.default)(FighterAI, [{
-	    key: 'update',
-	    value: function update(ship, delta) {
-	      var hitObject = ship.checkCollision(ship.quaternion, COLLISION_CHECK_DISTANCE, SAFETY_DISTANCE);
-	      if (hitObject) {
-	        var away = VECTOR3_A.subVectors(ship.position, hitObject.position);
-	        away.add(ship.position);
-	        ship.turnTowards(away, delta);
-	      } else {
-	        if (ship.AIattacking) {
-	          var aimTarget = this.getAimTarget(ship.position, ship.AItarget.position, ship.AItarget.getVelocityVec(), ship.gun.muzzleVelocity);
-	          ship.turnTowards(aimTarget, delta);
-
-	          var facing = VECTOR3_A.set(0, 0, -1).applyQuaternion(ship.quaternion);
-	          var angleToTarget = facing.angleTo(VECTOR3_B.subVectors(aimTarget, ship.position));
-	          if (angleToTarget < SHOOT_ANGLE) ship.shoot();
-	          if (ship.position.distanceTo(ship.AItarget.position) < CLOSE_DISTANCE) {
-	            ship.AIattacking = false;
-	          }
-	        } else {
-	          var _away = VECTOR3_A.subVectors(ship.position, ship.AItarget.position);
-	          _away.add(ship.position);
-	          ship.turnTowards(_away, delta);
-	          if (ship.position.distanceTo(ship.AItarget.position) > FAR_DISTANCE) {
-	            ship.AIattacking = true;
-	          }
-	        }
-	      }
-	      ship.thrust();
-	    }
-	  }, {
-	    key: 'getAimTarget',
-	    value: function getAimTarget(shipPosition, targetPosition, targetVelocity, shotSpeed) {
-	      var thisToTarget = VECTOR3_A.copy(targetPosition).sub(shipPosition);
-	      var targetMoveAngle = thisToTarget.angleTo(targetVelocity); // 0 or PI when paralell to vector from this to target.
-	      var aimAdvanceAngle = Math.asin(Math.sin(targetMoveAngle) * targetVelocity.length() / shotSpeed);
-	      var aimAdvanceAxis = VECTOR3_B.crossVectors(thisToTarget, targetVelocity).normalize();
-	      var aimAdvanceVector = thisToTarget.applyAxisAngle(aimAdvanceAxis, aimAdvanceAngle);
-	      var aimTarget = VECTOR3_C.addVectors(shipPosition, aimAdvanceVector);
-	      if (!aimTarget.x || !aimTarget.y || !aimTarget.z) {
-	        return targetPosition;
-	      } else {
-	        return aimTarget;
-	      }
-	    }
-	  }]);
-	  return FighterAI;
-	}();
-
-	var FIGHTER_AI = exports.FIGHTER_AI = new FighterAI();
 
 /***/ }),
 /* 471 */
@@ -74626,7 +74700,7 @@
 
 	var _LargePlasmaCannon2 = _interopRequireDefault(_LargePlasmaCannon);
 
-	var _GSFLoader = __webpack_require__(459);
+	var _GSFLoader = __webpack_require__(460);
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -74907,7 +74981,7 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _SubdivisionModifier = __webpack_require__(469);
+	var _SubdivisionModifier = __webpack_require__(466);
 
 	var _SubdivisionModifier2 = _interopRequireDefault(_SubdivisionModifier);
 
@@ -74915,7 +74989,7 @@
 
 	var _Shot3 = _interopRequireDefault(_Shot2);
 
-	var _GSFLoader = __webpack_require__(459);
+	var _GSFLoader = __webpack_require__(460);
 
 	var _Game = __webpack_require__(429);
 
@@ -75068,10 +75142,6 @@
 	  value: true
 	});
 
-	var _getPrototypeOf = __webpack_require__(370);
-
-	var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
-
 	var _classCallCheck2 = __webpack_require__(364);
 
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
@@ -75080,115 +75150,67 @@
 
 	var _createClass3 = _interopRequireDefault(_createClass2);
 
-	var _possibleConstructorReturn2 = __webpack_require__(374);
-
-	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
-
-	var _inherits2 = __webpack_require__(414);
-
-	var _inherits3 = _interopRequireDefault(_inherits2);
-
 	var _three = __webpack_require__(362);
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _Level2 = __webpack_require__(462);
-
-	var _Level3 = _interopRequireDefault(_Level2);
+	var _GSFLoader = __webpack_require__(460);
 
 	var _Game = __webpack_require__(429);
 
-	var _GSFLoader = __webpack_require__(459);
-
-	var _Sun = __webpack_require__(463);
-
-	var _Sun2 = _interopRequireDefault(_Sun);
-
-	var _SimpleEarth = __webpack_require__(465);
-
-	var _SimpleEarth2 = _interopRequireDefault(_SimpleEarth);
-
-	var _Fighter = __webpack_require__(466);
-
-	var _Fighter2 = _interopRequireDefault(_Fighter);
-
-	var _FighterAI = __webpack_require__(470);
+	var _GSFCamera = __webpack_require__(449);
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	// import {CAMERA} from './GSFCamera';
+	var FAR = 500;
+	var SCALING_FACTOR = 10;
 
-	var MenuLevel = function (_Level) {
-	  (0, _inherits3.default)(MenuLevel, _Level);
+	// Object pool
+	var VECTOR3_A = new THREE.Vector3();
 
-	  function MenuLevel(playerShip) {
-	    (0, _classCallCheck3.default)(this, MenuLevel);
+	var Crosshair = function () {
+	  function Crosshair() {
+	    (0, _classCallCheck3.default)(this, Crosshair);
 
-	    var _this = (0, _possibleConstructorReturn3.default)(this, (MenuLevel.__proto__ || (0, _getPrototypeOf2.default)(MenuLevel)).call(this));
-
-	    _this.playerShip = playerShip;
-
-	    _this.assets = {
-	      sun: function sun() {
-	        var sun = new _Sun2.default();
-	        sun.position.x = -6000;
-	        sun.position.y = 4000;
-	        sun.position.z = -6000;
-	        return sun;
-	      },
-	      background: function background() {
-	        var material = new THREE.MeshBasicMaterial({
-	          map: _GSFLoader.LOADER.get('backgroundTexture'),
-	          side: THREE.BackSide,
-	          color: 0x555555
-	        });
-	        var geometry = new THREE.SphereGeometry(100000, 32, 32);
-	        var stars = new THREE.Mesh(geometry, material);
-	        _Game.SCENE.add(stars);
-	        return stars;
-	      },
-	      earth: function earth() {
-	        var earth = new _SimpleEarth2.default(1000, 5);
-	        earth.position.y = -1100;
-	        earth.position.z = -500;
-	        earth.rotateX(Math.random() * 2 * Math.PI);
-	        earth.rotateY(Math.random() * 2 * Math.PI);
-	        earth.rotateZ(Math.random() * 2 * Math.PI);
-	        return earth;
-	      },
-	      fighters: function fighters() {
-	        var fighters = [];
-	        for (var i = 0; i < 10; i++) {
-	          var ship1 = new _Fighter2.default();
-	          ship1.position.set(-75 + 10 * (Math.random() - 0.5), 0 + 10 * (Math.random() - 0.5), -20 + 10 * (Math.random() - 0.5));
-	          ship1.ai = _FighterAI.FIGHTER_AI;
-	          var ship2 = new _Fighter2.default();
-	          ship2.position.set(75 + 10 * (Math.random() - 0.5), 0 + 10 * (Math.random() - 0.5), -20 + 10 * (Math.random() - 0.5));
-	          ship2.ai = _FighterAI.FIGHTER_AI;
-	          ship1.AItarget = ship2;
-	          ship2.AItarget = ship1;
-	        }
-	        return fighters;
-	      }
-	    };
-	    return _this;
+	    this.source = null;
+	    var crosshairMaterial = new THREE.SpriteMaterial({
+	      color: 0x00ff00,
+	      map: _GSFLoader.LOADER.get('crosshair'),
+	      blending: THREE.NormalBlending,
+	      depthWrite: false,
+	      depthTest: false
+	    });
+	    this.sprite = new THREE.Sprite(crosshairMaterial);
+	    this.sprite.renderDepth = 0;
+	    _Game.SCENE.add(this.sprite);
 	  }
 
-	  (0, _createClass3.default)(MenuLevel, [{
-	    key: 'update',
-	    value: function update(delta) {
-	      this.earth.rotateY(0.02 * delta);
+	  (0, _createClass3.default)(Crosshair, [{
+	    key: 'setSourceObject',
+	    value: function setSourceObject(source) {
+	      this.source = source;
 	    }
 	  }, {
-	    key: 'clear',
-	    value: function clear() {}
+	    key: 'update',
+	    value: function update() {
+	      if (!this.source) return;
+	      var hitObject = this.source.checkCollision(this.source.quaternion, FAR);
+	      var distance = FAR;
+	      if (hitObject) {
+	        distance = VECTOR3_A.subVectors(hitObject.position, this.source.position).length();
+	      }
+	      this.sprite.position.copy(VECTOR3_A.set(0, 0, -1).applyQuaternion(this.source.quaternion).multiplyScalar(distance).add(this.source.position));
+	      var scale = VECTOR3_A.subVectors(this.sprite.position, _GSFCamera.CAMERA.position).length() / SCALING_FACTOR;
+	      this.sprite.scale.x = scale;
+	      this.sprite.scale.y = scale;
+	    }
 	  }]);
-	  return MenuLevel;
-	}(_Level3.default);
+	  return Crosshair;
+	}();
 
-	exports.default = MenuLevel;
+	exports.default = Crosshair;
 
 /***/ }),
 /* 483 */
