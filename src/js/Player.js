@@ -1,7 +1,5 @@
 import _ from 'lodash';
 import keymaster from 'keymaster';
-import Crosshair from './Crosshair';
-import {CAMERA} from './GSFCamera';
 import {HUD} from './HUD';
 import {COLLIDABLES} from './Game';
 
