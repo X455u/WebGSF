@@ -1,9 +1,5 @@
 import * as THREE from 'three';
 
-// Object pool
-const VECTOR3_A = new THREE.Vector3();
-const QUATERNION = new THREE.Quaternion();
-
 class GSFCamera extends THREE.PerspectiveCamera {
   constructor() {
     let aspect = window.innerWidth / window.innerHeight;
