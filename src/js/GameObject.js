@@ -57,7 +57,7 @@ class GameObject extends THREE.Mesh {
   checkCollision(quaternion, distance, extraHitRadius = 0) {
     let start = VECTOR3_A.copy(this.position);
     let end = VECTOR3_B.copy(start);
-    let direction = VECTOR3_C.set(0, 0, 1);
+    let direction = VECTOR3_C.set(0, 0, -1);
     direction.applyQuaternion(quaternion);
     direction.multiplyScalar(distance);
     end.add(direction);

@@ -68,12 +68,6 @@ class TestLevel extends Level {
           turret.ai = TURRET_AI;
           turrets.push(turret);
         }
-        let turret = new Turret();
-        turret.position.set(0, 0, 10);
-        turret.AItarget = this.playerShip;
-        turret.ai = TURRET_AI;
-        turrets.push(turret);
-        return turrets;
       },
       fighterSpawner: () => {
         let enemies = [];
