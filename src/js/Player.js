@@ -57,7 +57,12 @@ class Player {
           let newGameButton = document.getElementById('newGame');
           newGameButton.removeAttribute('disabled');
           newGameButton.innerHTML = 'New Game';
-        }, 1000);
+          HUD.updateHP(1);
+          HUD.updateShield(1);
+          document.getElementById('menu').addEventListener('transitionend', (e) => {
+            e.srcElement.style.display = 'none';
+          }, {once: true});
+        }, 500);
       }, {once: true});
     });
   }
