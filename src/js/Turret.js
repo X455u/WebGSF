@@ -26,8 +26,8 @@ class Turret extends GameObject {
     this.headMesh.translateOnAxis(new THREE.Vector3(0, 1, 0), 3.1);
 
     this.headMesh.add(this.gunMesh);
-    this.gunMesh.translateOnAxis(new THREE.Vector3(0, 0, 1), 0.9);
-    this.gunMesh.translateOnAxis(new THREE.Vector3(0, 1, 0), 1.6);
+    this.gunMesh.translateOnAxis(new THREE.Vector3(0, 0, 1), 2 * 0.9);
+    this.gunMesh.translateOnAxis(new THREE.Vector3(0, 1, 0), 4 * 1.6);
 
     // AI
     this.ai = null;
@@ -37,7 +37,7 @@ class Turret extends GameObject {
     this.gun = new LargePlasmaCannon();
     this.gun.owner = this;
     this.gunMesh.add(this.gun);
-    this.hitRadius = 1;
+    this.hitRadius = 6;
   }
 
   update(delta) {

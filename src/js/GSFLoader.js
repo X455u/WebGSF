@@ -30,18 +30,18 @@ class GSFLoader {
     });
     this.JSON_LOADER.load('./media/railgun_base.json', (geometry) => {
       this.assets['railgunBaseGeometry'] = geometry;
-      // geometry.scale(2, 2, 2);
+      geometry.scale(2, 2, 2);
     });
     this.JSON_LOADER.load('./media/railgun_head.json', (geometry) => {
       this.assets['railgunHeadGeometry'] = geometry;
+      geometry.scale(2, 2, 2);
       geometry.translate(0, -3.1, 0);
-      // geometry.scale(2, 2, 2);
     });
     this.JSON_LOADER.load('./media/railgun_gun.json', (geometry) => {
       this.assets['railgunGunGeometry'] = geometry;
       geometry.translate(0, -4.7, -0.9);
       geometry.rotateX(-28 / 360 * 2 * Math.PI);
-      // geometry.scale(2, 2, 2);
+      geometry.scale(2, 2, 2);
     });
     this.TEX_LOADER.load('./media/railgun_ao.png', (aoMap) => {
       this.TEX_LOADER.load('./media/railgun_nor.png', (normalMap) => {
