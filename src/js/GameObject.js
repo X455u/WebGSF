@@ -50,7 +50,7 @@ class GameObject extends THREE.Mesh {
 
   getVelocityVec() {
     let velocityVec = VECTOR3_A;
-    velocityVec.set(0, 0, 1).applyQuaternion(this.quaternion);
+    velocityVec.set(0, 0, -1).applyQuaternion(this.quaternion);
     return velocityVec.multiplyScalar(this.velocity);
   }
 
