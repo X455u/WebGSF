@@ -57564,7 +57564,12 @@
 	            var newGameButton = document.getElementById('newGame');
 	            newGameButton.removeAttribute('disabled');
 	            newGameButton.innerHTML = 'New Game';
-	          }, 1000);
+	            _HUD.HUD.updateHP(1);
+	            _HUD.HUD.updateShield(1);
+	            document.getElementById('menu').addEventListener('transitionend', function (e) {
+	              e.srcElement.style.display = 'none';
+	            }, { once: true });
+	          }, 500);
 	        }, { once: true });
 	      });
 	    }
@@ -70584,18 +70589,18 @@
 	      });
 	      this.JSON_LOADER.load('./media/railgun_base.json', function (geometry) {
 	        _this.assets['railgunBaseGeometry'] = geometry;
-	        // geometry.scale(2, 2, 2);
+	        geometry.scale(2, 2, 2);
 	      });
 	      this.JSON_LOADER.load('./media/railgun_head.json', function (geometry) {
 	        _this.assets['railgunHeadGeometry'] = geometry;
+	        geometry.scale(2, 2, 2);
 	        geometry.translate(0, -3.1, 0);
-	        // geometry.scale(2, 2, 2);
 	      });
 	      this.JSON_LOADER.load('./media/railgun_gun.json', function (geometry) {
 	        _this.assets['railgunGunGeometry'] = geometry;
 	        geometry.translate(0, -4.7, -0.9);
 	        geometry.rotateX(-28 / 360 * 2 * Math.PI);
-	        // geometry.scale(2, 2, 2);
+	        geometry.scale(2, 2, 2);
 	      });
 	      this.TEX_LOADER.load('./media/railgun_ao.png', function (aoMap) {
 	        _this.TEX_LOADER.load('./media/railgun_nor.png', function (normalMap) {
@@ -74734,8 +74739,8 @@
 	    _this.headMesh.translateOnAxis(new THREE.Vector3(0, 1, 0), 3.1);
 
 	    _this.headMesh.add(_this.gunMesh);
-	    _this.gunMesh.translateOnAxis(new THREE.Vector3(0, 0, 1), 0.9);
-	    _this.gunMesh.translateOnAxis(new THREE.Vector3(0, 1, 0), 1.6);
+	    _this.gunMesh.translateOnAxis(new THREE.Vector3(0, 0, 1), 2 * 0.9);
+	    _this.gunMesh.translateOnAxis(new THREE.Vector3(0, 1, 0), 4 * 1.6);
 
 	    // AI
 	    _this.ai = null;
@@ -74745,7 +74750,7 @@
 	    _this.gun = new _LargePlasmaCannon2.default();
 	    _this.gun.owner = _this;
 	    _this.gunMesh.add(_this.gun);
-	    _this.hitRadius = 1;
+	    _this.hitRadius = 6;
 	    return _this;
 	  }
 
