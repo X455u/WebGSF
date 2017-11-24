@@ -55388,7 +55388,7 @@
 	    key: 'getVelocityVec',
 	    value: function getVelocityVec() {
 	      var velocityVec = VECTOR3_A;
-	      velocityVec.set(0, 0, 1).applyQuaternion(this.quaternion);
+	      velocityVec.set(0, 0, -1).applyQuaternion(this.quaternion);
 	      return velocityVec.multiplyScalar(this.velocity);
 	    }
 	  }, {
@@ -55398,7 +55398,7 @@
 
 	      var start = VECTOR3_A.copy(this.position);
 	      var end = VECTOR3_B.copy(start);
-	      var direction = VECTOR3_C.set(0, 0, 1);
+	      var direction = VECTOR3_C.set(0, 0, -1);
 	      direction.applyQuaternion(quaternion);
 	      direction.multiplyScalar(distance);
 	      end.add(direction);
