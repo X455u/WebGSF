@@ -26,6 +26,12 @@ RENDERER.domElement.focus();
 RENDERER.shadowMap.enabled = true;
 RENDERER.shadowMap.type = THREE.PCFSoftShadowMap;
 
+window.addEventListener('resize', () => {
+  CAMERA.aspect = window.innerWidth / window.innerHeight;
+  CAMERA.updateProjectionMatrix();
+  RENDERER.setSize(window.innerWidth, window.innerHeight);
+}, false);
+
 let main = document.createElement('div');
 main.className = 'main';
 main.innerHTML = menu;
