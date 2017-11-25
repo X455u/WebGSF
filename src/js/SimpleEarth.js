@@ -11,12 +11,12 @@ class SimpleEarth extends GameObject {
     geometry.computeBoundingBox();
     geometry.computeBoundingSphere();
 
-    let normalMap = LOADER.get('earthNormalMap');
     let material = new THREE.MeshPhongMaterial({
       color: 0xAAAAAA,
       shininess: 0,
       map: LOADER.get('earthTexture'),
-      normalMap: normalMap,
+      normalMap: LOADER.get('earthNormalMap'),
+      specularMap: LOADER.get('earthSpecularMap'),
       normalScale: new THREE.Vector2(1, 1)
     });
 

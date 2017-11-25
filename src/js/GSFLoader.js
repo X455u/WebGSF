@@ -73,10 +73,13 @@ class GSFLoader {
     this.TEX_LOADER.load('./media/earthTexture.jpg', (texture) => {
       this.assets['earthTexture'] = texture;
     });
-    this.TEX_LOADER.load('./media/earthNormalMap.jpg', (normalMap) => {
+    this.TEX_LOADER.load('./media/earthNormalMap.png', (normalMap) => {
       this.assets['earthNormalMap'] = normalMap;
     });
-    this.TEX_LOADER.load('./media/earthClouds.png', (texture) => {
+    this.TEX_LOADER.load('./media/earthSpecularMap.png', (specularMap) => {
+      this.assets['earthSpecularMap'] = specularMap;
+    });
+    this.TEX_LOADER.load('./media/earthClouds.jpg', (texture) => {
       this.assets['earthClouds'] = texture;
     });
     this.TEX_LOADER.load('./media/lensflare/lensflare0.png', (texture) => {
