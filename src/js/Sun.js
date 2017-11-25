@@ -20,7 +20,7 @@ function lensFlareUpdateCallback(object) {
 class Sun extends THREE.PointLight {
 
   constructor() {
-    super(0xffffff, 3);
+    super(0xfffacd, 3);
     let texFlare0 = LOADER.get('texFlare0');
     let texFlare2 = LOADER.get('texFlare2');
     let texFlare3 = LOADER.get('texFlare3');
