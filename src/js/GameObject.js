@@ -19,6 +19,9 @@ class GameObject extends THREE.Mesh {
     this.hitRadius = 1;
     this.velocity = 0;
     this.turnSpeed = 0.25;
+
+    this.castShadow = true;
+    this.receiveShadow = true;
   }
 
   update() {}

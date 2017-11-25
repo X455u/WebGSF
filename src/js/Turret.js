@@ -29,6 +29,11 @@ class Turret extends GameObject {
     this.gunMesh.translateOnAxis(new THREE.Vector3(0, 0, 1), 2 * 0.9);
     this.gunMesh.translateOnAxis(new THREE.Vector3(0, 1, 0), 4 * 1.6);
 
+    this.headMesh.castShadow = true;
+    this.headMesh.receiveShadow = true;
+    this.gunMesh.castShadow = true;
+    this.gunMesh.receiveShadow = true;
+
     // AI
     this.ai = null;
     this.AItarget = null;

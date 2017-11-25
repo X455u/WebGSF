@@ -17,10 +17,20 @@ function lensFlareUpdateCallback(object) {
   object.lensFlares[3].rotation = object.positionScreen.x * 0.5 + THREE.Math.degToRad(45);
 }
 
-class Sun extends THREE.PointLight {
+class Sun extends THREE.DirectionalLight {
 
   constructor() {
     super(0xfffacd, 3);
+    SCENE.add(this);
+    SCENE.add(this.target);
+
+    this.position.set(500, 500, -1000);
+    this.castShadow = true;
+    this.shadow.mapSize.width = this.shadow.mapSize.height = 512 * 4;
+    this.shadow.camera.left = this.shadow.camera.bottom = -200;
+    this.shadow.camera.right = this.shadow.camera.top = 200;
+    this.shadow.camera.far = 10000;
+
     let texFlare0 = LOADER.get('texFlare0');
     let texFlare2 = LOADER.get('texFlare2');
     let texFlare3 = LOADER.get('texFlare3');
@@ -34,7 +44,6 @@ class Sun extends THREE.PointLight {
     lensFlare.add(texFlare3, 70, 1.0, THREE.AdditiveBlending);
     lensFlare.customUpdateCallback = lensFlareUpdateCallback;
     this.add(lensFlare);
-    SCENE.add(this);
   }
 
 }
