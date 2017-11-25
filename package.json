@@ -23,7 +23,7 @@
     "howler": "^2.0.4",
     "keymaster": "^1.6.2",
     "lodash": "^3.10.1",
-    "three": "^0.87.1"
+    "three": "^0.88.0"
   },
   "devDependencies": {
     "babel-core": "^6.3.21",
