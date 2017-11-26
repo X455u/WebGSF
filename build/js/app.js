@@ -71872,6 +71872,9 @@
 	    value: function activateSpotlight() {
 	      this.spotlight = new THREE.SpotLight(0xffffff, 2, 300, 0.9, 0.75, 1.5);
 	      this.spotlight.position.set(0, 0, 0);
+	      this.spotlight.castShadow = true;
+	      this.spotlight.shadow.camera.near = 4;
+	      this.spotlight.shadow.camera.far = 300;
 	      this.add(this.spotlight);
 	      _Game.SCENE.add(this.spotlight.target);
 	    }
