@@ -1,6 +1,8 @@
 import _ from 'lodash';
 import keymaster from 'keymaster';
 import {HUD} from './HUD';
+import {GAME} from './Game';
+import MenuLevel from './MenuLevel';
 
 function isMobile() {
   return window.DeviceMotionEvent !== undefined && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
@@ -22,6 +24,9 @@ class Player {
     }
     this.ship = null;
     this.points = 0;
+
+    this.crosshair = null;
+    this.spotlight = null;
   }
 
   addPoints(points) {
@@ -30,12 +35,35 @@ class Player {
 
   setShip(ship) {
     this.ship = ship;
+    this.crosshair.setSourceObject(ship);
     ship.maxVelocity *= 1.5;
     ship.turnSpeed *= 1.5;
     ship.shieldRegen = 5;
     ship.gun.reloadTime = 0.05;
     ship.addEventListener('onShieldRegen', () => {
       HUD.updateShield(ship.shield / ship.maxShield);
+    });
+    ship.activateSpotlight();
+
+    ship.addEventListener('onDeath', () => {
+      document.body.style.opacity = 0;
+      document.body.addEventListener('transitionend', () => {
+        GAME.loadLevel(new MenuLevel());
+        setTimeout(() => {
+          document.body.style.opacity = 1;
+          let menu = document.getElementById('menu');
+          menu.removeAttribute('hidden');
+          menu.style.display = '';
+          let newGameButton = document.getElementById('newGame');
+          newGameButton.removeAttribute('disabled');
+          newGameButton.innerHTML = 'New Game';
+          HUD.updateHP(1);
+          HUD.updateShield(1);
+          document.getElementById('menu').addEventListener('transitionend', (e) => {
+            e.srcElement.style.display = 'none';
+          }, {once: true});
+        }, 500);
+      }, {once: true});
     });
   }
 
@@ -46,7 +74,7 @@ class Player {
       // Ship steering
       this.turnParameters = _({x: ['down', 'up'], z: ['left', 'right']}).map(
         (keys, k) => [k, _(keys).map(
-          (key, index) => (keymaster.isPressed(key) ? 1 : 0) * (index === 0 ? -1 : 1)
+          (key, index) => (keymaster.isPressed(key) ? 1 : 0) * (index === 0 ? 1 : -1)
         ).sum()]
       ).object().value();
       // Ship acceleration
@@ -59,13 +87,15 @@ class Player {
     }
 
     this.ship.turn(this.turnParameters.x, 0, this.turnParameters.z);
+
+    this.crosshair.update();
   }
 
   setMobileEventListeners() {
     this.motionControlled = true;
-    let invertCoefficient = -1;
+    let invertCoefficient = 1;
     if (isAndroid()) {
-      invertCoefficient = 1;
+      invertCoefficient = -1;
     }
     // Accelerometer
     window.ondevicemotion = (event) => {
@@ -86,4 +116,4 @@ class Player {
     document.body.addEventListener('touchmove', event => event.preventDefault(), false);
   }
 }
-export const player = new Player();
+export const PLAYER = new Player();

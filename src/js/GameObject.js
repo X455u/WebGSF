@@ -10,6 +10,7 @@ const VECTOR3_B = new THREE.Vector3();
 const VECTOR3_C = new THREE.Vector3();
 const VECTOR3_D = new THREE.Vector3();
 const VECTOR3_E = new THREE.Vector3();
+const VECTOR3_F = new THREE.Vector3();
 
 class GameObject extends THREE.Mesh {
   constructor(geometry, material) {
@@ -18,25 +19,28 @@ class GameObject extends THREE.Mesh {
     this.hitRadius = 1;
     this.velocity = 0;
     this.turnSpeed = 0.25;
+
+    this.castShadow = true;
+    this.receiveShadow = true;
   }
 
   update() {}
 
   dealDamage() {}
 
-  remove() {
+  destroy() {
     this.removed = true;
   }
 
   turnTowards(target, delta) {
     let matrix = MATRIX;
     let up = VECTOR3_A.set(0, 1, 0).applyQuaternion(this.quaternion);
-    matrix.lookAt(target, this.position, up);
+    matrix.lookAt(this.position, target, up);
 
     let quaternion = QUATERNION;
     quaternion.setFromRotationMatrix(matrix);
 
-    let direction = VECTOR3_B.set(0, 0, 1);
+    let direction = VECTOR3_B.set(0, 0, -1);
     direction.applyQuaternion(this.quaternion);
     direction.normalize();
 
@@ -49,14 +53,14 @@ class GameObject extends THREE.Mesh {
 
   getVelocityVec() {
     let velocityVec = VECTOR3_A;
-    velocityVec.set(0, 0, 1).applyQuaternion(this.quaternion);
+    velocityVec.set(0, 0, -1).applyQuaternion(this.quaternion);
     return velocityVec.multiplyScalar(this.velocity);
   }
 
   checkCollision(quaternion, distance, extraHitRadius = 0) {
     let start = VECTOR3_A.copy(this.position);
     let end = VECTOR3_B.copy(start);
-    let direction = VECTOR3_C.set(0, 0, 1);
+    let direction = VECTOR3_C.set(0, 0, -1);
     direction.applyQuaternion(quaternion);
     direction.multiplyScalar(distance);
     end.add(direction);
@@ -69,6 +73,7 @@ class GameObject extends THREE.Mesh {
       if (collidable === this || collidable === this.owner) continue;
       let collidableCenter = collidable.position;
       if (this.position.distanceTo(collidableCenter) > distance + collidable.hitRadius + this.hitRadius + extraHitRadius) continue;
+      if (direction.dot(VECTOR3_F.subVectors(collidableCenter, start)) < 0) continue;
       a1.subVectors(collidableCenter, start);
       a2.subVectors(collidableCenter, end);
       let radius = a1.cross(a2).length() / distance;

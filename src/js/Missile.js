@@ -3,6 +3,7 @@ import Shot from './Shot';
 import SimpleParticleSystem from './SimpleParticleSystem';
 import Explosion from './Explosion';
 import {GAME} from './Game';
+import Ship from './Ship';
 
 let missileTop = new THREE.ConeGeometry(0.2, 0.5, 8, 1, true);
 missileTop.translate(0, 1.25, 0);
@@ -38,7 +39,7 @@ class Missile extends Shot {
       destination: new THREE.Vector3(0, 0, -2),
       positionRandomness: 0.2,
       destinationRandomness: 0.5,
-      color: new THREE.Color(0xFFFFAA),
+      color: new THREE.Color(0xFF0000),
       size: 100,
       lifetime: 0.2
     });
@@ -47,16 +48,21 @@ class Missile extends Shot {
   }
 
   update(delta) {
-    if (this.target) {
+    if (this.target && !this.target.removed) {
       this.turnTowards(this.target.position, delta);
+    } else {
+      let newTarget = this.checkCollision(this.quaternion, 50, 20);
+      if (newTarget instanceof Ship) {
+        this.target = newTarget;
+      }
     }
     super.update(delta);
   }
 
-  remove() {
-    super.remove();
-    // let explosion = new Explosion({position: this.position});
-    // GAME.addObject(explosion);
+  destroy() {
+    super.destroy();
+    let explosion = new Explosion({position: this.position});
+    GAME.addObject(explosion);
   }
 }
 export default Missile;

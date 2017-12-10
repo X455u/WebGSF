@@ -45,7 +45,10 @@ class Ship extends GameObject {
       if (this.hp === 0) {
         let explosion = new Explosion({position: this.position});
         GAME.addObject(explosion);
-        this.remove();
+        this.destroy();
+        this.dispatchEvent({
+          type: 'onDeath'
+        });
       }
     });
   }
@@ -94,7 +97,7 @@ class Ship extends GameObject {
       this.velocity -= this.acceleration * delta;
     }
     this.velocity = Math.min(Math.max(0, this.velocity), this.maxVelocity);
-    this.translateZ(this.velocity * delta);
+    this.translateZ(-this.velocity * delta);
 
     if (this.gun) {
       this.gun.update(delta);
@@ -116,6 +119,10 @@ class Ship extends GameObject {
         type: 'onShieldRegen'
       });
     }
+  }
+
+  activateSpotlight() {
+    // For player only
   }
 }
 

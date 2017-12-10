@@ -1,14 +1,10 @@
 import * as THREE from 'three';
 
-// Object pool
-const VECTOR3_A = new THREE.Vector3();
-const QUATERNION = new THREE.Quaternion();
-
 class GSFCamera extends THREE.PerspectiveCamera {
   constructor() {
     let aspect = window.innerWidth / window.innerHeight;
     super(90, aspect, 1, 1000000);
-    this.followOffset = new THREE.Vector3(0, 0.5, -1).normalize().multiplyScalar(5);
+    this.followOffset = new THREE.Vector3(0, 0.5, 1).normalize().multiplyScalar(5);
     this.followSpeed = 10;
     this.target = null;
   }
@@ -18,9 +14,7 @@ class GSFCamera extends THREE.PerspectiveCamera {
     let offset = this.followOffset.clone().applyQuaternion(this.target.quaternion);
     let cameraTargetPosition = this.target.position.clone().add(offset);
     this.position.lerp(cameraTargetPosition, this.followSpeed * delta);
-    let quat = QUATERNION.setFromAxisAngle(VECTOR3_A.set(0, 1, 0), Math.PI);
-    quat.multiplyQuaternions(this.target.quaternion, quat);
-    this.quaternion.slerp(quat, this.followSpeed * delta);
+    this.quaternion.slerp(this.target.quaternion, this.followSpeed * delta);
   }
 
   setTarget(target) {

@@ -8,7 +8,6 @@ class SmallPulseLaser extends THREE.Object3D {
     this.reload = 1.0;
     this.reloadTime = 0.5;
     this.muzzleVelocity = 300;
-    this.shotLifetime = 5.0;
     this.owner = null;
   }
 

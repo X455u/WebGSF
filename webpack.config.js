@@ -23,6 +23,14 @@ module.exports = {
           plugins: ['transform-runtime'],
           presets: ['es2015']
         }
+      },
+      {
+        test: /\.(html)$/,
+        loader: 'html-loader'
+      },
+      {
+        test: /\.css$/,
+        loader: 'style-loader!css-loader'
       }
     ]
   }

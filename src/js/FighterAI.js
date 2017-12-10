@@ -28,7 +28,7 @@ class FighterAI {
         let aimTarget = this.getAimTarget(ship.position, ship.AItarget.position, ship.AItarget.getVelocityVec(), ship.gun.muzzleVelocity);
         ship.turnTowards(aimTarget, delta);
 
-        let facing = VECTOR3_A.set(0, 0, 1).applyQuaternion(ship.quaternion);
+        let facing = VECTOR3_A.set(0, 0, -1).applyQuaternion(ship.quaternion);
         let angleToTarget = facing.angleTo(VECTOR3_B.subVectors(aimTarget, ship.position));
         if (angleToTarget < SHOOT_ANGLE) ship.shoot();
         if (ship.position.distanceTo(ship.AItarget.position) < CLOSE_DISTANCE) {
