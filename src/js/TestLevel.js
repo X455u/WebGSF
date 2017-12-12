@@ -13,6 +13,7 @@ import {FIGHTER_AI} from './FighterAI';
 import Turret from './Turret';
 import {TURRET_AI} from './TurretAI';
 import Crosshair from './Crosshair';
+import Tank from './Tank';
 
 /**
  * Calls this.enemySpawnedCallback when spawning enemy fighters.
@@ -80,6 +81,17 @@ class TestLevel extends Level {
           if (this.enemySpawnedCallback) this.enemySpawnedCallback(enemyShip);
         }, 10000);
         return fighterSpawner;
+      },
+      tanks: () => {
+        let tanks = [];
+        for (let i = 0; i < 100; i++) {
+          let tank = new Tank();
+          let direction = new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize();
+          tank.position.copy(direction).setLength(this.mars.hitRadius);
+          tank.position.add(this.mars.position);
+          tank.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction);
+          tanks.push(tank);
+        }
       }
     };
   }
