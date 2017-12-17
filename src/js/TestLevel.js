@@ -90,6 +90,7 @@ class TestLevel extends Level {
           tank.position.copy(direction).setLength(this.mars.hitRadius);
           tank.position.add(this.mars.position);
           tank.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction);
+          tank.planet = this.mars;
           tanks.push(tank);
         }
       }

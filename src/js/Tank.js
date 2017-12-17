@@ -18,26 +18,37 @@ class Tank extends THREE.Mesh {
     super(geometry, material);
     this.removed = false;
     this.hitRadius = 1;
-    this.velocity = 0;
-    this.turnSpeed = 0.25;
+    this.velocity = 10;
+    this.turnSpeed = Math.random() - 0.5;
 
     this.castShadow = true;
     this.receiveShadow = true;
 
     this.planet = null;
-    GAME.addObject(this, true);
+    GAME.addObject(this);
   }
 
   update(delta) {
     if (this.planet) {
+      this.translateZ(-this.velocity * delta);
+      this.rotateY(this.turnSpeed * delta);
+
       let surfaceNormal = VECTOR3_A.subVectors(this.position, this.planet.position).normalize();
 
       let position = VECTOR3_B.copy(surfaceNormal).multiplyScalar(this.planet.hitRadius).add(this.planet.position);
       this.position.copy(position);
 
-      let direction = VECTOR3_B.set(0, 0, -1).applyQuaternion(this.quaternion);
-      let turnAmount = VECTOR3_C.crossVectors(surfaceNormal, direction).length();
-      this.rotateX(turnAmount);
+      let directionFront = VECTOR3_B.set(0, 0, -1).applyQuaternion(this.quaternion);
+      let turnAxisX = VECTOR3_C.crossVectors(surfaceNormal, directionFront);
+      let turnAmountX = 1 - turnAxisX.length();
+      if (surfaceNormal.dot(directionFront) < 0) turnAmountX = -turnAmountX;
+      if (turnAmountX) this.rotateOnWorldAxis(turnAxisX, turnAmountX);
+
+      let directionSide = VECTOR3_B.set(1, 0, 0).applyQuaternion(this.quaternion);
+      let turnAxisZ = VECTOR3_C.crossVectors(surfaceNormal, directionSide);
+      let turnAmountZ = 1 - turnAxisZ.length();
+      if (surfaceNormal.dot(directionSide) < 0) turnAmountZ = -turnAmountZ;
+      if (turnAmountZ) this.rotateOnWorldAxis(turnAxisZ, turnAmountZ);
     }
   }
 
