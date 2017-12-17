@@ -12,6 +12,7 @@ let material = new THREE.MeshPhongMaterial({
 const VECTOR3_A = new THREE.Vector3();
 const VECTOR3_B = new THREE.Vector3();
 const VECTOR3_C = new THREE.Vector3();
+const VECTOR3_D = new THREE.Vector3();
 
 class Tank extends THREE.Mesh {
   constructor() {
@@ -19,7 +20,7 @@ class Tank extends THREE.Mesh {
     this.removed = false;
     this.hitRadius = 1;
     this.velocity = 10;
-    this.turnSpeed = Math.random() - 0.5;
+    this.turnSpeed = 0.2;
 
     this.castShadow = true;
     this.receiveShadow = true;
@@ -29,9 +30,9 @@ class Tank extends THREE.Mesh {
   }
 
   update(delta) {
+    this.turnTowards(this.target, delta);
     if (this.planet) {
       this.translateZ(-this.velocity * delta);
-      this.rotateY(this.turnSpeed * delta);
 
       let surfaceNormal = VECTOR3_A.subVectors(this.position, this.planet.position).normalize();
 
@@ -59,7 +60,15 @@ class Tank extends THREE.Mesh {
   }
 
   turnTowards(target, delta) {
-
+    let quaternion = this.getWorldQuaternion();
+    let currentDirection = VECTOR3_C.set(0, 0, -1).applyQuaternion(quaternion);
+    let targetDirection = VECTOR3_A.subVectors(target.position, this.getWorldPosition());
+    let up = VECTOR3_B.set(0, 1, 0).applyQuaternion(quaternion);
+    let targetDirectionOnPlane = VECTOR3_D.copy(targetDirection).projectOnPlane(up).normalize();
+    let angle = currentDirection.angleTo(targetDirectionOnPlane) || Number.EPSILON; // Workaround for being NaN sometimes
+    let right = VECTOR3_B.set(1, 0, 0).applyQuaternion(quaternion);
+    let turnCoef = -Math.sign(right.dot(targetDirectionOnPlane));
+    this.rotateY(turnCoef * Math.min(angle, this.turnSpeed * delta));
   }
 
 }
