@@ -46,13 +46,13 @@ class MenuLevel extends Level {
         let fighters = [];
         for (let i = 0; i < 10; i++) {
           let ship1 = new Fighter();
-          ship1.position.set(-75 + 10 * (Math.random() - 0.5), 0 + 10 * (Math.random() - 0.5), -20 + 10 * (Math.random() - 0.5));
+          ship1.position.set(-75 + 20 * (Math.random() - 0.5), 0 + 20 * (Math.random() - 0.5), -20 + 20 * (Math.random() - 0.5));
           ship1.ai = FIGHTER_AI;
+          ship1.team = 1;
           let ship2 = new Fighter();
-          ship2.position.set(75 + 10 * (Math.random() - 0.5), 0 + 10 * (Math.random() - 0.5), -20 + 10 * (Math.random() - 0.5));
+          ship2.position.set(75 + 20 * (Math.random() - 0.5), 0 + 20 * (Math.random() - 0.5), -20 + 20 * (Math.random() - 0.5));
           ship2.ai = FIGHTER_AI;
-          ship1.AItarget = ship2;
-          ship2.AItarget = ship1;
+          ship2.team = 2;
         }
         return fighters;
       }

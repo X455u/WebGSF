@@ -83,7 +83,7 @@ class Ship extends GameObject {
   }
 
   update(delta) {
-    if (this.ai && this.AItarget) this.ai.update(this, delta);
+    if (this.ai) this.ai.update(this, delta);
 
     let turnAmount = this.turnSpeed * 2 * Math.PI * delta;
     this.rotateX(this.turnParameters.x * turnAmount);

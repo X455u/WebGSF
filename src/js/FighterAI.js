@@ -1,5 +1,7 @@
 import * as THREE from 'three';
 
+import {GAME} from './Game';
+
 const CLOSE_DISTANCE = 50;
 const FAR_DISTANCE = 200;
 const COLLISION_CHECK_DISTANCE = 30;
@@ -18,6 +20,10 @@ class FighterAI {
   }
 
   update(ship, delta) {
+    if (!ship.AItarget || ship.AItarget.removed === true) ship.AItarget = this.getNewAITarget(ship);
+
+    if (!ship.AItarget) return; // Idle if no target found
+
     let hitObject = ship.checkCollision(ship.quaternion, COLLISION_CHECK_DISTANCE, SAFETY_DISTANCE);
     if (hitObject) {
       let away = VECTOR3_A.subVectors(ship.position, hitObject.position);
@@ -58,6 +64,18 @@ class FighterAI {
     } else {
       return aimTarget;
     }
+  }
+
+  getNewAITarget(ship) {
+    let enemies = GAME.objects.filter(object => object.team && object.team !== ship.team);
+    let target = enemies[0];
+
+    if (!target) return null;
+
+    for (const enemy of enemies) {
+      if (ship.position.distanceTo(enemy.position) < ship.position.distanceTo(target.position)) target = enemy;
+    }
+    return target;
   }
 
 }
