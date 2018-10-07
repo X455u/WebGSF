@@ -50,6 +50,7 @@ class TestLevel extends Level {
       },
       playerShip: () => {
         let playerShip = new Fighter();
+        playerShip.team = 1;
         PLAYER.crosshair = new Crosshair(CAMERA);
         PLAYER.setShip(playerShip);
         CAMERA.setTarget(playerShip);
@@ -74,8 +75,8 @@ class TestLevel extends Level {
           let enemyShip = new Fighter();
           enemyShip.position.subVectors(this.mars.position, this.playerShip.position).setLength(this.mars.hitRadius + 30);
           enemyShip.position.add(this.mars.position);
-          enemyShip.AItarget = this.playerShip;
           enemyShip.ai = FIGHTER_AI;
+          enemyShip.team = 2;
           enemies.push(enemyShip);
           if (this.enemySpawnedCallback) this.enemySpawnedCallback(enemyShip);
         }, 10000);
