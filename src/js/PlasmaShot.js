@@ -50,8 +50,6 @@ class PlasmaShot extends Shot {
   destroy() {
     super.destroy();
     this.remove(this.sound);
-    SCENE.add(this.sound);
-    this.sound.position.copy(this.position);
   }
 
 }
