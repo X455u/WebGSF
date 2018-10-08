@@ -13,6 +13,7 @@ import {FIGHTER_AI} from './FighterAI';
 import Turret from './Turret';
 import {TURRET_AI} from './TurretAI';
 import Crosshair from './Crosshair';
+import LandingPad from './LandingPad';
 
 /**
  * Calls this.enemySpawnedCallback when spawning enemy fighters.
@@ -67,6 +68,19 @@ class TestLevel extends Level {
           turret.AItarget = this.playerShip;
           turret.ai = TURRET_AI;
           turrets.push(turret);
+        }
+      },
+      ladningPads: () => {
+        let ladningPads = [];
+        for (let i = 0; i < 10; i++) {
+          let landingPad = new LandingPad();
+          let direction = new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize();
+          landingPad.position.copy(direction).setLength(this.mars.hitRadius);
+          landingPad.position.add(this.mars.position);
+          landingPad.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction);
+          landingPad.AItarget = this.playerShip;
+          landingPad.ai = TURRET_AI;
+          ladningPads.push(landingPad);
         }
       },
       fighterSpawner: () => {

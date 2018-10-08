@@ -58,6 +58,20 @@ class GSFLoader {
         });
       });
     });
+    this.BUFFER_GEOMETRY_LOADER.load('./media/landingpad.json', (geometry) => {
+      this.assets['landingPadBufferGeometry'] = geometry;
+      geometry.scale(2, 2, 2);
+    });
+    this.TEX_LOADER.load('./media/landingpad_nor.png', (normalMap) => {
+      this.TEX_LOADER.load('./media/landingpad_comp.png', (texture) => {
+        this.assets['landingPadMaterial'] = new THREE.MeshPhongMaterial({
+          map: texture,
+          normalMap: normalMap,
+          normalMapType: THREE.ObjectSpaceNormalMap,
+          color: 0x444444
+        });
+      });
+    });
     this.TEX_LOADER.load('./media/background.jpg', (texture) => {
       this.assets['backgroundTexture'] = texture;
     });
