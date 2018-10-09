@@ -6,6 +6,9 @@ const SHOOT_ANGLE = 0.05;
 const VECTOR3_A = new THREE.Vector3();
 const VECTOR3_B = new THREE.Vector3();
 const VECTOR3_C = new THREE.Vector3();
+const VECTOR3_D = new THREE.Vector3();
+
+const QUATERNION_A = new THREE.Quaternion();
 
 class TurretAI {
 
@@ -14,11 +17,15 @@ class TurretAI {
   }
 
   update(turret, delta) {
-    let aimTarget = this.getAimTarget(turret.gun.getWorldPosition(), turret.AItarget.position, turret.AItarget.getVelocityVec(), turret.gun.muzzleVelocity);
+    let worldPos = VECTOR3_D;
+    turret.gun.getWorldPosition(worldPos);
+    let aimTarget = this.getAimTarget(worldPos, turret.AItarget.position, turret.AItarget.getVelocityVec(), turret.gun.muzzleVelocity);
     turret.turnTowards(aimTarget, delta);
 
-    let facing = VECTOR3_A.set(0, 0, -1).applyQuaternion(turret.gun.getWorldQuaternion());
-    let angleToTarget = facing.angleTo(VECTOR3_B.subVectors(aimTarget, turret.gun.getWorldPosition()));
+    let worldQuat = QUATERNION_A;
+    turret.gun.getWorldQuaternion(worldQuat);
+    let facing = VECTOR3_A.set(0, 0, -1).applyQuaternion(worldQuat);
+    let angleToTarget = facing.angleTo(VECTOR3_B.subVectors(aimTarget, worldPos));
     if (angleToTarget < SHOOT_ANGLE) turret.shoot();
   }
 
