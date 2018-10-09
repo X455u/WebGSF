@@ -9,6 +9,10 @@ const VECTOR3_A = new THREE.Vector3();
 const VECTOR3_B = new THREE.Vector3();
 const VECTOR3_C = new THREE.Vector3();
 const VECTOR3_D = new THREE.Vector3();
+const VECTOR3_E = new THREE.Vector3();
+const VECTOR3_F = new THREE.Vector3();
+
+const QUATERNION_A = new THREE.Quaternion();
 
 // Configurations
 const GUN_ROTATION_MAX = 0.5 * Math.PI;
@@ -65,11 +69,16 @@ class Turret extends GameObject {
   }
 
   turnTowards(target, delta) {
-    let directionFromHead = VECTOR3_A.subVectors(target, this.headMesh.getWorldPosition());
-    let directionFromGun = VECTOR3_A.subVectors(target, this.gunMesh.getWorldPosition());
+    let headWorldPos = VECTOR3_F;
+    this.headMesh.getWorldPosition(headWorldPos);
+    let directionFromHead = VECTOR3_A.subVectors(target, headWorldPos);
+    let gunWorldPos = VECTOR3_F;
+    this.gunMesh.getWorldPosition(gunWorldPos);
+    let directionFromGun = VECTOR3_E.subVectors(target, gunWorldPos);
 
     // Turn head
-    let headQuaternion = this.headMesh.getWorldQuaternion();
+    let headQuaternion = QUATERNION_A;
+    this.headMesh.getWorldQuaternion(headQuaternion);
     let headUp = VECTOR3_B.set(0, 1, 0).applyQuaternion(headQuaternion);
     let headDirection = VECTOR3_C.set(0, 0, -1).applyQuaternion(headQuaternion);
     let headTargetDirection = VECTOR3_D.copy(directionFromHead).projectOnPlane(headUp).normalize();
@@ -79,7 +88,8 @@ class Turret extends GameObject {
     this.headMesh.rotateY(headTurnCoef * Math.min(headAngle, this.turnSpeed * delta));
 
     // Turn gun
-    let gunQuaternion = this.gunMesh.getWorldQuaternion();
+    let gunQuaternion = QUATERNION_A;
+    this.gunMesh.getWorldQuaternion(gunQuaternion);
     let gunLeft = VECTOR3_B.set(1, 0, 0).applyQuaternion(gunQuaternion);
     let gunDirection = VECTOR3_C.set(0, 0, -1).applyQuaternion(gunQuaternion);
     let gunTargetDirection = VECTOR3_D.copy(directionFromGun).projectOnPlane(gunLeft).normalize();
