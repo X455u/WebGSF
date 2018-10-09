@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import {LOADER} from './GSFLoader';
+import {SOUND_LISTENER} from './Game';
 
 class Explosion extends THREE.Sprite {
   constructor() {
@@ -12,6 +13,12 @@ class Explosion extends THREE.Sprite {
     this.updateTime = 0.03;
     this.nextUpdate = this.now + this.updateTime;
     this.frames = 25;
+
+    this.sound = new THREE.PositionalAudio(SOUND_LISTENER);
+    this.sound.setBuffer(LOADER.get('explosion' + Math.floor(Math.random() * 3)));
+    this.sound.setRefDistance(10);
+    this.add(this.sound);
+    this.sound.play();
   }
 
   update(delta) {

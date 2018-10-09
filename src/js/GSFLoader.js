@@ -120,6 +120,15 @@ class GSFLoader {
     this.AUDIO_LOADER.load('./media/plasma.mp3', (buffer) => {
       this.assets['plasmaSoundBuffer'] = buffer;
     });
+    this.AUDIO_LOADER.load('./media/sounds/explosion0.mp3', (buffer) => {
+      this.assets['explosion0'] = buffer;
+    });
+    this.AUDIO_LOADER.load('./media/sounds/explosion1.mp3', (buffer) => {
+      this.assets['explosion1'] = buffer;
+    });
+    this.AUDIO_LOADER.load('./media/sounds/explosion2.mp3', (buffer) => {
+      this.assets['explosion2'] = buffer;
+    });
     /* eslint-enable dot-notation */
   }
 }
