@@ -108,6 +108,12 @@ class GSFLoader {
     this.TEX_LOADER.load('./media/crosshair.png', (texture) => {
       this.assets['crosshair'] = texture;
     });
+    this.TEX_LOADER.load('./media/explosion.png', (texture) => {
+      this.assets['explosionTexture'] = texture;
+      texture.wrapS = THREE.RepeatWrapping;
+      texture.wrapT = THREE.RepeatWrapping;
+      texture.repeat.set(1 / 25, 1);
+    });
     this.AUDIO_LOADER.load('./media/laser.mp3', (buffer) => {
       this.assets['laserSoundBuffer'] = buffer;
     });

@@ -61,7 +61,8 @@ class Missile extends Shot {
 
   destroy() {
     super.destroy();
-    let explosion = new Explosion({position: this.position});
+    let explosion = new Explosion();
+    explosion.position.copy(this.position);
     GAME.addObject(explosion);
   }
 }
