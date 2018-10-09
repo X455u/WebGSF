@@ -8,6 +8,13 @@ import {SCENE} from './Game';
 // Object pool
 const VECTOR3_A = new THREE.Vector3();
 
+const THRUSTER_POSITIONS = [
+  new THREE.Vector3(-0.8, 0.25, 1), // Up-left
+  new THREE.Vector3(0.8, 0.25, 1), // Up-right
+  new THREE.Vector3(-0.8, -0.25, 1), // Down-left
+  new THREE.Vector3(0.8, -0.25, 1) // Down-right
+];
+
 class Fighter extends Ship {
   constructor() {
     super(LOADER.get('fighterGeometry'), LOADER.get('fighterMaterial'), {
@@ -27,15 +34,8 @@ class Fighter extends Ship {
       this.gun.translateX(1.4 * this.weaponSide);
     });
 
-    this.thrusterPositions = [
-      new THREE.Vector3(-0.8, 0.25, 1), // Up-left
-      new THREE.Vector3(0.8, 0.25, 1), // Up-right
-      new THREE.Vector3(-0.8, -0.25, 1), // Down-left
-      new THREE.Vector3(0.8, -0.25, 1) // Down-right
-    ];
-
     this.thrusters = [];
-    for (let thrusterPosition of this.thrusterPositions) {
+    for (let thrusterPosition of THRUSTER_POSITIONS) {
       let thruster = new SimpleParticleSystem({
         particles: 200,
         destination: new THREE.Vector3(0, 0, 2),
