@@ -43,7 +43,8 @@ class Ship extends GameObject {
     // Events
     this.addEventListener('onDamage', () => {
       if (this.hp === 0) {
-        let explosion = new Explosion({position: this.position});
+        let explosion = new Explosion();
+        explosion.position.copy(this.position);
         GAME.addObject(explosion);
         this.destroy();
         this.dispatchEvent({
