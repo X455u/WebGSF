@@ -132,6 +132,9 @@ class GSFLoader {
     this.AUDIO_LOADER.load('./media/sounds/engine_ambient.mp3', (buffer) => {
       this.assets['engine_ambient'] = buffer;
     });
+    this.AUDIO_LOADER.load('./media/sounds/low_pulsating_hum.mp3', (buffer) => {
+      this.assets['low_pulsating_hum'] = buffer;
+    });
     /* eslint-enable dot-notation */
   }
 }
