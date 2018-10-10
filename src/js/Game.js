@@ -82,6 +82,9 @@ class Game {
     CAMERA.target = null;
     SCENE.children = [];
     COLLIDABLES.length = 0;
+    for (let object of this.objects) {
+      if (object.destroy) object.destroy();
+    }
     this.objects = [];
     if (this.level) {
       this.level.clear();
