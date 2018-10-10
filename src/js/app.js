@@ -136,6 +136,7 @@ function initGame() {
   };
 
   GAME.loadLevel(testLevel).then(() => {
+    music.fade(music.volume(), 0, 2000);
     let playerShip = GAME.level.playerShip;
 
     playerShip.addEventListener('onDamage', () => {
