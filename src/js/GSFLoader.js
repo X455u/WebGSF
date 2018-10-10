@@ -129,6 +129,9 @@ class GSFLoader {
     this.AUDIO_LOADER.load('./media/sounds/explosion2.mp3', (buffer) => {
       this.assets['explosion2'] = buffer;
     });
+    this.AUDIO_LOADER.load('./media/sounds/engine_ambient.mp3', (buffer) => {
+      this.assets['engine_ambient'] = buffer;
+    });
     /* eslint-enable dot-notation */
   }
 }
