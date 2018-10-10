@@ -12,6 +12,9 @@ function remove(element, list) {
   if (index > -1) list.splice(index, 1);
 }
 
+// Object pool
+const VECTOR3_A = new THREE.Vector3();
+
 class Game {
 
   constructor() {
@@ -27,6 +30,8 @@ class Game {
     for (const object of this.objects) {
       object.update(delta);
     }
+
+    SOUND_LISTENER.up.copy(VECTOR3_A.set(0, 1, 0).applyQuaternion(CAMERA.quaternion));
 
     // Remove objects
     let i = 0;
