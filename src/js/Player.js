@@ -65,6 +65,8 @@ class Player {
         }, 500);
       }, {once: true});
     });
+
+    ship.sound.stop();
   }
 
   update() {

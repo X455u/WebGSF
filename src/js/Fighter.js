@@ -3,7 +3,7 @@ import {LOADER} from './GSFLoader';
 import Ship from './Ship';
 import SmallPulseLaser from './SmallPulseLaser';
 import SimpleParticleSystem from './SimpleParticleSystem';
-import {SCENE} from './Game';
+import {SOUND_LISTENER, SCENE} from './Game';
 
 // Object pool
 const VECTOR3_A = new THREE.Vector3();
@@ -53,6 +53,16 @@ class Fighter extends Ship {
     }
 
     this.hitRadius = 1;
+
+    this.sound = new THREE.PositionalAudio(SOUND_LISTENER);
+    this.sound.setBuffer(LOADER.get('engine_ambient'));
+    this.sound.setLoop(true);
+    this.sound.setVolume(0.5);
+    this.sound.setRefDistance(10);
+    this.sound.setDistanceModel('exponential');
+    this.sound.setRolloffFactor(2);
+    this.add(this.sound);
+    this.sound.play();
   }
 
   update(delta) {
@@ -66,6 +76,7 @@ class Fighter extends Ship {
   destroy() {
     super.destroy();
     if (this.spotlight) SCENE.remove(this.spotlight.target);
+    this.sound.stop();
   }
 
   activateSpotlight() {
