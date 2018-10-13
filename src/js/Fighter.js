@@ -52,8 +52,6 @@ class Fighter extends Ship {
       this.thrusters.push(thruster);
     }
 
-    this.hitRadius = 1;
-
     this.sound = new THREE.PositionalAudio(SOUND_LISTENER);
     this.sound.setBuffer(LOADER.get('engine_ambient'));
     this.sound.setLoop(true);

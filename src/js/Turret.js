@@ -22,7 +22,7 @@ class Turret extends GameObject {
   constructor() {
     let material = LOADER.get('railgunMaterial');
     super(LOADER.get('railgunBaseGeometry'), material);
-    GAME.addObject(this, true);
+
     this.headMesh = new THREE.Mesh(LOADER.get('railgunHeadGeometry'), material);
     this.gunMesh = new THREE.Mesh(LOADER.get('railgunGunGeometry'), material);
 
@@ -46,7 +46,8 @@ class Turret extends GameObject {
     this.gun = new LargePlasmaCannon();
     this.gun.owner = this;
     this.gunMesh.add(this.gun);
-    this.hitRadius = 6;
+
+    this.isStatic = true;
   }
 
   update(delta) {

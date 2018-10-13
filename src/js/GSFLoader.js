@@ -59,7 +59,7 @@ class GSFLoader {
       });
     });
     this.BUFFER_GEOMETRY_LOADER.load('./media/landingpad.json', (geometry) => {
-      this.assets['landingPadBufferGeometry'] = geometry;
+      this.assets['landingPadGeometry'] = new THREE.Geometry().fromBufferGeometry(geometry);
       geometry.scale(2, 2, 2);
     });
     this.TEX_LOADER.load('./media/landingpad_nor.png', (normalMap) => {

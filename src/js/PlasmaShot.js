@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import SubdivisionModifier from './SubdivisionModifier';
 import Shot from './Shot';
 import {LOADER} from './GSFLoader';
-import {SOUND_LISTENER, SCENE} from './Game';
+import {SOUND_LISTENER} from './Game';
 import SimpleParticleSystem from './SimpleParticleSystem';
 
 let shotGeometry = new THREE.CylinderGeometry(0.5, 0.5, 6, 8, 3);
@@ -27,7 +27,7 @@ class PlasmaShot extends Shot {
     super(shotGeometry, shotMaterial);
     this.lifetimeLeft = 10;
     this.velocity = 200;
-    this.damage = 50;
+    this.collisionDamage = 50;
 
     this.sound = new THREE.PositionalAudio(SOUND_LISTENER);
     this.sound.setBuffer(LOADER.get('plasmaSoundBuffer'));
