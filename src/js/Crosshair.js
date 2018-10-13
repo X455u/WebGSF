@@ -32,7 +32,8 @@ class Crosshair {
 
   update() {
     if (!this.source) return;
-    let hitObject = this.source.checkCollision(this.source.quaternion, FAR);
+    // let hitObject = this.source.checkCollision(this.source.quaternion, FAR);
+    let hitObject;
     let distance = FAR;
     if (hitObject) {
       distance = VECTOR3_A.subVectors(hitObject.position, this.source.position).length();

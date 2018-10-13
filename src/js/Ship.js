@@ -6,7 +6,6 @@ class Ship extends GameObject {
 
   constructor(geometry, material, stats) {
     super(geometry, material);
-    GAME.addObject(this, true);
 
     // Stats
     this.maxVelocity = stats.maxVelocity;
@@ -106,12 +105,6 @@ class Ship extends GameObject {
         this.gun.shoot();
         this.isShooting = false;
       }
-    }
-
-    let hitObject = this.checkCollision(this.quaternion, this.velocity * delta);
-    if (hitObject) {
-      this.dealDamage(Infinity);
-      hitObject.dealDamage(Infinity);
     }
 
     if (this.shield !== this.maxShield) {

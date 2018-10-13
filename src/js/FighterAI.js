@@ -24,7 +24,8 @@ class FighterAI {
 
     if (!ship.AItarget) return; // Idle if no target found
 
-    let hitObject = ship.checkCollision(ship.quaternion, COLLISION_CHECK_DISTANCE, SAFETY_DISTANCE);
+    // let hitObject = ship.checkCollision(ship.quaternion, COLLISION_CHECK_DISTANCE, SAFETY_DISTANCE);
+    let hitObject;
     if (hitObject) {
       let away = VECTOR3_A.subVectors(ship.position, hitObject.position);
       away.add(ship.position);

@@ -62,7 +62,7 @@ class TestLevel extends Level {
         for (let i = 0; i < 10; i++) {
           let turret = new Turret();
           let direction = new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize();
-          turret.position.copy(direction).setLength(this.mars.hitRadius);
+          turret.position.copy(direction).setLength(this.mars.radius);
           turret.position.add(this.mars.position);
           turret.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction);
           turret.AItarget = this.playerShip;
@@ -70,24 +70,22 @@ class TestLevel extends Level {
           turrets.push(turret);
         }
       },
-      ladningPads: () => {
-        let ladningPads = [];
+      landingPads: () => {
+        let landingPads = [];
         for (let i = 0; i < 10; i++) {
           let landingPad = new LandingPad();
           let direction = new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize();
-          landingPad.position.copy(direction).setLength(this.mars.hitRadius);
+          landingPad.position.copy(direction).setLength(this.mars.radius);
           landingPad.position.add(this.mars.position);
           landingPad.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction);
-          landingPad.AItarget = this.playerShip;
-          landingPad.ai = TURRET_AI;
-          ladningPads.push(landingPad);
+          landingPads.push(landingPad);
         }
       },
       fighterSpawner: () => {
         let enemies = [];
         let fighterSpawner = setInterval(() => {
           let enemyShip = new Fighter();
-          enemyShip.position.subVectors(this.mars.position, this.playerShip.position).setLength(this.mars.hitRadius + 30);
+          enemyShip.position.subVectors(this.mars.position, this.playerShip.position).setLength(this.mars.radius + 30);
           enemyShip.position.add(this.mars.position);
           enemyShip.ai = FIGHTER_AI;
           enemyShip.team = 2;

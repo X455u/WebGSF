@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import SubdivisionModifier from './SubdivisionModifier';
 import Shot from './Shot';
 import {LOADER} from './GSFLoader';
-import {SOUND_LISTENER, SCENE} from './Game';
+import {SOUND_LISTENER} from './Game';
 
 let shotGeometry = new THREE.CylinderGeometry(0.05, 0.05, 5, 8, 1);
 shotGeometry.rotateX(Math.PI / 2);
@@ -27,7 +27,7 @@ class LaserShot extends Shot {
     super(shotGeometry, shotMaterial);
     this.lifetimeLeft = 5;
     this.velocity = 300;
-    this.damage = 5;
+    this.collisionDamage = 5;
 
     this.sound = new THREE.PositionalAudio(SOUND_LISTENER);
     this.sound.setBuffer(LOADER.get('laserSoundBuffer'));

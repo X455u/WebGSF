@@ -1,16 +1,12 @@
 import * as THREE from 'three';
 import GameObject from './GameObject';
 import {LOADER} from './GSFLoader';
-import {GAME} from './Game';
 
 const CLOUD_ROTATION_SPEED = 0.02;
 
 class SimpleEarth extends GameObject {
   constructor(radius, detail) {
     let geometry = new THREE.IcosahedronGeometry(radius, detail);
-    geometry.computeBoundingBox();
-    geometry.computeBoundingSphere();
-
     let material = new THREE.MeshPhongMaterial({
       color: 0xAAAAAA,
       shininess: 0,
@@ -21,9 +17,6 @@ class SimpleEarth extends GameObject {
     });
 
     super(geometry, material);
-
-    GAME.addStatic(this, true);
-    this.hitRadius = radius;
 
     // Clouds
     let cloudGeometry = new THREE.IcosahedronGeometry(radius * 1.05, detail);
@@ -38,6 +31,8 @@ class SimpleEarth extends GameObject {
     });
     this.clouds = new THREE.Mesh(cloudGeometry, cloudMaterial);
     this.add(this.clouds);
+
+    this.isStatic = true;
   }
 
   update(delta) {

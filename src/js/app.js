@@ -74,6 +74,7 @@ let music = new Howl({
 });
 music.play();
 
+let loop = true;
 
 // Game Loop
 let previousTime;
@@ -100,7 +101,7 @@ function render() {
   //   text.innerHTML += '<br/>fps: ' + fps;
   // }
 
-  requestAnimationFrame(render);
+  if (loop) requestAnimationFrame(render);
 }
 
 function initGame() {
@@ -153,12 +154,16 @@ function initGame() {
       missile.owner = playerShip;
     };
     document.getElementById('menu').setAttribute('hidden', '');
+
+    loop = true;
+    render();
   });
 }
 
 newGameButton.addEventListener('click', () => {
   if (newGameButton.hasAttribute('disabled')) return;
   newGameButton.setAttribute('disabled', '');
+  loop = false;
   initGame();
 });
 

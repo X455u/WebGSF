@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 
 import {CAMERA} from './GSFCamera';
+import gjk from './GJK';
 
 export const SCENE = new THREE.Scene();
 export const COLLIDABLES = [];
@@ -14,21 +15,110 @@ function remove(element, list) {
 
 // Object pool
 const VECTOR3_A = new THREE.Vector3();
+const VECTOR3_B = new THREE.Vector3();
 
 class Game {
 
   constructor() {
     this.objects = [];
     this.level = null;
+    this.i = 0;
   }
 
   update(delta) {
     if (!this.level) return;
+    this.i++;
 
     this.level.update(delta);
 
+    let hitBoxes = {x: [], y: [], z: []};
+
     for (const object of this.objects) {
       object.update(delta);
+
+      if (!object.geometry || !object.geometry.boundingSphere) continue;
+
+      let rotatedCenter = VECTOR3_A.copy(object.geometry.boundingSphere.center).applyQuaternion(object.quaternion);
+      let boundingSpherePosition = VECTOR3_B.addVectors(object.position, rotatedCenter);
+      let boundingSphereRadius = object.geometry.boundingSphere.radius;
+
+      hitBoxes.x.push({object: object, coord: boundingSpherePosition.x - boundingSphereRadius});
+      hitBoxes.y.push({object: object, coord: boundingSpherePosition.y - boundingSphereRadius});
+      hitBoxes.z.push({object: object, coord: boundingSpherePosition.z - boundingSphereRadius});
+
+      hitBoxes.x.push({object: object, coord: boundingSpherePosition.x + boundingSphereRadius});
+      hitBoxes.y.push({object: object, coord: boundingSpherePosition.y + boundingSphereRadius});
+      hitBoxes.z.push({object: object, coord: boundingSpherePosition.z + boundingSphereRadius});
+    }
+
+    hitBoxes.x.sort((a, b) => a.coord - b.coord);
+    hitBoxes.y.sort((a, b) => a.coord - b.coord);
+    hitBoxes.z.sort((a, b) => a.coord - b.coord);
+
+    let possibleCollisions = [];
+    let withinX = new Set();
+    let withinY = new Set();
+    let withinZ = new Set();
+
+    let checkCollision = (within, current) => {
+      if (!within.delete(current)) {
+        for (let object of within) {
+          if (current.isStatic && object.isStatic) continue;
+          possibleCollisions.push({a: current, b: object});
+        }
+        within.add(current);
+      }
+    };
+
+    for (let i = 0; i < hitBoxes.x.length; i++) {
+      let x = hitBoxes.x[i];
+      let y = hitBoxes.y[i];
+      let z = hitBoxes.z[i];
+
+      checkCollision(withinX, x.object);
+      checkCollision(withinY, y.object);
+      checkCollision(withinZ, z.object);
+    }
+
+    let collisionCounter = {};
+    while (possibleCollisions.length > 0) {
+      let collision = possibleCollisions.pop();
+      if (collisionCounter[collision.a.uuid]) {
+
+        if (collisionCounter[collision.a.uuid][collision.b.uuid]) {
+          collisionCounter[collision.a.uuid][collision.b.uuid]++;
+        } else {
+          collisionCounter[collision.a.uuid][collision.b.uuid] = 1;
+        }
+
+      } else if (collisionCounter[collision.b.uuid]) {
+
+        if (collisionCounter[collision.b.uuid][collision.a.uuid]) {
+          collisionCounter[collision.b.uuid][collision.a.uuid]++;
+        } else {
+          collisionCounter[collision.b.uuid][collision.a.uuid] = 1;
+        }
+
+      } else {
+        collisionCounter[collision.a.uuid] = {};
+        collisionCounter[collision.a.uuid][collision.b.uuid] = 1;
+      }
+    }
+
+    let collisions = [];
+    for (let uuidA in collisionCounter) {
+      for (let uuidB in collisionCounter[uuidA]) {
+        if (collisionCounter[uuidA][uuidB] === 3) collisions.push({a: uuidA, b: uuidB});
+      }
+    }
+
+    for (let collision of collisions) {
+      let a = this.objects.find(obj => obj.uuid === collision.a);
+      let b = this.objects.find(obj => obj.uuid === collision.b);
+      if (gjk(a, b)) {
+        a.dealDamage(b.collisionDamage);
+        b.dealDamage(a.collisionDamage);
+      }
     }
 
     SOUND_LISTENER.up.copy(VECTOR3_A.set(0, 1, 0).applyQuaternion(CAMERA.quaternion));
@@ -47,22 +137,10 @@ class Game {
     }
   }
 
-  addObject(object, isShootable) {
+  addObject(object) {
     SCENE.add(object);
     this.objects.push(object);
-    if (isShootable) COLLIDABLES.push(object);
-  }
-
-  addStatic(object, isShootable) {
-    SCENE.add(object);
-    this.objects.push(object);
-    if (isShootable) COLLIDABLES.push(object);
-  }
-
-  addShot(object, isShootable) {
-    SCENE.add(object);
-    this.objects.push(object);
-    if (isShootable) COLLIDABLES.push(object);
+    COLLIDABLES.push(object);
   }
 
   loadLevel(level) {
