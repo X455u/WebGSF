@@ -7,7 +7,7 @@ let MAX_ITERATIONS = 256;
 
 function getFarthestPoint(shape, d) { // vertices of shape and direction (normalized)
 
-  let vertices = shape.geometry.vertices;
+  let vertices = shape.collisionHull.geometry.vertices;
 
   // Project all vertices onto shape and get the longest
   let p = shape.localToWorld(vertices[0].clone());

@@ -31,6 +31,8 @@ class GameObject extends THREE.Mesh {
     this.isStatic = false; // Static objects don't check collision with eachother
 
     GAME.addObject(this);
+
+    this.collisionHull = this;
   }
 
   update() {}
