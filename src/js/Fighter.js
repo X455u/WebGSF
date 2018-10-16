@@ -15,6 +15,24 @@ const THRUSTER_POSITIONS = [
   new THREE.Vector3(0.8, -0.25, 1) // Down-right
 ];
 
+const COLLISION_HULL = new THREE.Object3D();
+COLLISION_HULL.geometry = {};
+COLLISION_HULL.geometry.vertices = [
+  new THREE.Vector3(2.50, 1.50, 2.00),
+  new THREE.Vector3(2.50, -1.50, 2.00),
+  new THREE.Vector3(-2.50, 1.50, 2.00),
+  new THREE.Vector3(-2.50, -1.50, 2.00),
+  new THREE.Vector3(-2.50, -1.50, -1.75),
+  new THREE.Vector3(2.50, -1.50, -1.75),
+  new THREE.Vector3(2.50, 1.50, -1.75),
+  new THREE.Vector3(-2.50, 1.50, -1.75),
+  new THREE.Vector3(1.50, -0.25, -6.75),
+  new THREE.Vector3(-1.50, -0.25, -6.75)
+];
+for (let vec of COLLISION_HULL.geometry.vertices) {
+  vec.multiplyScalar(0.5);
+}
+
 class Fighter extends Ship {
   constructor() {
     super(LOADER.get('fighterGeometry'), LOADER.get('fighterMaterial'), {
@@ -61,6 +79,8 @@ class Fighter extends Ship {
     this.sound.setRolloffFactor(2);
     this.add(this.sound);
     this.sound.play();
+
+    this.collisionHull = COLLISION_HULL;
   }
 
   update(delta) {
