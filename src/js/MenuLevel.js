@@ -22,6 +22,11 @@ class MenuLevel extends Level {
         sun.position.z = -6000;
         return sun;
       },
+      ambientLight: () => {
+        let ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
+        SCENE.add(ambientLight);
+        return ambientLight;
+      },
       background: () => {
         let material = new THREE.MeshBasicMaterial({
           map: LOADER.get('backgroundTexture'),
