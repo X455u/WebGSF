@@ -110,9 +110,6 @@ function initGame() {
   // points.innerHTML = 'Points: ' + PLAYER.points;
   // document.body.appendChild(points);
 
-  let ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
-  SCENE.add(ambientLight);
-
   // Format debugging text
   let text;
   // let fps = 60.0;
@@ -169,8 +166,6 @@ newGameButton.addEventListener('click', () => {
 
 LOADER.manager.onLoad = () => {
   GAME.loadLevel(new MenuLevel()).then(() => {
-    let ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
-    SCENE.add(ambientLight);
     previousTime = new Date().getTime();
     render();
     document.body.removeChild(loadingText);

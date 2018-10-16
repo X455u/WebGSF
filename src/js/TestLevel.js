@@ -27,6 +27,11 @@ class TestLevel extends Level {
         let sun = new Sun();
         return sun;
       },
+      ambientLight: () => {
+        let ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
+        SCENE.add(ambientLight);
+        return ambientLight;
+      },
       background: () => {
         let material = new THREE.MeshBasicMaterial({
           map: LOADER.get('backgroundTexture'),
