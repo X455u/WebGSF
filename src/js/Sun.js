@@ -28,8 +28,8 @@ class Sun extends THREE.DirectionalLight {
     this.position.set(500, 500, -1000);
     this.castShadow = true;
     this.shadow.mapSize.width = this.shadow.mapSize.height = 512 * 4;
-    this.shadow.camera.left = this.shadow.camera.bottom = -200;
-    this.shadow.camera.right = this.shadow.camera.top = 200;
+    this.shadow.camera.left = this.shadow.camera.bottom = -500;
+    this.shadow.camera.right = this.shadow.camera.top = 500;
     this.shadow.camera.far = 10000;
 
     let texFlare0 = LOADER.get('texFlare0');
