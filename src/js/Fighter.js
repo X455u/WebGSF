@@ -78,7 +78,7 @@ class Fighter extends Ship {
     this.add(this.sound);
     this.sound.play();
 
-    this.collisionHull = COLLISION_HULL;
+    this.collisionHulls = [COLLISION_HULL];
   }
 
   update(delta) {

@@ -115,11 +115,19 @@ class Game {
     for (let collision of collisions) {
       let a = this.objects.find(obj => obj.uuid === collision.a);
       let b = this.objects.find(obj => obj.uuid === collision.b);
-      let hullA = a.collisionHull.map(vec => vec.clone().applyMatrix4(a.matrix));
-      let hullB = b.collisionHull.map(vec => vec.clone().applyMatrix4(b.matrix));
-      if (gjk(hullA, hullB)) {
-        a.dealDamage(b.collisionDamage);
-        b.dealDamage(a.collisionDamage);
+      let exit = false;
+      for (let hullA of a.collisionHulls) {
+        for (let hullB of b.collisionHulls) {
+          let hullAclone = hullA.map(vec => vec.clone().applyMatrix4(a.matrix));
+          let hullBclone = hullB.map(vec => vec.clone().applyMatrix4(b.matrix));
+          if (gjk(hullAclone, hullBclone)) {
+            a.dealDamage(b.collisionDamage);
+            b.dealDamage(a.collisionDamage);
+            exit = true;
+            break;
+          }
+        }
+        if (exit) break;
       }
     }
 
