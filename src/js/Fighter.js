@@ -15,9 +15,7 @@ const THRUSTER_POSITIONS = [
   new THREE.Vector3(0.8, -0.25, 1) // Down-right
 ];
 
-const COLLISION_HULL = new THREE.Object3D();
-COLLISION_HULL.geometry = {};
-COLLISION_HULL.geometry.vertices = [
+const COLLISION_HULL = [
   new THREE.Vector3(2.50, 1.50, 2.00),
   new THREE.Vector3(2.50, -1.50, 2.00),
   new THREE.Vector3(-2.50, 1.50, 2.00),
@@ -29,7 +27,7 @@ COLLISION_HULL.geometry.vertices = [
   new THREE.Vector3(1.50, -0.25, -6.75),
   new THREE.Vector3(-1.50, -0.25, -6.75)
 ];
-for (let vec of COLLISION_HULL.geometry.vertices) {
+for (let vec of COLLISION_HULL) {
   vec.multiplyScalar(0.5);
 }
 
