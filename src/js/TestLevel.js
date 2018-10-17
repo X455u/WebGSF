@@ -14,6 +14,7 @@ import Turret from './Turret';
 import {TURRET_AI} from './TurretAI';
 import Crosshair from './Crosshair';
 import LandingPad from './LandingPad';
+import TwinTurret from './TwinTurret';
 
 /**
  * Calls this.enemySpawnedCallback when spawning enemy fighters.
@@ -74,6 +75,7 @@ class TestLevel extends Level {
           turret.ai = TURRET_AI;
           turrets.push(turret);
         }
+        return turrets;
       },
       landingPads: () => {
         let landingPads = [];
@@ -85,6 +87,19 @@ class TestLevel extends Level {
           landingPad.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction);
           landingPads.push(landingPad);
         }
+        return landingPads;
+      },
+      twinTurrets: () => {
+        let twinTurrets = [];
+        for (let i = 0; i < 10; i++) {
+          let twinTurret = new TwinTurret();
+          let direction = new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize();
+          twinTurret.position.copy(direction).setLength(this.mars.radius);
+          twinTurret.position.add(this.mars.position);
+          twinTurret.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction);
+          twinTurrets.push(twinTurret);
+        }
+        return twinTurrets;
       },
       fighterSpawner: () => {
         let enemies = [];

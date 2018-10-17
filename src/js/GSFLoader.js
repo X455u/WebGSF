@@ -60,7 +60,6 @@ class GSFLoader {
     });
     this.BUFFER_GEOMETRY_LOADER.load('./media/landingpad.json', (geometry) => {
       this.assets['landingPadGeometry'] = new THREE.Geometry().fromBufferGeometry(geometry);
-      geometry.scale(2, 2, 2);
     });
     this.TEX_LOADER.load('./media/landingpad_nor.png', (normalMap) => {
       this.TEX_LOADER.load('./media/landingpad_comp.png', (texture) => {
@@ -72,6 +71,16 @@ class GSFLoader {
         });
       });
     });
+    this.BUFFER_GEOMETRY_LOADER.load('./media/objects/twin_turret/twinTurretBase.json', (geometry) => {
+      geometry.scale(2, 2, 2);
+      this.assets['twinTurretBaseGeometry'] = new THREE.Geometry().fromBufferGeometry(geometry);
+    });
+    for (let i = 0; i < 5; i++) {
+      this.BUFFER_GEOMETRY_LOADER.load('./media/objects/twin_turret/hull' + i + '.json', (geometry) => {
+        geometry.scale(2, 2, 2);
+        this.assets['twinTurretBaseHull' + i] = new THREE.Geometry().fromBufferGeometry(geometry).vertices;
+      });
+    }
     this.TEX_LOADER.load('./media/background.jpg', (texture) => {
       this.assets['backgroundTexture'] = texture;
     });
