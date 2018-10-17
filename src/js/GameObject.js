@@ -28,7 +28,7 @@ class GameObject extends THREE.Mesh {
 
     GAME.addObject(this);
 
-    this.collisionHull = this.geometry.vertices;
+    this.collisionHulls = [this.geometry.vertices];
   }
 
   update() {}
