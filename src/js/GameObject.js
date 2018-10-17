@@ -1,5 +1,4 @@
 import * as THREE from 'three';
-import {COLLIDABLES} from './Game';
 import {GAME} from './Game';
 
 // Object pool
@@ -9,9 +8,6 @@ const QUATERNION = new THREE.Quaternion();
 const VECTOR3_A = new THREE.Vector3();
 const VECTOR3_B = new THREE.Vector3();
 const VECTOR3_C = new THREE.Vector3();
-const VECTOR3_D = new THREE.Vector3();
-const VECTOR3_E = new THREE.Vector3();
-const VECTOR3_F = new THREE.Vector3();
 
 class GameObject extends THREE.Mesh {
   constructor(geometry, material) {
@@ -32,7 +28,7 @@ class GameObject extends THREE.Mesh {
 
     GAME.addObject(this);
 
-    this.collisionHull = this;
+    this.collisionHull = this.geometry.vertices;
   }
 
   update() {}
@@ -68,34 +64,5 @@ class GameObject extends THREE.Mesh {
     return velocityVec.multiplyScalar(this.velocity);
   }
 
-  // checkCollision(quaternion, distance, extraHitRadius = 0) {
-  //   let start = VECTOR3_A.copy(this.position);
-  //   let end = VECTOR3_B.copy(start);
-  //   let direction = VECTOR3_C.set(0, 0, -1);
-  //   direction.applyQuaternion(quaternion);
-  //   direction.multiplyScalar(distance);
-  //   end.add(direction);
-  //
-  //   let hitObject;
-  //   let hitDistance = Infinity;
-  //   let a1 = VECTOR3_D;
-  //   let a2 = VECTOR3_E;
-  //   for (let collidable of COLLIDABLES) {
-  //     if (collidable === this || collidable === this.owner) continue;
-  //     let collidableCenter = collidable.position;
-  //     if (this.position.distanceTo(collidableCenter) > distance + collidable.hitRadius + this.hitRadius + extraHitRadius) continue;
-  //     if (direction.dot(VECTOR3_F.subVectors(collidableCenter, start)) < 0) continue;
-  //     a1.subVectors(collidableCenter, start);
-  //     a2.subVectors(collidableCenter, end);
-  //     let radius = a1.cross(a2).length() / distance;
-  //     if (radius > collidable.hitRadius + this.hitRadius + extraHitRadius) continue;
-  //     let hitDistance2 = this.position.distanceTo(collidableCenter);
-  //     if (hitDistance2 < hitDistance) {
-  //       hitDistance = hitDistance2;
-  //       hitObject = collidable;
-  //     }
-  //   }
-  //   return hitObject;
-  // }
 }
 export default GameObject;

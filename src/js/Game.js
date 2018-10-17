@@ -115,7 +115,9 @@ class Game {
     for (let collision of collisions) {
       let a = this.objects.find(obj => obj.uuid === collision.a);
       let b = this.objects.find(obj => obj.uuid === collision.b);
-      if (gjk(a, b)) {
+      let hullA = a.collisionHull.map(vec => vec.clone().applyMatrix4(a.matrix));
+      let hullB = b.collisionHull.map(vec => vec.clone().applyMatrix4(b.matrix));
+      if (gjk(hullA, hullB)) {
         a.dealDamage(b.collisionDamage);
         b.dealDamage(a.collisionDamage);
       }
