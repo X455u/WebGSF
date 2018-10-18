@@ -71,7 +71,7 @@ class TestLevel extends Level {
           turret.position.copy(direction).setLength(this.mars.radius);
           turret.position.add(this.mars.position);
           turret.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction);
-          turret.AItarget = this.playerShip;
+          turret.target = this.playerShip;
           turret.ai = TURRET_AI;
           turrets.push(turret);
         }
@@ -97,6 +97,8 @@ class TestLevel extends Level {
           twinTurret.position.copy(direction).setLength(this.mars.radius);
           twinTurret.position.add(this.mars.position);
           twinTurret.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction);
+          twinTurret.target = this.playerShip;
+          twinTurret.ai = TURRET_AI;
           twinTurrets.push(twinTurret);
         }
         return twinTurrets;

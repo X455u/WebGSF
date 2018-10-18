@@ -2,6 +2,8 @@ import * as THREE from 'three';
 import GameObject from './GameObject';
 import {SOUND_LISTENER} from './Game';
 import {LOADER} from './GSFLoader';
+import Turret from './Turret';
+import LargePlasmaCannon from './LargePlasmaCannon';
 
 class TwinTurret extends GameObject {
   constructor() {
@@ -17,17 +19,60 @@ class TwinTurret extends GameObject {
     this.sound.play();
 
     this.isStatic = true;
+    this.ai = null;
+    this.target = null;
 
     this.collisionHulls = [];
     for (let i = 0; i < 5; i++) {
       this.collisionHulls.push(LOADER.get('twinTurretBaseHull' + i));
     }
+
+    let material = LOADER.get('railgunMaterial');
+
+    this.turret1 = new Turret(LOADER.get('plasmaTurretHeadGeometry'), material, LOADER.get('plasmaTurretGunGeometry'), material);
+    this.turret1.gun.translateOnAxis(new THREE.Vector3(0, 1, 0), 3.2);
+    this.turret1.gun.translateOnAxis(new THREE.Vector3(0, 0, 1), 1.6);
+    this.add(this.turret1);
+    this.turret1.translateOnAxis(new THREE.Vector3(1, 0, 0), -0.3);
+    this.turret1.translateOnAxis(new THREE.Vector3(0, 1, 0), 5.4);
+    this.turret1.translateOnAxis(new THREE.Vector3(0, 0, 1), 21.5);
+    this.turret1.weaponType = new LargePlasmaCannon();
+    this.turret1.weaponType.owner = this;
+    this.turret1.gun.add(this.turret1.weaponType);
+    this.turret1.weaponType.isShooting = false;
+    this.turret1.shoot = () => {
+      this.turret1.weaponType.shoot();
+    };
+
+    this.turret2 = new Turret(LOADER.get('plasmaTurretHeadGeometry'), material, LOADER.get('plasmaTurretGunGeometry'), material);
+    this.turret2.gun.translateOnAxis(new THREE.Vector3(0, 1, 0), 3.2);
+    this.turret2.gun.translateOnAxis(new THREE.Vector3(0, 0, 1), 1.6);
+    this.add(this.turret2);
+    this.turret2.translateOnAxis(new THREE.Vector3(1, 0, 0), -0.3);
+    this.turret2.translateOnAxis(new THREE.Vector3(0, 1, 0), 5.4);
+    this.turret2.translateOnAxis(new THREE.Vector3(0, 0, 1), -21.5);
+    this.turret2.weaponType = new LargePlasmaCannon();
+    this.turret2.weaponType.owner = this;
+    this.turret2.gun.add(this.turret2.weaponType);
+    this.turret2.weaponType.isShooting = false;
+    this.turret2.shoot = () => {
+      this.turret2.weaponType.shoot();
+    };
+  }
+
+  update(delta) {
+    if (this.ai) {
+      this.ai.update(this.turret1, this.target, delta);
+      this.ai.update(this.turret2, this.target, delta);
+    }
+
+    this.turret1.weaponType.update(delta);
+    this.turret2.weaponType.update(delta);
   }
 
   destroy() {
     super.destroy();
     this.sound.stop();
   }
-
 }
 export default TwinTurret;
