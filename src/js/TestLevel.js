@@ -10,7 +10,7 @@ import SimpleMars from './SimpleMars';
 import SimpleEarth from './SimpleEarth';
 import Fighter from './Fighter';
 import {FIGHTER_AI} from './FighterAI';
-import Turret from './Turret';
+import PlasmaTurret from './PlasmaTurret';
 import {TURRET_AI} from './TurretAI';
 import Crosshair from './Crosshair';
 import LandingPad from './LandingPad';
@@ -66,7 +66,7 @@ class TestLevel extends Level {
       turrets: () => {
         let turrets = [];
         for (let i = 0; i < 10; i++) {
-          let turret = new Turret();
+          let turret = new PlasmaTurret();
           let direction = new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize();
           turret.position.copy(direction).setLength(this.mars.radius);
           turret.position.add(this.mars.position);
