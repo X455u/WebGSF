@@ -19,8 +19,8 @@ class Turret extends THREE.Mesh {
   constructor(headGeometry, headMaterial, gunGeometry, gunMaterial) {
     super(headGeometry, headMaterial);
 
-    this.gunMesh = new THREE.Mesh(gunGeometry, gunMaterial);
-    this.add(this.gunMesh);
+    this.gun = new THREE.Mesh(gunGeometry, gunMaterial);
+    this.add(this.gun);
 
     this.gunRotationMax = GUN_ROTATION_MAX;
     this.gunRotationMin = GUN_ROTATION_MIN;
@@ -32,7 +32,7 @@ class Turret extends THREE.Mesh {
     this.getWorldPosition(headWorldPos);
     let directionFromHead = VECTOR3_A.subVectors(targetPosition, headWorldPos);
     let gunWorldPos = VECTOR3_F;
-    this.gunMesh.getWorldPosition(gunWorldPos);
+    this.gun.getWorldPosition(gunWorldPos);
     let directionFromGun = VECTOR3_E.subVectors(targetPosition, gunWorldPos);
 
     // Turn head
@@ -48,16 +48,16 @@ class Turret extends THREE.Mesh {
 
     // Turn gun
     let gunQuaternion = QUATERNION_A;
-    this.gunMesh.getWorldQuaternion(gunQuaternion);
+    this.gun.getWorldQuaternion(gunQuaternion);
     let gunLeft = VECTOR3_B.set(1, 0, 0).applyQuaternion(gunQuaternion);
     let gunDirection = VECTOR3_C.set(0, 0, -1).applyQuaternion(gunQuaternion);
     let gunTargetDirection = VECTOR3_D.copy(directionFromGun).projectOnPlane(gunLeft).normalize();
     let gunAngle = gunDirection.angleTo(gunTargetDirection) || Number.EPSILON; // Workaround for being NaN sometimes
     let gunUp = VECTOR3_B.set(0, 1, 0).applyQuaternion(gunQuaternion);
     let gunTurnCoef = Math.sign(gunUp.dot(gunTargetDirection));
-    this.gunMesh.rotateX(gunTurnCoef * Math.min(gunAngle, this.turnSpeed * delta));
+    this.gun.rotateX(gunTurnCoef * Math.min(gunAngle, this.turnSpeed * delta));
 
-    this.gunMesh.rotation.x = Math.max(GUN_ROTATION_MIN, Math.min(this.gunMesh.rotation.x, GUN_ROTATION_MAX));
+    this.gun.rotation.x = Math.max(GUN_ROTATION_MIN, Math.min(this.gun.rotation.x, GUN_ROTATION_MAX));
   }
 }
 export default Turret;

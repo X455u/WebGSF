@@ -11,42 +11,29 @@ class PlasmaTurret extends GameObject {
     super(LOADER.get('railgunBaseGeometry'), material);
 
     this.turret = new Turret(LOADER.get('plasmaTurretHeadGeometry'), material, LOADER.get('plasmaTurretGunGeometry'), material);
-    this.turret.gunMesh.translateOnAxis(new THREE.Vector3(0, 1, 0), 3.2);
-    this.turret.gunMesh.translateOnAxis(new THREE.Vector3(0, 0, 1), 1.6);
+    this.turret.gun.translateOnAxis(new THREE.Vector3(0, 1, 0), 3.2);
+    this.turret.gun.translateOnAxis(new THREE.Vector3(0, 0, 1), 1.6);
     this.add(this.turret);
 
     this.turret.translateOnAxis(new THREE.Vector3(0, 1, 0), 6);
 
-    // AI
-    this.ai = null;
-    this.AItarget = null;
-
-    // Stats
     this.gun = new LargePlasmaCannon();
     this.gun.owner = this;
-    this.turret.gunMesh.add(this.gun);
+    this.turret.gun.add(this.gun);
+    this.turret.shoot = () => {
+      this.gun.shoot();
+    };
+
+    // AI
+    this.ai = null;
+    this.target = null;
 
     this.isStatic = true;
   }
 
   update(delta) {
-    if (this.ai) this.ai.update(this, delta);
-
+    if (this.ai) this.ai.update(this.turret, this.target, delta);
     this.gun.update(delta);
-    if (this.isShooting) {
-      this.gun.shoot();
-      this.isShooting = false;
-    }
-  }
-
-  shoot() {
-    let wasFalse = !this.isShooting;
-    this.isShooting = true;
-    return wasFalse;
-  }
-
-  turnTowards(target, delta) {
-    this.turret.turnTowards(target, delta);
   }
 }
 export default PlasmaTurret;

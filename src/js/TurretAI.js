@@ -16,10 +16,12 @@ class TurretAI {
 
   }
 
-  update(turret, delta) {
+  update(turret, targetObject, delta) {
+    if (!targetObject) return;
+
     let worldPos = VECTOR3_D;
     turret.gun.getWorldPosition(worldPos);
-    let aimTarget = this.getAimTarget(worldPos, turret.AItarget.position, turret.AItarget.getVelocityVec(), turret.gun.muzzleVelocity);
+    let aimTarget = this.getAimTarget(worldPos, targetObject.position, targetObject.getVelocityVec(), turret.gun.muzzleVelocity);
     turret.turnTowards(aimTarget, delta);
 
     let worldQuat = QUATERNION_A;
