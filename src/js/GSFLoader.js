@@ -29,19 +29,16 @@ class GSFLoader {
       });
     });
     this.JSON_LOADER.load('./media/railgun_base.json', (geometry) => {
+      geometry.scale(2, 2, 2);
       this.assets['railgunBaseGeometry'] = geometry;
-      geometry.scale(2, 2, 2);
     });
-    this.JSON_LOADER.load('./media/railgun_head.json', (geometry) => {
-      this.assets['railgunHeadGeometry'] = geometry;
+    this.BUFFER_GEOMETRY_LOADER.load('./media/plasmaTurretHeadGeometry.json', (geometry) => {
       geometry.scale(2, 2, 2);
-      geometry.translate(0, -3.1, 0);
+      this.assets['plasmaTurretHeadGeometry'] = new THREE.Geometry().fromBufferGeometry(geometry);
     });
-    this.JSON_LOADER.load('./media/railgun_gun.json', (geometry) => {
-      this.assets['railgunGunGeometry'] = geometry;
-      geometry.translate(0, -4.7, -0.9);
-      geometry.rotateX(-28 / 360 * 2 * Math.PI);
+    this.BUFFER_GEOMETRY_LOADER.load('./media/plasmaTurretGunGeometry.json', (geometry) => {
       geometry.scale(2, 2, 2);
+      this.assets['plasmaTurretGunGeometry'] = new THREE.Geometry().fromBufferGeometry(geometry);
     });
     this.TEX_LOADER.load('./media/railgun_ao.png', (aoMap) => {
       this.TEX_LOADER.load('./media/railgun_nor.png', (normalMap) => {
