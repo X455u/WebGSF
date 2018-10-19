@@ -15,6 +15,7 @@ import {TURRET_AI} from './TurretAI';
 import Crosshair from './Crosshair';
 import LandingPad from './LandingPad';
 import TwinTurret from './TwinTurret';
+import Mothership from './Mothership';
 
 /**
  * Calls this.enemySpawnedCallback when spawning enemy fighters.
@@ -62,6 +63,13 @@ class TestLevel extends Level {
         PLAYER.setShip(playerShip);
         CAMERA.setTarget(playerShip);
         return playerShip;
+      },
+      mothership: () => {
+        let mothership = new Mothership();
+        mothership.position.set(-1000, 300, -500);
+        mothership.target = this.playerShip;
+        mothership.ai = TURRET_AI;
+        return mothership;
       },
       turrets: () => {
         let turrets = [];
