@@ -21,7 +21,8 @@ class TurretAI {
 
     let worldPos = VECTOR3_D;
     turret.gun.getWorldPosition(worldPos);
-    let aimTarget = this.getAimTarget(worldPos, targetObject.position, targetObject.getVelocityVec(), turret.gun.muzzleVelocity);
+    // let aimTarget = this.getAimTarget(worldPos, targetObject.position, targetObject.getVelocityVec(), turret.gun.muzzleVelocity);
+    let aimTarget = this.getAimTarget(worldPos, targetObject.position, targetObject.getVelocityVec(), 200);
     turret.turnTowards(aimTarget, delta);
 
     let worldQuat = QUATERNION_A;

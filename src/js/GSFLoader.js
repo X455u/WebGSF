@@ -74,6 +74,18 @@ class GSFLoader {
         this.assets['twinTurretBaseHull' + i] = new THREE.Geometry().fromBufferGeometry(geometry).vertices;
       });
     }
+    this.BUFFER_GEOMETRY_LOADER.load('./media/objects/mothership/mothershipGeometry.json', (geometry) => {
+      geometry.scale(40, 40, 40);
+      this.assets['mothershipGeometry'] = new THREE.Geometry().fromBufferGeometry(geometry);
+    });
+    this.TEX_LOADER.load('./media/objects/mothership/mothership_nor.png', (normalMap) => {
+      this.TEX_LOADER.load('./media/objects/mothership/mothership_col.png', (texture) => {
+        this.assets['mothershipMaterial'] = new THREE.MeshPhongMaterial({
+          map: texture,
+          normalMap: normalMap
+        });
+      });
+    });
     this.TEX_LOADER.load('./media/background.jpg', (texture) => {
       this.assets['backgroundTexture'] = texture;
     });

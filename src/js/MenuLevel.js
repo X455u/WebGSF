@@ -7,7 +7,7 @@ import Sun from './Sun';
 import SimpleEarth from './SimpleEarth';
 import Fighter from './Fighter';
 import {FIGHTER_AI} from './FighterAI';
-// import {CAMERA} from './GSFCamera';
+import Mothership from './Mothership';
 
 class MenuLevel extends Level {
   constructor(playerShip) {
@@ -46,6 +46,13 @@ class MenuLevel extends Level {
         earth.rotateY(Math.random() * 2 * Math.PI);
         earth.rotateZ(Math.random() * 2 * Math.PI);
         return earth;
+      },
+      mothership: () => {
+        let mothership = new Mothership();
+        mothership.position.set(500, 0, -700);
+        mothership.rotateZ(-0.1 * Math.PI);
+        mothership.rotateX(0.1 * Math.PI);
+        return mothership;
       },
       fighters: () => {
         let fighters = [];
