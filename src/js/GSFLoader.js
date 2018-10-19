@@ -40,17 +40,14 @@ class GSFLoader {
       geometry.scale(2, 2, 2);
       this.assets['plasmaTurretGunGeometry'] = new THREE.Geometry().fromBufferGeometry(geometry);
     });
-    this.TEX_LOADER.load('./media/railgun_ao.png', (aoMap) => {
-      this.TEX_LOADER.load('./media/railgun_nor.png', (normalMap) => {
-        this.TEX_LOADER.load('./media/railgun_comp.png', (texture) => {
-          this.TEX_LOADER.load('./media/railgun_spec.png', (specular) => {
-            this.assets['railgunMaterial'] = new THREE.MeshPhongMaterial({
-              map: texture,
-              aoMap: aoMap,
-              normalMap: normalMap,
-              specularMap: specular,
-              color: 0x444444
-            });
+    this.TEX_LOADER.load('./media/railgun_nor.png', (normalMap) => {
+      this.TEX_LOADER.load('./media/railgun_comp.png', (texture) => {
+        this.TEX_LOADER.load('./media/railgun_spec.png', (specular) => {
+          this.assets['railgunMaterial'] = new THREE.MeshPhongMaterial({
+            map: texture,
+            normalMap: normalMap,
+            specularMap: specular,
+            color: 0x808080
           });
         });
       });
@@ -63,8 +60,7 @@ class GSFLoader {
         this.assets['landingPadMaterial'] = new THREE.MeshPhongMaterial({
           map: texture,
           normalMap: normalMap,
-          normalMapType: THREE.ObjectSpaceNormalMap,
-          color: 0x444444
+          normalMapType: THREE.ObjectSpaceNormalMap
         });
       });
     });

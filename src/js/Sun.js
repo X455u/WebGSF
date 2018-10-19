@@ -21,7 +21,7 @@ function LensflareUpdateCallback(object) {
 class Sun extends THREE.DirectionalLight {
 
   constructor() {
-    super(0xfffacd, 3);
+    super(0xfffacd, 1.2);
     SCENE.add(this);
     SCENE.add(this.target);
 

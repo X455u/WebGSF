@@ -8,8 +8,6 @@ class SimpleEarth extends GameObject {
   constructor(radius, detail) {
     let geometry = new THREE.IcosahedronGeometry(radius, detail);
     let material = new THREE.MeshPhongMaterial({
-      color: 0xAAAAAA,
-      shininess: 0,
       map: LOADER.get('earthTexture'),
       normalMap: LOADER.get('earthNormalMap'),
       specularMap: LOADER.get('earthSpecularMap'),
