@@ -7,7 +7,7 @@ import LargePlasmaCannon from './LargePlasmaCannon';
 
 class TwinTurret extends GameObject {
   constructor() {
-    super(LOADER.get('twinTurretBaseGeometry'), new THREE.MeshPhongMaterial({color: 0x666666}));
+    super(LOADER.get('twinTurretBaseGeometry'), LOADER.get('twinTurretTexture'));
 
     this.sound = new THREE.PositionalAudio(SOUND_LISTENER);
     this.sound.setBuffer(LOADER.get('low_pulsating_hum'));

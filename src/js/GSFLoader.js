@@ -74,6 +74,11 @@ class GSFLoader {
         this.assets['twinTurretBaseHull' + i] = new THREE.Geometry().fromBufferGeometry(geometry).vertices;
       });
     }
+    this.TEX_LOADER.load('./media/objects/twin_turret/twinTurretTexture.png', (texture) => {
+      this.assets['twinTurretTexture'] = new THREE.MeshPhongMaterial({
+        map: texture
+      });
+    });
     this.BUFFER_GEOMETRY_LOADER.load('./media/objects/mothership/mothershipGeometry.json', (geometry) => {
       geometry.scale(40, 40, 40);
       this.assets['mothershipGeometry'] = new THREE.Geometry().fromBufferGeometry(geometry);
