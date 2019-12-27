@@ -1,37 +1,43 @@
 /* eslint-env node */
-var path = require('path');
+const path = require("path");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 module.exports = {
-  entry: [
-    'babel-polyfill',
-    './src/js/app.js'
-  ],
-  output: {
-    path: path.resolve(__dirname, 'build/js'),
-    filename: 'app.js'
+  entry: {
+    main: ["webpack/hot/dev-server", "./src/js/app.js"]
   },
-  target: 'web',
+  mode: "development",
+  output: {
+    path: path.resolve(__dirname, "build"),
+    filename: "app.js"
+  },
+  devServer: {
+    contentBase: path.join(__dirname, ""),
+    compress: true,
+    port: 9000
+  },
   module: {
-    loaders: [
+    rules: [
       {
-        loader: 'babel-loader',
-        include: [
-          path.resolve(__dirname, 'src/js')
-        ],
         test: /\.js$/,
-        query: {
-          plugins: ['transform-runtime'],
-          presets: ['es2015']
+        exclude: /node_modules/,
+        use: {
+          loader: "babel-loader"
         }
       },
       {
         test: /\.(html)$/,
-        loader: 'html-loader'
+        loader: "html-loader"
       },
       {
-        test: /\.css$/,
-        loader: 'style-loader!css-loader'
+        test: /\.css$/i,
+        use: ["style-loader", "css-loader"]
       }
     ]
-  }
+  },
+  plugins: [
+    new HtmlWebpackPlugin({
+      filename: "index.html"
+    })
+  ]
 };
