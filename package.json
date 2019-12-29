@@ -22,7 +22,7 @@
     "core-js": "^3.6.1",
     "howler": "^2.0.4",
     "keymaster": "^1.6.2",
-    "lodash": "^3.10.1",
+    "lodash": "^4.17.15",
     "three": "^0.97.0",
     "three-full": "^11.3.2"
   },

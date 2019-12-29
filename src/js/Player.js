@@ -74,11 +74,14 @@ class Player {
 
     if (!this.motionControlled) {
       // Ship steering
-      this.turnParameters = _({x: ['down', 'up'], z: ['left', 'right']}).map(
-        (keys, k) => [k, _(keys).map(
-          (key, index) => (keymaster.isPressed(key) ? 1 : 0) * (index === 0 ? 1 : -1)
-        ).sum()]
-      ).object().value();
+      this.turnParameters = {
+        x:
+          Number(keymaster.isPressed("down")) -
+          Number(keymaster.isPressed("up")),
+        z:
+          Number(keymaster.isPressed("left")) -
+          Number(keymaster.isPressed("right"))
+      };
       // Ship acceleration
       if (keymaster.isPressed('space')) this.ship.thrust();
       if (keymaster.isPressed('x')) this.ship.shoot();
