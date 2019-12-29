@@ -11,6 +11,7 @@ import TestLevel from './TestLevel';
 import MenuLevel from './MenuLevel';
 
 import '../hud/menu.css';
+import '../index.css';
 const menu = require('../hud/menu.html');
 
 const DEBUG = false;
