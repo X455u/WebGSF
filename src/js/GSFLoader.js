@@ -3,7 +3,6 @@ import * as THREE from 'three';
 class GSFLoader {
   constructor() {
     this.manager = new THREE.LoadingManager();
-    this.JSON_LOADER = new THREE.JSONLoader(this.manager);
     this.BUFFER_GEOMETRY_LOADER = new THREE.BufferGeometryLoader(this.manager);
     this.TEX_LOADER = new THREE.TextureLoader(this.manager);
     this.AUDIO_LOADER = new THREE.AudioLoader(this.manager);
@@ -16,9 +15,8 @@ class GSFLoader {
 
   load() {
     /* eslint-disable dot-notation */
-    this.JSON_LOADER.load('./media/nicce_fighter.json', (geometry) => {
-      geometry.scale(0.5, 0.5, 0.5);
-      this.assets['fighterGeometry'] = geometry;
+    this.BUFFER_GEOMETRY_LOADER.load('./media/nicce_fighter_buf.json', (geometry) => {
+      this.assets['fighterGeometry'] = new THREE.Geometry().fromBufferGeometry(geometry);
     });
     this.TEX_LOADER.load('./media/spaceship_comp.png', (texture) => {
       this.TEX_LOADER.load('./media/spaceship_nor.png', (normalMap) => {
@@ -28,9 +26,8 @@ class GSFLoader {
         });
       });
     });
-    this.JSON_LOADER.load('./media/railgun_base.json', (geometry) => {
-      geometry.scale(2, 2, 2);
-      this.assets['railgunBaseGeometry'] = geometry;
+    this.BUFFER_GEOMETRY_LOADER.load('./media/railgun_base_buf.json', (geometry) => {
+      this.assets['railgunBaseGeometry'] = new THREE.Geometry().fromBufferGeometry(geometry);
     });
     this.BUFFER_GEOMETRY_LOADER.load('./media/plasmaTurretHeadGeometry.json', (geometry) => {
       geometry.scale(2, 2, 2);
