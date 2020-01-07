@@ -1,22 +1,7 @@
 import * as THREE from 'three';
-import {LOADER} from './GSFLoader';
 import {SCENE} from './Game';
-import {Lensflare, LensflareElement} from 'three-full';
-
-function LensflareUpdateCallback(object) {
-  let f, fl = object.Lensflares.length;
-  let flare;
-  let vecX = -object.positionScreen.x * 2;
-  let vecY = -object.positionScreen.y * 2;
-  for (f = 0; f < fl; f++) {
-    flare = object.Lensflares[ f ];
-    flare.x = object.positionScreen.x + vecX * flare.distance;
-    flare.y = object.positionScreen.y + vecY * flare.distance;
-    flare.rotation = 0;
-  }
-  object.Lensflares[2].y += 0.025;
-  object.Lensflares[3].rotation = object.positionScreen.x * 0.5 + THREE.Math.degToRad(45);
-}
+// import {LOADER} from './GSFLoader';
+// import {Lensflare, LensflareElement} from 'three-full';
 
 class Sun extends THREE.DirectionalLight {
 
@@ -32,20 +17,18 @@ class Sun extends THREE.DirectionalLight {
     this.shadow.camera.right = this.shadow.camera.top = 500;
     this.shadow.camera.far = 10000;
 
-    let texFlare0 = LOADER.get('texFlare0');
-    let texFlare2 = LOADER.get('texFlare2');
-    let texFlare3 = LOADER.get('texFlare3');
-    let lensflare = new Lensflare();
-    lensflare.addElement(new LensflareElement(texFlare0, 512, 0.0, new THREE.Color(0xffffff), THREE.AdditiveBlending));
-    lensflare.addElement(new LensflareElement(texFlare2, 512, 0.0, new THREE.Color(0xffffff), THREE.AdditiveBlending));
-    lensflare.addElement(new LensflareElement(texFlare2, 512, 0.0, new THREE.Color(0xffffff), THREE.AdditiveBlending));
-    lensflare.addElement(new LensflareElement(texFlare2, 512, 0.0, new THREE.Color(0xffffff), THREE.AdditiveBlending));
-    lensflare.addElement(new LensflareElement(texFlare3, 60, 0.6, new THREE.Color(0xffffff), THREE.AdditiveBlending));
-    lensflare.addElement(new LensflareElement(texFlare3, 70, 0.7, new THREE.Color(0xffffff), THREE.AdditiveBlending));
-    lensflare.addElement(new LensflareElement(texFlare3, 120, 0.9, new THREE.Color(0xffffff), THREE.AdditiveBlending));
-    lensflare.addElement(new LensflareElement(texFlare3, 70, 1.0, new THREE.Color(0xffffff), THREE.AdditiveBlending));
-    lensflare.customUpdateCallback = LensflareUpdateCallback;
-    this.add(lensflare);
+    // let texFlare0 = LOADER.get('texFlare0');
+    // let texFlare2 = LOADER.get('texFlare2');
+    // let texFlare3 = LOADER.get('texFlare3');
+
+    // let lensflare = new Lensflare();
+    // lensflare.addElement(new LensflareElement(texFlare0, 512, 0.0));
+    // lensflare.addElement(new LensflareElement(texFlare2, 512, 0.0));
+    // lensflare.addElement(new LensflareElement(texFlare3, 60, 0.6));
+    // lensflare.addElement(new LensflareElement(texFlare3, 70, 0.7));
+    // lensflare.addElement(new LensflareElement(texFlare3, 120, 0.9));
+    // lensflare.addElement(new LensflareElement(texFlare3, 70, 1.0));
+    // this.add(lensflare);
   }
 
 }

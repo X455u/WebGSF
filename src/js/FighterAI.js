@@ -55,6 +55,7 @@ class FighterAI {
 
   getAimTarget(shipPosition, targetPosition, targetVelocity, shotSpeed) {
     let thisToTarget = VECTOR3_A.copy(targetPosition).sub(shipPosition);
+    if (thisToTarget.length() === 0 || targetVelocity.length() === 0) return targetPosition;
     let targetMoveAngle = thisToTarget.angleTo(targetVelocity); // 0 or PI when paralell to vector from this to target.
     let aimAdvanceAngle = Math.asin(Math.sin(targetMoveAngle) * targetVelocity.length() / shotSpeed);
     let aimAdvanceAxis = VECTOR3_B.crossVectors(thisToTarget, targetVelocity).normalize();
