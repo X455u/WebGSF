@@ -4,17 +4,11 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 module.exports = {
   entry: {
-    main: ["webpack/hot/dev-server", "./src/js/app.js"]
+    main: ["./src/js/app.js"]
   },
-  mode: "development",
   output: {
     path: path.resolve(__dirname, "build"),
     filename: "app.js"
-  },
-  devServer: {
-    contentBase: path.join(__dirname, ""),
-    compress: true,
-    port: 9000
   },
   module: {
     rules: [
@@ -34,10 +28,5 @@ module.exports = {
         use: ["style-loader", "css-loader"]
       }
     ]
-  },
-  plugins: [
-    new HtmlWebpackPlugin({
-      filename: "index.html"
-    })
-  ]
+  }
 };
