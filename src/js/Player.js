@@ -76,11 +76,11 @@ class Player {
       // Ship steering
       this.turnParameters = {
         x:
-          Number(keymaster.isPressed("down")) -
-          Number(keymaster.isPressed("up")),
+          Number(keymaster.isPressed('down')) -
+          Number(keymaster.isPressed('up')),
         z:
-          Number(keymaster.isPressed("left")) -
-          Number(keymaster.isPressed("right"))
+          Number(keymaster.isPressed('left')) -
+          Number(keymaster.isPressed('right'))
       };
       // Ship acceleration
       if (keymaster.isPressed('space')) this.ship.thrust();

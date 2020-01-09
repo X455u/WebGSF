@@ -1,14 +1,13 @@
 /* eslint-env node */
-const path = require("path");
-const HtmlWebpackPlugin = require("html-webpack-plugin");
+const path = require('path');
 
 module.exports = {
   entry: {
-    main: ["./src/js/app.js"]
+    main: ['./src/js/app.js']
   },
   output: {
-    path: path.resolve(__dirname, "build"),
-    filename: "app.js"
+    path: path.resolve(__dirname, 'build'),
+    filename: 'app.js'
   },
   module: {
     rules: [
@@ -16,16 +15,16 @@ module.exports = {
         test: /\.js$/,
         exclude: /node_modules/,
         use: {
-          loader: "babel-loader"
+          loader: 'babel-loader'
         }
       },
       {
         test: /\.(html)$/,
-        loader: "html-loader"
+        loader: 'html-loader'
       },
       {
         test: /\.css$/i,
-        use: ["style-loader", "css-loader"]
+        use: ['style-loader', 'css-loader']
       }
     ]
   }
