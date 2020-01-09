@@ -4,11 +4,13 @@ import GameObject from './GameObject';
 import LargePlasmaCannon from './LargePlasmaCannon';
 import {LOADER} from './GSFLoader';
 import Turret from './Turret';
+import {GAME} from './Game';
 
 class PlasmaTurret extends GameObject {
   constructor() {
     let material = LOADER.get('railgunMaterial');
     super(LOADER.get('railgunBaseGeometry'), material);
+    GAME.addObject(this);
 
     this.turret = new Turret(LOADER.get('plasmaTurretHeadGeometry'), material, LOADER.get('plasmaTurretGunGeometry'), material);
     this.turret.gun.translateOnAxis(new THREE.Vector3(0, 1, 0), 3.2);

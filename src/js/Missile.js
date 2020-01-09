@@ -51,10 +51,10 @@ class Missile extends Shot {
     if (this.target && !this.target.removed) {
       this.turnTowards(this.target.position, delta);
     } else {
-      // let newTarget = this.checkCollision(this.quaternion, 50, 20);
-      // if (newTarget instanceof Ship) {
-      //   this.target = newTarget;
-      // }
+      let newTarget = this.checkCollision(this.quaternion, 50, 20);
+      if (newTarget instanceof Ship) {
+        this.target = newTarget;
+      }
     }
     super.update(delta);
   }

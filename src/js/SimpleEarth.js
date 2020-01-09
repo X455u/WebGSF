@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import GameObject from './GameObject';
 import {LOADER} from './GSFLoader';
+import {GAME} from './Game';
 
 const CLOUD_ROTATION_SPEED = 0.02;
 
@@ -15,6 +16,7 @@ class SimpleEarth extends GameObject {
     });
 
     super(geometry, material);
+    GAME.addObject(this);
 
     // Clouds
     let cloudGeometry = new THREE.IcosahedronGeometry(radius * 1.05, detail);
@@ -30,6 +32,7 @@ class SimpleEarth extends GameObject {
     this.clouds = new THREE.Mesh(cloudGeometry, cloudMaterial);
     this.add(this.clouds);
 
+    this.hitRadius = radius;
     this.isStatic = true;
   }
 

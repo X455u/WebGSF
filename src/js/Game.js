@@ -147,10 +147,10 @@ class Game {
     }
   }
 
-  addObject(object) {
+  addObject(object, collidable = true) {
     SCENE.add(object);
     this.objects.push(object);
-    COLLIDABLES.push(object);
+    if (collidable) COLLIDABLES.push(object);
   }
 
   loadLevel(level) {

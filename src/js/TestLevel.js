@@ -115,13 +115,12 @@ class TestLevel extends Level {
         let enemies = [];
         let fighterSpawner = setInterval(() => {
           let enemyShip = new Fighter();
-          enemyShip.position.subVectors(this.mars.position, this.playerShip.position).setLength(this.mars.radius + 30);
-          enemyShip.position.add(this.mars.position);
+          enemyShip.position.set(-1000, 250, -500);
           enemyShip.ai = FIGHTER_AI;
           enemyShip.team = 2;
           enemies.push(enemyShip);
           if (this.enemySpawnedCallback) this.enemySpawnedCallback(enemyShip);
-        }, 10000);
+        }, 5000);
         return fighterSpawner;
       }
     };

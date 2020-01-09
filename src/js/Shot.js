@@ -1,8 +1,10 @@
 import GameObject from './GameObject';
+import {GAME} from './Game';
 
 class Shot extends GameObject {
   constructor(geometry, material) {
     super(geometry, material);
+    GAME.addObject(this, false);
     this.velocity = 300;
     this.lifetime = 5;
     this.collisionDamage = 1;
