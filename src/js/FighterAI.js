@@ -19,13 +19,13 @@ class FighterAI {
 
   }
 
+
   update(ship, delta) {
     if (!ship.AItarget || ship.AItarget.removed === true) ship.AItarget = this.getNewAITarget(ship);
 
     if (!ship.AItarget) return; // Idle if no target found
 
-    // let hitObject = ship.checkCollision(ship.quaternion, COLLISION_CHECK_DISTANCE, SAFETY_DISTANCE);
-    let hitObject;
+    const hitObject = ship.checkCollision(ship.quaternion, COLLISION_CHECK_DISTANCE, SAFETY_DISTANCE);
     if (hitObject) {
       let away = VECTOR3_A.subVectors(ship.position, hitObject.position);
       away.add(ship.position);

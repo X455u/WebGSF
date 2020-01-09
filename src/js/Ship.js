@@ -7,6 +7,8 @@ class Ship extends GameObject {
   constructor(geometry, material, stats) {
     super(geometry, material);
 
+    GAME.addObject(this);
+
     // Stats
     this.maxVelocity = stats.maxVelocity;
     this.acceleration = stats.acceleration;
@@ -41,7 +43,7 @@ class Ship extends GameObject {
 
     // Events
     this.addEventListener('onDamage', () => {
-      if (this.hp === 0) {
+      if (this.hp <= 0) {
         let explosion = new Explosion();
         explosion.position.copy(this.position);
         GAME.addObject(explosion);

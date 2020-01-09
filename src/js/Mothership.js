@@ -3,6 +3,7 @@ import GameObject from './GameObject';
 import {LOADER} from './GSFLoader';
 import Turret from './Turret';
 import LargePlasmaCannon from './LargePlasmaCannon';
+import {GAME} from './Game';
 
 const ROTATION_SPEED = 0.05;
 
@@ -22,6 +23,7 @@ const COLLISION_HULL = [
 class Mothership extends GameObject {
   constructor() {
     super(LOADER.get('mothershipGeometry'), LOADER.get('mothershipMaterial'));
+    GAME.addObject(this);
     this.isStatic = true;
     this.turrets = [];
     this.ai = null;

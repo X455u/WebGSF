@@ -121,6 +121,9 @@ class LandingPad extends GameObject {
     this.add(this.sound);
     this.sound.play();
 
+    // GAME.addObject(this);
+
+    this.hitRadius = 5;
     this.isStatic = true;
 
     this.collisionHulls = [
