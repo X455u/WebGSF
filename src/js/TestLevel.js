@@ -76,7 +76,7 @@ class TestLevel extends Level {
         for (let i = 0; i < 10; i++) {
           let turret = new PlasmaTurret();
           let direction = new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize();
-          turret.position.copy(direction).setLength(this.mars.radius);
+          turret.position.copy(direction).setLength(this.mars.hitRadius);
           turret.position.add(this.mars.position);
           turret.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction);
           turret.target = this.playerShip;
@@ -90,7 +90,7 @@ class TestLevel extends Level {
         for (let i = 0; i < 10; i++) {
           let landingPad = new LandingPad();
           let direction = new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize();
-          landingPad.position.copy(direction).setLength(this.mars.radius);
+          landingPad.position.copy(direction).setLength(this.mars.hitRadius);
           landingPad.position.add(this.mars.position);
           landingPad.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction);
           landingPads.push(landingPad);
@@ -102,7 +102,7 @@ class TestLevel extends Level {
         for (let i = 0; i < 10; i++) {
           let twinTurret = new TwinTurret();
           let direction = new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize();
-          twinTurret.position.copy(direction).setLength(this.mars.radius);
+          twinTurret.position.copy(direction).setLength(this.mars.hitRadius);
           twinTurret.position.add(this.mars.position);
           twinTurret.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction);
           twinTurret.target = this.playerShip;
