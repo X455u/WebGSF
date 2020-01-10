@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import GameObject from './GameObject';
-import {SOUND_LISTENER} from './Game';
+import {SOUND_LISTENER, GAME} from './Game';
 import {LOADER} from './GSFLoader';
 
 const HULL_HEAD = [
@@ -121,7 +121,7 @@ class LandingPad extends GameObject {
     this.add(this.sound);
     this.sound.play();
 
-    // GAME.addObject(this);
+    GAME.addObject(this);
 
     this.hitRadius = 5;
     this.isStatic = true;

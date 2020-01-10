@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import GameObject from './GameObject';
-import {SOUND_LISTENER} from './Game';
+import {SOUND_LISTENER, GAME} from './Game';
 import {LOADER} from './GSFLoader';
 import Turret from './Turret';
 import LargePlasmaCannon from './LargePlasmaCannon';
@@ -8,6 +8,8 @@ import LargePlasmaCannon from './LargePlasmaCannon';
 class TwinTurret extends GameObject {
   constructor() {
     super(LOADER.get('twinTurretBaseGeometry'), LOADER.get('twinTurretTexture'));
+
+    GAME.addObject(this);
 
     this.sound = new THREE.PositionalAudio(SOUND_LISTENER);
     this.sound.setBuffer(LOADER.get('low_pulsating_hum'));

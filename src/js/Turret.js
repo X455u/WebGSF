@@ -41,7 +41,12 @@ class Turret extends THREE.Mesh {
     let headUp = VECTOR3_B.set(0, 1, 0).applyQuaternion(headQuaternion);
     let headDirection = VECTOR3_C.set(0, 0, -1).applyQuaternion(headQuaternion);
     let headTargetDirection = VECTOR3_D.copy(directionFromHead).projectOnPlane(headUp).normalize();
-    let headAngle = headDirection.angleTo(headTargetDirection) || Number.EPSILON; // Workaround for being NaN sometimes
+    let headAngle;
+    if (!headDirection.length() || !headTargetDirection.length()) {
+      headAngle = Number.EPSILON;
+    } else {
+      headAngle = headDirection.angleTo(headTargetDirection) || Number.EPSILON; // Workaround for being NaN sometimes
+    }
     let headLeft = VECTOR3_B.set(1, 0, 0).applyQuaternion(headQuaternion);
     let headTurnCoef = -Math.sign(headLeft.dot(headTargetDirection));
     this.rotateY(headTurnCoef * Math.min(headAngle, this.turnSpeed * delta));
@@ -52,7 +57,12 @@ class Turret extends THREE.Mesh {
     let gunLeft = VECTOR3_B.set(1, 0, 0).applyQuaternion(gunQuaternion);
     let gunDirection = VECTOR3_C.set(0, 0, -1).applyQuaternion(gunQuaternion);
     let gunTargetDirection = VECTOR3_D.copy(directionFromGun).projectOnPlane(gunLeft).normalize();
-    let gunAngle = gunDirection.angleTo(gunTargetDirection) || Number.EPSILON; // Workaround for being NaN sometimes
+    let gunAngle;
+    if (!gunDirection.length() || !gunTargetDirection.length()) {
+      gunAngle = Number.EPSILON;
+    } else {
+      gunAngle = gunDirection.angleTo(gunTargetDirection) || Number.EPSILON; // Workaround for being NaN sometimes
+    }
     let gunUp = VECTOR3_B.set(0, 1, 0).applyQuaternion(gunQuaternion);
     let gunTurnCoef = Math.sign(gunUp.dot(gunTargetDirection));
     this.gun.rotateX(gunTurnCoef * Math.min(gunAngle, this.turnSpeed * delta));

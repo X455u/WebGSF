@@ -56,7 +56,12 @@ class GameObject extends THREE.Mesh {
     let targetDirection = VECTOR3_C.subVectors(target, this.position);
     targetDirection.normalize();
 
-    let angle = direction.angleTo(targetDirection);
+    let angle;
+    if (!direction.length() || !targetDirection.length()) {
+      angle = Number.EPSILON;
+    } else {
+      angle = direction.angleTo(targetDirection) || Number.EPSILON;
+    }
     this.quaternion.slerp(quaternion, this.turnSpeed * delta * 2 * Math.PI / angle);
   }
 
