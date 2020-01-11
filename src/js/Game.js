@@ -38,17 +38,29 @@ class Game {
 
       if (!object.geometry || !object.geometry.boundingSphere) continue;
 
-      let rotatedCenter = VECTOR3_A.copy(object.geometry.boundingSphere.center).applyQuaternion(object.quaternion);
-      let boundingSpherePosition = VECTOR3_B.addVectors(object.position, rotatedCenter);
-      let boundingSphereRadius = object.geometry.boundingSphere.radius;
+      if (object.isHighSpeed) {
+        const [min, max] = object.getHighSpeedBroadPoints(delta);
 
-      hitBoxes.x.push({object: object, coord: boundingSpherePosition.x - boundingSphereRadius});
-      hitBoxes.y.push({object: object, coord: boundingSpherePosition.y - boundingSphereRadius});
-      hitBoxes.z.push({object: object, coord: boundingSpherePosition.z - boundingSphereRadius});
+        hitBoxes.x.push({object: object, coord: min.x});
+        hitBoxes.y.push({object: object, coord: min.y});
+        hitBoxes.z.push({object: object, coord: min.z});
 
-      hitBoxes.x.push({object: object, coord: boundingSpherePosition.x + boundingSphereRadius});
-      hitBoxes.y.push({object: object, coord: boundingSpherePosition.y + boundingSphereRadius});
-      hitBoxes.z.push({object: object, coord: boundingSpherePosition.z + boundingSphereRadius});
+        hitBoxes.x.push({object: object, coord: max.x});
+        hitBoxes.y.push({object: object, coord: max.y});
+        hitBoxes.z.push({object: object, coord: max.z});
+      } else {
+        let rotatedCenter = VECTOR3_A.copy(object.geometry.boundingSphere.center).applyQuaternion(object.quaternion);
+        let boundingSpherePosition = VECTOR3_B.addVectors(object.position, rotatedCenter);
+        let boundingSphereRadius = object.geometry.boundingSphere.radius;
+
+        hitBoxes.x.push({object: object, coord: boundingSpherePosition.x - boundingSphereRadius});
+        hitBoxes.y.push({object: object, coord: boundingSpherePosition.y - boundingSphereRadius});
+        hitBoxes.z.push({object: object, coord: boundingSpherePosition.z - boundingSphereRadius});
+
+        hitBoxes.x.push({object: object, coord: boundingSpherePosition.x + boundingSphereRadius});
+        hitBoxes.y.push({object: object, coord: boundingSpherePosition.y + boundingSphereRadius});
+        hitBoxes.z.push({object: object, coord: boundingSpherePosition.z + boundingSphereRadius});
+      }
     }
 
     hitBoxes.x.sort((a, b) => a.coord - b.coord);
@@ -118,8 +130,8 @@ class Game {
       let exit = false;
       for (let hullA of a.collisionHulls) {
         for (let hullB of b.collisionHulls) {
-          let hullAclone = hullA.map(vec => vec.clone().applyMatrix4(a.matrix));
-          let hullBclone = hullB.map(vec => vec.clone().applyMatrix4(b.matrix));
+          let hullAclone = a.isHighSpeed ? a.getHighSpeedNarrowPoints(delta) : hullA.map(vec => vec.clone().applyMatrix4(a.matrix));
+          let hullBclone = b.isHighSpeed ? b.getHighSpeedNarrowPoints(delta) : hullB.map(vec => vec.clone().applyMatrix4(b.matrix));
           if (gjk(hullAclone, hullBclone)) {
             a.dealDamage(b.collisionDamage);
             b.dealDamage(a.collisionDamage);
