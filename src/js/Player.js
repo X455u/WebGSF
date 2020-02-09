@@ -4,6 +4,8 @@ import {HUD} from './HUD';
 import {GAME} from './Game';
 import MenuLevel from './MenuLevel';
 
+const ACCELEROMETER_SMOOTHING = 0.01;
+
 function isMobile() {
   return window.DeviceMotionEvent !== undefined && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 }
@@ -14,6 +16,8 @@ function isAndroid() {
 
 class Player {
   constructor() {
+    this.deviceOrientation = {};
+    this.smoothOrientation = {};
     this.turnParameters = {
       x: 0,
       z: 0
@@ -89,11 +93,24 @@ class Player {
     } else {
       if (this.isThrusting) this.ship.thrust();
       if (this.isShooting) this.ship.shoot();
+      this.updateMobileTurning();
     }
 
     this.ship.turn(this.turnParameters.x, 0, this.turnParameters.z);
 
     this.crosshair.update();
+  }
+
+  updateMobileTurning() {
+    if (!this.smoothOrientation.x || !this.smoothOrientation.z) {
+      this.smoothOrientation = this.deviceOrientation;
+    }
+    this.smoothOrientation.x *= (1 - ACCELEROMETER_SMOOTHING);
+    this.smoothOrientation.x += ACCELEROMETER_SMOOTHING * this.deviceOrientation.x;
+    this.smoothOrientation.z *= (1 - ACCELEROMETER_SMOOTHING);
+    this.smoothOrientation.z += ACCELEROMETER_SMOOTHING * this.deviceOrientation.z;
+    this.turnParameters.x = this.deviceOrientation.x - this.smoothOrientation.x;
+    this.turnParameters.z = this.deviceOrientation.z;
   }
 
   setMobileEventListeners() {
@@ -104,7 +121,7 @@ class Player {
     }
     // Accelerometer
     window.ondevicemotion = (event) => {
-      this.turnParameters = {
+      this.deviceOrientation = {
         x: invertCoefficient * event.accelerationIncludingGravity.z / 6,
         z: invertCoefficient * event.accelerationIncludingGravity.y / 6
       };
