@@ -27,6 +27,21 @@ module.exports = {
       {
         test: /\.css$/i,
         use: ['style-loader', 'css-loader']
+      },
+      {
+        test: /\.(?:json)$/,
+        exclude: /node_modules/,
+        type: 'javascript/auto',
+        use: {
+          loader: 'file-loader'
+        }
+      },
+      {
+        test: /\.(?:png|jpg|jpeg|svg|mp3)$/,
+        exclude: /node_modules/,
+        use: {
+          loader: 'file-loader'
+        }
       }
     ]
   },
@@ -45,47 +60,47 @@ module.exports = {
       orientation: 'landscape',
       icons: [
         {
-          src: 'media/touch/touch-icon-57x57.png',
+          src: 'src/assets/touch/touch-icon-57x57.png',
           sizes: '57x57',
           type: 'image/png'
         },
         {
-          src: 'media/touch/touch-icon-72x72.png',
+          src: 'src/assets/touch/touch-icon-72x72.png',
           sizes: '72x72',
           type: 'image/png'
         },
         {
-          src: 'media/touch/touch-icon-76x76.png',
+          src: 'src/assets/touch/touch-icon-76x76.png',
           sizes: '76x76',
           type: 'image/png'
         },
         {
-          src: 'media/touch/touch-icon-114x114.png',
+          src: 'src/assets/touch/touch-icon-114x114.png',
           sizes: '114x114',
           type: 'image/png'
         },
         {
-          src: 'media/touch/touch-icon-120x120.png',
+          src: 'src/assets/touch/touch-icon-120x120.png',
           sizes: '120x120',
           type: 'image/png'
         },
         {
-          src: 'media/touch/touch-icon-144x144.png',
+          src: 'src/assets/touch/touch-icon-144x144.png',
           sizes: '144x144',
           type: 'image/png'
         },
         {
-          src: 'media/touch/touch-icon-152x152.png',
+          src: 'src/assets/touch/touch-icon-152x152.png',
           sizes: '152x152',
           type: 'image/png'
         },
         {
-          src: 'media/touch/touch-icon-180x180.png',
+          src: 'src/assets/touch/touch-icon-180x180.png',
           sizes: '180x180',
           type: 'image/png'
         },
         {
-          src: 'media/touch/touch-icon-192x192.png',
+          src: 'src/assets/touch/touch-icon-192x192.png',
           sizes: '192x192',
           type: 'image/png'
         }
