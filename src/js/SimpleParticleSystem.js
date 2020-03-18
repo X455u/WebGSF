@@ -1,5 +1,6 @@
 /* eslint-disable */
 import * as THREE from 'three';
+import particle from '../assets/particle2.png';
 
 function randomPointInUnitSphere() {
   let x1 = 2 * (Math.random() - 0.5);
@@ -84,7 +85,7 @@ class SimpleParticleSystem extends THREE.Object3D {
 
   	let textureLoader = new THREE.TextureLoader();
 
-  	this.particleSpriteTex = this.PARTICLE_SPRITE_TEXTURE || textureLoader.load( './media/particle2.png' );
+  	this.particleSpriteTex = this.PARTICLE_SPRITE_TEXTURE || textureLoader.load( particle );
   	this.particleSpriteTex.wrapS = this.particleSpriteTex.wrapT = THREE.RepeatWrapping;
 
   	this.particleShaderMat = new THREE.ShaderMaterial( {

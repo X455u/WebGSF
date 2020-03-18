@@ -14,6 +14,8 @@ import '../hud/menu.css';
 import '../index.css';
 const menu = require('../hud/menu.html');
 
+import mainTheme from '../assets/main_theme2.mp3';
+
 const DEBUG = false;
 
 const MAX_DELTA = 0.1; // s
@@ -69,7 +71,7 @@ LOADER.manager.onError = (url) => {
 };
 
 let music = new Howl({
-  src: ['./media/main_theme2.mp3'],
+  src: [mainTheme],
   loop: true,
   volume: 0.5
 });
