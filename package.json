@@ -4,7 +4,8 @@
   "description": "WebGSF",
   "scripts": {
     "build": "webpack --config webpack.prod.js && cp -r media build/media",
-    "start": "webpack-dev-server --open --hot --config webpack.dev.js"
+    "start": "webpack-dev-server --open --hot --config webpack.dev.js",
+    "deploy": "node deploy-gh-pages.js"
   },
   "repository": {
     "type": "git",
