@@ -1,13 +1,13 @@
 import * as THREE from 'three';
 
-import Level from './Level';
-import {SCENE} from './Game';
-import {LOADER} from './GSFLoader';
-import Sun from './Sun';
-import SimpleEarth from './SimpleEarth';
-import Fighter from './Fighter';
-import {FIGHTER_AI} from './FighterAI';
-import Mothership from './Mothership';
+import Level from '../Level';
+import {SCENE} from '../Game';
+import {LOADER} from '../GSFLoader';
+import Sun from '../Sun';
+import SimpleEarth from '../SimpleEarth';
+import Fighter from '../Fighter';
+import {FIGHTER_AI} from '../FighterAI';
+import Mothership from '../Mothership';
 
 class MenuLevel extends Level {
   constructor(playerShip) {

@@ -1,21 +1,21 @@
 import * as THREE from 'three';
 
-import Level from './Level';
-import {SCENE} from './Game';
-import {PLAYER} from './Player';
-import {CAMERA} from './GSFCamera';
-import {LOADER} from './GSFLoader';
-import Sun from './Sun';
-import SimpleMars from './SimpleMars';
-import SimpleEarth from './SimpleEarth';
-import Fighter from './Fighter';
-import {FIGHTER_AI} from './FighterAI';
-import PlasmaTurret from './PlasmaTurret';
-import {TURRET_AI} from './TurretAI';
-import Crosshair from './Crosshair';
-import LandingPad from './LandingPad';
-import TwinTurret from './TwinTurret';
-import Mothership from './Mothership';
+import Level from '../Level';
+import {SCENE} from '../Game';
+import {PLAYER} from '../Player';
+import {CAMERA} from '../GSFCamera';
+import {LOADER} from '../GSFLoader';
+import Sun from '../Sun';
+import SimpleMars from '../SimpleMars';
+import SimpleEarth from '../SimpleEarth';
+import Fighter from '../Fighter';
+import {FIGHTER_AI} from '../FighterAI';
+import PlasmaTurret from '../PlasmaTurret';
+import {TURRET_AI} from '../TurretAI';
+import Crosshair from '../Crosshair';
+import LandingPad from '../LandingPad';
+import TwinTurret from '../TwinTurret';
+import Mothership from '../Mothership';
 
 /**
  * Calls this.enemySpawnedCallback when spawning enemy fighters.

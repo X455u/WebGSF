@@ -2,7 +2,7 @@ import _ from 'lodash';
 import keymaster from 'keymaster';
 import {HUD} from './HUD';
 import {GAME} from './Game';
-import MenuLevel from './MenuLevel';
+import MenuLevel from './levels/MenuLevel';
 
 const ACCELEROMETER_SMOOTHING = 0.01;
 

@@ -7,8 +7,8 @@ import {Howl} from 'howler';
 import {LOADER} from './GSFLoader';
 import {GAME, SCENE} from './Game';
 import {CAMERA} from './GSFCamera';
-import TestLevel from './TestLevel';
-import MenuLevel from './MenuLevel';
+import TestLevel from './levels/TestLevel';
+import MenuLevel from './levels/MenuLevel';
 
 import '../hud/menu.css';
 import '../index.css';
