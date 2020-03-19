@@ -1,0 +1,54 @@
+{
+  "icons": [
+    {
+      "src": "icon_192x192.d13b53d3ef0bdf5d0a3ef55a0faaeb42.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon_180x180.3925ff594b1d9877535496fef91a58f8.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "icon_152x152.d9f6ae36298ab25870bc9ce679e95f21.png",
+      "sizes": "152x152",
+      "type": "image/png"
+    },
+    {
+      "src": "icon_144x144.d09cd5b04ca64432e6047c183464c252.png",
+      "sizes": "144x144",
+      "type": "image/png"
+    },
+    {
+      "src": "icon_120x120.5670586276121271b0bede0d72b6315f.png",
+      "sizes": "120x120",
+      "type": "image/png"
+    },
+    {
+      "src": "icon_114x114.010e50b08bff76dcfa047e763a062707.png",
+      "sizes": "114x114",
+      "type": "image/png"
+    },
+    {
+      "src": "icon_76x76.1acaa41e646e49507a8b7ea16e137b5a.png",
+      "sizes": "76x76",
+      "type": "image/png"
+    },
+    {
+      "src": "icon_72x72.932cf245910cab583e1a5fe629de3a63.png",
+      "sizes": "72x72",
+      "type": "image/png"
+    },
+    {
+      "src": "icon_57x57.cb3c50fa6e21fc4388eb3db36f12f00c.png",
+      "sizes": "57x57",
+      "type": "image/png"
+    }
+  ],
+  "name": "Galactic Star Fighter",
+  "short_name": "GSF",
+  "orientation": "landscape",
+  "display": "fullscreen",
+  "start_url": "index.html"
+}
