@@ -3,9 +3,9 @@
   "version": "0.0.1",
   "description": "WebGSF",
   "scripts": {
-    "build": "webpack --config webpack.prod.js",
+    "build": "rm -rf build && webpack --config webpack.prod.js",
     "start": "webpack-dev-server --open --hot --config webpack.dev.js",
-    "deploy": "node deploy-gh-pages.js"
+    "deploy": "npm run build && node deploy-gh-pages.js"
   },
   "repository": {
     "type": "git",
