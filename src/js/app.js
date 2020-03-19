@@ -16,6 +16,12 @@ const menu = require('../hud/menu.html');
 
 import mainTheme from '../assets/main_theme2.mp3';
 
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./service-worker.js');
+  });
+}
+
 const DEBUG = false;
 
 const MAX_DELTA = 0.1; // s

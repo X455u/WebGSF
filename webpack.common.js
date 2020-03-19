@@ -16,9 +16,7 @@ module.exports = {
       {
         test: /\.js$/,
         exclude: /node_modules/,
-        use: {
-          loader: 'babel-loader'
-        }
+        use: {loader: 'babel-loader'}
       },
       {
         test: /\.(html)$/,
@@ -32,27 +30,22 @@ module.exports = {
         test: /\.(?:json)$/,
         exclude: /node_modules/,
         type: 'javascript/auto',
-        use: {
-          loader: 'file-loader'
-        }
+        use: {loader: 'file-loader'}
       },
       {
-        test: /\.(?:png|jpg|jpeg|svg|mp3)$/,
+        test: /\.(?:png|jpg|jpeg|svg|mp3|ico)$/,
         exclude: /node_modules/,
-        use: {
-          loader: 'file-loader'
-        }
+        use: {loader: 'file-loader'}
       }
     ]
   },
   plugins: [
     new HtmlWebpackPlugin({
-      filename: 'index.html'
+      title: 'WebGSF',
+      favicon: 'src/assets/favicon.ico',
+      meta: {viewport: 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no'}
     }),
     new WebpackPwaManifest({
-      inject: false,
-      fingerprints: false,
-
       name: 'Galactic Star Fighter',
       'short_name': 'GSF',
       'start_url': 'index.html',
