@@ -7,9 +7,8 @@ import {GAME, SCENE} from './Game';
 import {CAMERA} from './GSFCamera';
 import {LOADER} from './GSFLoader';
 import {HUD} from './HUD';
+import Level2 from './levels/Level2';
 import MenuLevel from './levels/MenuLevel';
-import TestLevel from './levels/TestLevel';
-import Level1 from './levels/Level1';
 import Missile from './Missile';
 import {PLAYER} from './Player';
 
@@ -150,7 +149,7 @@ function initGame() {
   //   });
   // };
 
-  GAME.loadLevel(new Level1()).then(() => {
+  GAME.loadLevel(new Level2()).then(() => {
     music.fade(music.volume(), 0, 2000);
     let playerShip = GAME.level.playerShip;
 
