@@ -34,11 +34,11 @@ class SimpleParticleSystem extends THREE.Object3D {
     // geometry
     this.particleShaderGeo = new THREE.BufferGeometry();
 
-    this.particleShaderGeo.addAttribute( 'position', new THREE.BufferAttribute( new Float32Array( this.PARTICLE_COUNT * 3 ), 3 ).setDynamic( true ) );
-    this.particleShaderGeo.addAttribute( 'destination', new THREE.BufferAttribute( new Float32Array( this.PARTICLE_COUNT * 3 ), 3 ).setDynamic( true ) );
-    this.particleShaderGeo.addAttribute( 'color', new THREE.BufferAttribute( new Float32Array( this.PARTICLE_COUNT * 3 ), 3 ).setDynamic( true ) );
-    this.particleShaderGeo.addAttribute( 'size', new THREE.BufferAttribute( new Float32Array( this.PARTICLE_COUNT ), 1 ).setDynamic( true ) );
-    this.particleShaderGeo.addAttribute( 'lifeOffset', new THREE.BufferAttribute( new Float32Array( this.PARTICLE_COUNT ), 1 ).setDynamic( true ) );
+    this.particleShaderGeo.setAttribute( 'position', new THREE.BufferAttribute( new Float32Array( this.PARTICLE_COUNT * 3 ), 3 ).setUsage( THREE.DynamicDrawUsage ) );
+    this.particleShaderGeo.setAttribute( 'destination', new THREE.BufferAttribute( new Float32Array( this.PARTICLE_COUNT * 3 ), 3 ).setUsage( THREE.DynamicDrawUsage ) );
+    this.particleShaderGeo.setAttribute( 'color', new THREE.BufferAttribute( new Float32Array( this.PARTICLE_COUNT * 3 ), 3 ).setUsage( THREE.DynamicDrawUsage ) );
+    this.particleShaderGeo.setAttribute( 'size', new THREE.BufferAttribute( new Float32Array( this.PARTICLE_COUNT ), 1 ).setUsage( THREE.DynamicDrawUsage ) );
+    this.particleShaderGeo.setAttribute( 'lifeOffset', new THREE.BufferAttribute( new Float32Array( this.PARTICLE_COUNT ), 1 ).setUsage( THREE.DynamicDrawUsage ) );
 
     // material
     this.particleShaderMat = this.particleShaderMat;
