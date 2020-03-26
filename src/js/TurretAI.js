@@ -1,14 +1,18 @@
 import * as THREE from 'three';
+import {GAME} from './Game';
 
 const SHOOT_ANGLE = 0.05;
+const FAR_DISTANCE = 2000;
 
 // Object pool
 const VECTOR3_A = new THREE.Vector3();
 const VECTOR3_B = new THREE.Vector3();
 const VECTOR3_C = new THREE.Vector3();
 const VECTOR3_D = new THREE.Vector3();
+const VECTOR3_E = new THREE.Vector3();
 
 const QUATERNION_A = new THREE.Quaternion();
+const QUATERNION_B = new THREE.Quaternion();
 
 class TurretAI {
 
@@ -16,13 +20,16 @@ class TurretAI {
 
   }
 
-  update(turret, targetObject, delta) {
-    if (!targetObject) return;
+  update(turretParent, delta) {
+    const turret = turretParent.turret;
+    if (!turretParent.AItarget || turretParent.AItarget.removed === true) turretParent.AItarget = this.getNewAITarget(turretParent);
+
+    if (!turretParent.AItarget) return; // Idle if no target found
 
     let worldPos = VECTOR3_D;
     turret.gun.getWorldPosition(worldPos);
     // let aimTarget = this.getAimTarget(worldPos, targetObject.position, targetObject.getVelocityVec(), turret.gun.muzzleVelocity);
-    let aimTarget = this.getAimTarget(worldPos, targetObject.position, targetObject.getVelocityVec(), 200);
+    let aimTarget = this.getAimTarget(worldPos, turretParent.AItarget.position, turretParent.AItarget.getVelocityVec(), 200);
     turret.turnTowards(aimTarget, delta);
 
     let worldQuat = QUATERNION_A;
@@ -45,6 +52,35 @@ class TurretAI {
     } else {
       return aimTarget;
     }
+  }
+
+  getNewAITarget(turretParent) {
+    const turret = turretParent.turret;
+
+    const enemies = GAME.objects.filter(object => object.team && object.team !== turretParent.team && turret.position.distanceTo(object.position) < FAR_DISTANCE);
+    let target = enemies[0];
+
+    if (!target) return null;
+
+    const gunQuat = QUATERNION_B;
+    turret.gun.getWorldQuaternion(gunQuat);
+    const gunDirection = VECTOR3_E.set(0, 0, -1).applyQuaternion(gunQuat);
+    const gunPosition = VECTOR3_D;
+    turret.gun.getWorldPosition(gunPosition);
+
+    let currentAngle = Infinity;
+
+    for (const enemy of enemies) {
+      const aimAdvance = this.getAimTarget(gunPosition, enemy.position, enemy.getVelocityVec(), 200);
+      if (aimAdvance.length() === 0) continue;
+      const newAngle = gunDirection.angleTo(aimAdvance);
+      if (newAngle >= currentAngle) continue;
+
+      target = enemy;
+      currentAngle = newAngle;
+
+    }
+    return target;
   }
 }
 export const TURRET_AI = new TurretAI();

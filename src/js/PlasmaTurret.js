@@ -28,13 +28,13 @@ class PlasmaTurret extends GameObject {
 
     // AI
     this.ai = null;
-    this.target = null;
+    this.AItarget = null;
 
     this.isStatic = true;
   }
 
   update(delta) {
-    if (this.ai) this.ai.update(this.turret, this.target, delta);
+    if (this.ai) this.ai.update(this, delta);
     this.gun.update(delta);
   }
 }

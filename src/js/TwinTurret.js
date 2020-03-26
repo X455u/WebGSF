@@ -22,7 +22,7 @@ class TwinTurret extends GameObject {
 
     this.isStatic = true;
     this.ai = null;
-    this.target = null;
+    this.AItarget = null;
 
     this.collisionHulls = [];
     for (let i = 0; i < 5; i++) {
@@ -64,8 +64,8 @@ class TwinTurret extends GameObject {
 
   update(delta) {
     if (this.ai) {
-      this.ai.update(this.turret1, this.target, delta);
-      this.ai.update(this.turret2, this.target, delta);
+      this.ai.update(this.turret1, delta);
+      this.ai.update(this.turret2, delta);
     }
 
     this.turret1.weaponType.update(delta);

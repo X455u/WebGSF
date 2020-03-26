@@ -1,9 +1,9 @@
 import * as THREE from 'three';
+import { GAME } from './Game';
 import GameObject from './GameObject';
-import {LOADER} from './GSFLoader';
-import Turret from './Turret';
+import { LOADER } from './GSFLoader';
 import LargePlasmaCannon from './LargePlasmaCannon';
-import {GAME} from './Game';
+import Turret from './Turret';
 
 const ROTATION_SPEED = 0.05;
 
@@ -27,7 +27,7 @@ class Mothership extends GameObject {
     this.isStatic = true;
     this.turrets = [];
     this.ai = null;
-    this.target = null;
+    this.AItarget = null;
 
     let material = LOADER.get('railgunMaterial');
     let angularOffset = 1 / 12 * 2 * Math.PI / 2;
@@ -59,7 +59,7 @@ class Mothership extends GameObject {
 
     if (this.ai) {
       for (let turret of this.turrets) {
-        this.ai.update(turret, this.target, delta);
+        this.ai.update(turret, delta);
       }
     }
 
