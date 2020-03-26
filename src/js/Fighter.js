@@ -1,9 +1,9 @@
 import * as THREE from 'three';
-import {LOADER} from './GSFLoader';
+import { SCENE, SOUND_LISTENER } from './Game';
+import { LOADER } from './GSFLoader';
 import Ship from './Ship';
-import SmallPulseLaser from './SmallPulseLaser';
 import SimpleParticleSystem from './SimpleParticleSystem';
-import {SOUND_LISTENER, SCENE} from './Game';
+import SmallPulseLaser from './SmallPulseLaser';
 
 // Object pool
 const VECTOR3_A = new THREE.Vector3();
@@ -38,8 +38,8 @@ class Fighter extends Ship {
       acceleration: 80,
       turnSpeed: 0.25,
       gun: new SmallPulseLaser(),
-      maxHp: 100,
-      maxShield: 50
+      maxHp: 20,
+      maxShield: 0
     });
     this.weaponSide = 1;
     this.gun.translateX(0.7 * this.weaponSide);

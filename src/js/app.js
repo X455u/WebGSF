@@ -1,20 +1,19 @@
-import * as THREE from 'three';
-
-import {HUD} from './HUD';
-import Missile from './Missile';
-import {PLAYER} from './Player';
 import {Howl} from 'howler';
-import {LOADER} from './GSFLoader';
-import {GAME, SCENE} from './Game';
-import {CAMERA} from './GSFCamera';
-import TestLevel from './levels/TestLevel';
-import MenuLevel from './levels/MenuLevel';
-
+import * as THREE from 'three';
+import mainTheme from '../assets/main_theme2.mp3';
 import '../hud/menu.css';
 import '../index.css';
-const menu = require('../hud/menu.html');
+import {GAME, SCENE} from './Game';
+import {CAMERA} from './GSFCamera';
+import {LOADER} from './GSFLoader';
+import {HUD} from './HUD';
+import MenuLevel from './levels/MenuLevel';
+import TestLevel from './levels/TestLevel';
+import Level1 from './levels/Level1';
+import Missile from './Missile';
+import {PLAYER} from './Player';
 
-import mainTheme from '../assets/main_theme2.mp3';
+const menu = require('../hud/menu.html');
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
@@ -35,33 +34,42 @@ RENDERER.domElement.focus();
 RENDERER.shadowMap.enabled = true;
 RENDERER.shadowMap.type = THREE.PCFSoftShadowMap;
 
-window.addEventListener('resize', () => {
-  CAMERA.aspect = window.innerWidth / window.innerHeight;
-  CAMERA.updateProjectionMatrix();
-  RENDERER.setSize(window.innerWidth, window.innerHeight);
-}, false);
+window.addEventListener(
+  'resize',
+  () => {
+    CAMERA.aspect = window.innerWidth / window.innerHeight;
+    CAMERA.updateProjectionMatrix();
+    RENDERER.setSize(window.innerWidth, window.innerHeight);
+  },
+  false
+);
 
-let main = document.createElement('div');
+const main = document.createElement('div');
 main.className = 'main';
 main.innerHTML = menu;
 document.body.appendChild(main);
-let newGameButton = document.getElementById('newGame');
-newGameButton.setAttribute('disabled', '');
-document.getElementById('menu').addEventListener('transitionend', (e) => {
-  e.srcElement.style.display = 'none';
-}, {once: true});
+
+const buttons = document.getElementsByClassName('button');
+buttons.forEach(b => b.setAttribute('disabled', ''));
+document.getElementById('menu').addEventListener(
+  'transitionend',
+  e => {
+    e.srcElement.style.display = 'none';
+  },
+  {once: true}
+);
 
 // Loading
-let loadingText = document.createElement('div');
+const loadingText = document.createElement('div');
 loadingText.className = 'loading';
 loadingText.innerHTML = 'Loading...';
 document.body.appendChild(loadingText);
-let loadingProgress = document.createElement('div');
+const loadingProgress = document.createElement('div');
 loadingProgress.style.display = 'flex';
 loadingText.appendChild(loadingProgress);
-let loadingProgressCount = document.createElement('div');
+const loadingProgressCount = document.createElement('div');
 loadingProgress.appendChild(loadingProgressCount);
-let loadingProgressTotal = document.createElement('div');
+const loadingProgressTotal = document.createElement('div');
 loadingProgress.appendChild(loadingProgressTotal);
 
 LOADER.manager.onStart = (url, itemsLoaded, itemsTotal) => {
@@ -72,11 +80,11 @@ LOADER.manager.onProgress = (url, itemsLoaded, itemsTotal) => {
   loadingProgressCount.innerHTML = itemsLoaded;
   loadingProgressTotal.innerHTML = '/' + itemsTotal;
 };
-LOADER.manager.onError = (url) => {
+LOADER.manager.onError = url => {
   console.error('Error loading: ' + url);
 };
 
-let music = new Howl({
+const music = new Howl({
   src: [mainTheme],
   loop: true,
   volume: 0.5
@@ -88,8 +96,8 @@ let loop = true;
 // Game Loop
 let previousTime;
 function render() {
-  let time = new Date().getTime();
-  let delta = Math.min(MAX_DELTA, (time - previousTime) / 1000);
+  const time = new Date().getTime();
+  const delta = Math.min(MAX_DELTA, (time - previousTime) / 1000);
   previousTime = time;
 
   PLAYER.update();
@@ -129,20 +137,20 @@ function initGame() {
     document.body.appendChild(text);
   }
 
-  let testLevel = new TestLevel();
-  testLevel.assetLoadedCallback = (assetsLoaded, assetKey) => {
-    newGameButton.innerHTML = `Loaded: ${assetKey} ${assetsLoaded}/${Object.keys(testLevel.assets).length}`;
-  };
-  testLevel.enemySpawnedCallback = (enemy) => {
-    enemy.addEventListener('onDamage', () => {
-      if (enemy.hp === 0) {
-        PLAYER.addPoints(100);
-        // points.innerHTML = 'Points: ' + Math.floor(PLAYER.points);
-      }
-    });
-  };
+  // let testLevel = new TestLevel();
+  // testLevel.assetLoadedCallback = (assetsLoaded, assetKey) => {
+  //   buttons.innerHTML = `Loaded: ${assetKey} ${assetsLoaded}/${Object.keys(testLevel.assets).length}`;
+  // };
+  // testLevel.enemySpawnedCallback = enemy => {
+  //   enemy.addEventListener('onDamage', () => {
+  //     if (enemy.hp === 0) {
+  //       PLAYER.addPoints(100);
+  //       // points.innerHTML = 'Points: ' + Math.floor(PLAYER.points);
+  //     }
+  //   });
+  // };
 
-  GAME.loadLevel(testLevel).then(() => {
+  GAME.loadLevel(new Level1()).then(() => {
     music.fade(music.volume(), 0, 2000);
     let playerShip = GAME.level.playerShip;
 
@@ -166,11 +174,16 @@ function initGame() {
   });
 }
 
-newGameButton.addEventListener('click', () => {
-  if (newGameButton.hasAttribute('disabled')) return;
-  newGameButton.setAttribute('disabled', '');
-  loop = false;
-  initGame();
+buttons.forEach(b => {
+  b.addEventListener('click', () => {
+    if (b.hasAttribute('disabled')) return;
+    buttons.forEach(b2 => {
+      b2.setAttribute('disabled', '');
+    });
+    b.setAttribute('selected', '');
+    loop = false;
+    initGame();
+  });
 });
 
 LOADER.manager.onLoad = () => {
@@ -178,7 +191,30 @@ LOADER.manager.onLoad = () => {
     previousTime = new Date().getTime();
     render();
     document.body.removeChild(loadingText);
-    newGameButton.removeAttribute('disabled');
+    buttons.forEach(b => b.removeAttribute('disabled'));
   });
 };
 LOADER.load();
+
+export const restartGame = ()=> {
+  document.body.style.opacity = 0;
+  document.body.addEventListener('transitionend', () => {
+    GAME.loadLevel(new MenuLevel());
+    setTimeout(() => {
+      document.body.style.opacity = 1;
+      const menuElement = document.getElementById('menu');
+      menuElement.removeAttribute('hidden');
+      menuElement.style.display = '';
+      buttons.forEach(b => {
+        b.removeAttribute('disabled');
+        b.removeAttribute('selected');
+      });
+      HUD.updateHP(1);
+      HUD.updateShield(1);
+      menuElement.addEventListener('transitionend', (e) => {
+        e.srcElement.style.display = 'none';
+      }, {once: true});
+    }, 500);
+  }, {once: true});
+}
+;

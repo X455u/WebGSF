@@ -4,10 +4,10 @@
   background-color: rgba(150, 200, 255, 0.75);
   color: black;
   position: fixed;
-  top: 30%;
-  left: 30%;
-  width: 40%;
-  height: 40%;
+  top: 20%;
+  left: 20%;
+  width: 60%;
+  height: 60%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -36,4 +36,8 @@
 
 .button[disabled] {
   opacity: 0.5;
+}
+
+.button[selected] {
+  background-color: greenyellow;
 }

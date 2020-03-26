@@ -1,8 +1,7 @@
 import _ from 'lodash';
 import keymaster from 'keymaster';
 import {HUD} from './HUD';
-import {GAME} from './Game';
-import MenuLevel from './levels/MenuLevel';
+import {restartGame} from './app';
 
 const ACCELEROMETER_SMOOTHING = 0.01;
 
@@ -27,7 +26,7 @@ class Player {
       this.setMobileEventListeners();
     }
     this.ship = null;
-    this.points = 0;
+    // this.points = 0;
 
     this.crosshair = null;
     this.spotlight = null;
@@ -40,35 +39,12 @@ class Player {
   setShip(ship) {
     this.ship = ship;
     this.crosshair.setSourceObject(ship);
-    ship.maxVelocity *= 1.5;
-    ship.turnSpeed *= 1.5;
-    ship.shieldRegen = 5;
-    ship.gun.reloadTime = 0.05;
     ship.addEventListener('onShieldRegen', () => {
       HUD.updateShield(ship.shield / ship.maxShield);
     });
     ship.activateSpotlight();
 
-    ship.addEventListener('onDeath', () => {
-      document.body.style.opacity = 0;
-      document.body.addEventListener('transitionend', () => {
-        GAME.loadLevel(new MenuLevel());
-        setTimeout(() => {
-          document.body.style.opacity = 1;
-          let menu = document.getElementById('menu');
-          menu.removeAttribute('hidden');
-          menu.style.display = '';
-          let newGameButton = document.getElementById('newGame');
-          newGameButton.removeAttribute('disabled');
-          newGameButton.innerHTML = 'New Game';
-          HUD.updateHP(1);
-          HUD.updateShield(1);
-          document.getElementById('menu').addEventListener('transitionend', (e) => {
-            e.srcElement.style.display = 'none';
-          }, {once: true});
-        }, 500);
-      }, {once: true});
-    });
+    ship.addEventListener('onDeath', () => restartGame());
 
     ship.sound.stop();
   }
