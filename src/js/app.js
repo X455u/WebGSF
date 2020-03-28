@@ -7,7 +7,9 @@ import {GAME, SCENE} from './Game';
 import {CAMERA} from './GSFCamera';
 import {LOADER} from './GSFLoader';
 import {HUD} from './HUD';
+import Level1 from './levels/Level1';
 import Level2 from './levels/Level2';
+import Level3 from './levels/Level3';
 import MenuLevel from './levels/MenuLevel';
 import Missile from './Missile';
 import {PLAYER} from './Player';
@@ -120,7 +122,7 @@ function render() {
   if (loop) requestAnimationFrame(render);
 }
 
-function initGame() {
+function initGame(levelId) {
   // let points = document.createElement('div');
   // points.className = 'debug';
   // points.innerHTML = 'Points: ' + PLAYER.points;
@@ -149,7 +151,13 @@ function initGame() {
   //   });
   // };
 
-  GAME.loadLevel(new Level2()).then(() => {
+  const level = {
+    level1: new Level1(),
+    level2: new Level2(),
+    level3: new Level3(),
+  }[levelId];
+
+  GAME.loadLevel(level).then(() => {
     music.fade(music.volume(), 0, 2000);
     let playerShip = GAME.level.playerShip;
 
@@ -181,7 +189,7 @@ buttons.forEach(b => {
     });
     b.setAttribute('selected', '');
     loop = false;
-    initGame();
+    initGame(b.id);
   });
 });
 

@@ -1,7 +1,7 @@
 import * as THREE from 'three';
-import { GAME } from './Game';
+import {GAME} from './Game';
 import GameObject from './GameObject';
-import { LOADER } from './GSFLoader';
+import {LOADER} from './GSFLoader';
 import LargePlasmaCannon from './LargePlasmaCannon';
 import Turret from './Turret';
 
@@ -27,7 +27,6 @@ class Mothership extends GameObject {
     this.isStatic = true;
     this.turrets = [];
     this.ai = null;
-    this.AItarget = null;
 
     let material = LOADER.get('railgunMaterial');
     let angularOffset = 1 / 12 * 2 * Math.PI / 2;
@@ -59,7 +58,8 @@ class Mothership extends GameObject {
 
     if (this.ai) {
       for (let turret of this.turrets) {
-        this.ai.update(turret, delta);
+        turret.team = this.team;
+        this.ai.update(null, delta, turret);
       }
     }
 

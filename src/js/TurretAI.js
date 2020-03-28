@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import {GAME} from './Game';
 
 const SHOOT_ANGLE = 0.05;
-const FAR_DISTANCE = 2000;
+const FAR_DISTANCE = 1800;
 
 // Object pool
 const VECTOR3_A = new THREE.Vector3();
@@ -20,14 +20,22 @@ class TurretAI {
 
   }
 
-  update(turretParent, delta) {
-    const turret = turretParent.turret;
-    if (!turretParent.AItarget || turretParent.AItarget.removed === true) turretParent.AItarget = this.getNewAITarget(turretParent);
-
-    if (!turretParent.AItarget) return; // Idle if no target found
+  update(turretParent, delta, turretChild) {
+    let turret;
+    if (turretChild) {
+      turretParent = turretChild;
+      turret = turretChild;
+    } else {
+      turret = turretParent.turret;
+    }
 
     let worldPos = VECTOR3_D;
     turret.gun.getWorldPosition(worldPos);
+
+    if (!turretParent.AItarget || turretParent.AItarget.removed === true || worldPos.distanceTo(turretParent.AItarget.getWorldPosition()) > FAR_DISTANCE) turretParent.AItarget = this.getNewAITarget(turretParent, turretChild);
+
+    if (!turretParent.AItarget) return; // Idle if no target found
+
     // let aimTarget = this.getAimTarget(worldPos, targetObject.position, targetObject.getVelocityVec(), turret.gun.muzzleVelocity);
     let aimTarget = this.getAimTarget(worldPos, turretParent.AItarget.position, turretParent.AItarget.getVelocityVec(), 200);
     turret.turnTowards(aimTarget, delta);
@@ -54,10 +62,19 @@ class TurretAI {
     }
   }
 
-  getNewAITarget(turretParent) {
-    const turret = turretParent.turret;
+  getNewAITarget(turretParent, turretChild) {
+    let turret;
+    if (turretChild) {
+      turretParent = turretChild;
+      turret = turretChild;
+    } else {
+      turret = turretParent.turret;
+    }
 
-    const enemies = GAME.objects.filter(object => object.team && object.team !== turretParent.team && turret.position.distanceTo(object.position) < FAR_DISTANCE);
+    const gunPosition = VECTOR3_D;
+    turret.gun.getWorldPosition(gunPosition);
+
+    const enemies = GAME.objects.filter(object => object.team && object.team !== turretParent.team && gunPosition.distanceTo(object.getWorldPosition()) < FAR_DISTANCE);
     let target = enemies[0];
 
     if (!target) return null;
@@ -65,8 +82,6 @@ class TurretAI {
     const gunQuat = QUATERNION_B;
     turret.gun.getWorldQuaternion(gunQuat);
     const gunDirection = VECTOR3_E.set(0, 0, -1).applyQuaternion(gunQuat);
-    const gunPosition = VECTOR3_D;
-    turret.gun.getWorldPosition(gunPosition);
 
     let currentAngle = Infinity;
 
