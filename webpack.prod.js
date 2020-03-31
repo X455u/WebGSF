@@ -9,7 +9,7 @@ module.exports = merge(common, {
   plugins: [
     new WorkboxPlugin.GenerateSW({
       runtimeCaching: [{
-        urlPattern: /\.(?:png|jpg|jpeg|svg|json|mp3)$/,
+        urlPattern: /\.(?:png|jpg|jpeg|svg|json|mp3|obj)$/,
         handler: 'CacheFirst',
       }],
     }),

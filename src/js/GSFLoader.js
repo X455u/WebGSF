@@ -1,44 +1,48 @@
 import * as THREE from 'three';
-import nicceFighter from '../assets/nicce_fighter_buf.json';
-import spaceshipComp from '../assets/spaceship_comp.png';
-import spaceshipNor from '../assets/spaceship_nor.png';
-import railgunBase from '../assets/railgun_base_buf.json';
-import plasmaTurretHeadGeometry from '../assets/plasmaTurretHeadGeometry.json';
-import plasmaTurretGunGeometry from '../assets/plasmaTurretGunGeometry.json';
-import railgunNor from '../assets/railgun_nor.png';
-import railgunComp from '../assets/railgun_comp.png';
-import railgunSpec from '../assets/railgun_spec.png';
+import {OBJLoader} from 'three/examples/jsm/loaders/OBJLoader.js';
+import background from '../assets/background.jpg';
+import crosshair from '../assets/crosshair.png';
+import earthClouds from '../assets/earthClouds.jpg';
+import earthNormalMap from '../assets/earthNormalMap.png';
+import earthSpecularMap from '../assets/earthSpecularMap.png';
+import earthTexture from '../assets/earthTexture.jpg';
+import explosion from '../assets/explosion.png';
 import landingpad from '../assets/landingpad.json';
-import landingpadNor from '../assets/landingpad_nor.png';
 import landingpadComp from '../assets/landingpad_comp.png';
-import twinTurretBase from '../assets/objects/twin_turret/twinTurretBase.json';
+import landingpadNor from '../assets/landingpad_nor.png';
+import laser from '../assets/laser.mp3';
+import lensflare0 from '../assets/lensflare/lensflare0.png';
+import lensflare2 from '../assets/lensflare/lensflare2.png';
+import lensflare3 from '../assets/lensflare/lensflare3.png';
+import mars from '../assets/mars.jpg';
+import nicceFighter from '../assets/nicce_fighter_buf.json';
+import mothershipGeometry from '../assets/objects/mothership/mothershipGeometry.json';
+import mothershipCol from '../assets/objects/mothership/mothership_col.png';
+import mothershipNor from '../assets/objects/mothership/mothership_nor.png';
 import hull0 from '../assets/objects/twin_turret/hull0.json';
 import hull1 from '../assets/objects/twin_turret/hull1.json';
 import hull2 from '../assets/objects/twin_turret/hull2.json';
 import hull3 from '../assets/objects/twin_turret/hull3.json';
 import hull4 from '../assets/objects/twin_turret/hull4.json';
+import twinTurretBase from '../assets/objects/twin_turret/twinTurretBase.json';
 import twinTurretTexture from '../assets/objects/twin_turret/twinTurretTexture.png';
-import mothershipGeometry from '../assets/objects/mothership/mothershipGeometry.json';
-import mothershipNor from '../assets/objects/mothership/mothership_nor.png';
-import mothershipCol from '../assets/objects/mothership/mothership_col.png';
-import background from '../assets/background.jpg';
-import mars from '../assets/mars.jpg';
-import earthTexture from '../assets/earthTexture.jpg';
-import earthNormalMap from '../assets/earthNormalMap.png';
-import earthSpecularMap from '../assets/earthSpecularMap.png';
-import earthClouds from '../assets/earthClouds.jpg';
-import lensflare0 from '../assets/lensflare/lensflare0.png';
-import lensflare2 from '../assets/lensflare/lensflare2.png';
-import lensflare3 from '../assets/lensflare/lensflare3.png';
-import crosshair from '../assets/crosshair.png';
-import explosion from '../assets/explosion.png';
-import laser from '../assets/laser.mp3';
 import plasma from '../assets/plasma.mp3';
+import plasmaTurretGunGeometry from '../assets/plasmaTurretGunGeometry.json';
+import plasmaTurretHeadGeometry from '../assets/plasmaTurretHeadGeometry.json';
+import powergenObj from '../assets/powergen/powergen.obj';
+import powergenDiff from '../assets/powergen/powergen_diff.png';
+import powergenNor from '../assets/powergen/powergen_nor.png';
+import railgunBase from '../assets/railgun_base_buf.json';
+import railgunComp from '../assets/railgun_comp.png';
+import railgunNor from '../assets/railgun_nor.png';
+import railgunSpec from '../assets/railgun_spec.png';
+import engineAmbient from '../assets/sounds/engine_ambient.mp3';
 import explosion0 from '../assets/sounds/explosion0.mp3';
 import explosion1 from '../assets/sounds/explosion1.mp3';
 import explosion2 from '../assets/sounds/explosion2.mp3';
-import engineAmbient from '../assets/sounds/engine_ambient.mp3';
 import lowPulsatingHum from '../assets/sounds/low_pulsating_hum.mp3';
+import spaceshipComp from '../assets/spaceship_comp.png';
+import spaceshipNor from '../assets/spaceship_nor.png';
 
 class GSFLoader {
   constructor() {
@@ -46,6 +50,7 @@ class GSFLoader {
     this.BUFFER_GEOMETRY_LOADER = new THREE.BufferGeometryLoader(this.manager);
     this.TEX_LOADER = new THREE.TextureLoader(this.manager);
     this.AUDIO_LOADER = new THREE.AudioLoader(this.manager);
+    this.OBJ_LOADER = new OBJLoader(this.manager);
     this.assets = {};
   }
 
@@ -55,6 +60,17 @@ class GSFLoader {
 
   load() {
     /* eslint-disable dot-notation */
+    this.OBJ_LOADER.load(powergenObj, obj => {
+      this.assets['powergenGeometry'] = obj.children[0].geometry;
+    });
+    this.TEX_LOADER.load(powergenDiff, (diff) => {
+      this.TEX_LOADER.load(powergenNor, (nor) => {
+        this.assets['powergenMaterial'] = new THREE.MeshPhongMaterial({
+          map: diff,
+          normalMap: nor
+        });
+      });
+    });
     this.BUFFER_GEOMETRY_LOADER.load(nicceFighter, (geometry) => {
       this.assets['fighterGeometry'] = new THREE.Geometry().fromBufferGeometry(geometry);
     });

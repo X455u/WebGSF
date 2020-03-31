@@ -7,6 +7,7 @@ import {LOADER} from '../GSFLoader';
 import Level from '../Level';
 import PlasmaTurret from '../PlasmaTurret';
 import {PLAYER} from '../Player';
+import Powergen from '../Powergen';
 import SimpleMars from '../SimpleMars';
 import Sun from '../Sun';
 import {TURRET_AI} from '../TurretAI';
@@ -69,6 +70,18 @@ class Level2 extends Level {
           turrets.push(turret);
         }
         return turrets;
+      },
+      powergens: () => {
+        let powergens = [];
+        for (let i = 0; i < 100; i++) {
+          let powergen = new Powergen();
+          let direction = new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize();
+          powergen.position.copy(direction).setLength(this.mars.hitRadius);
+          powergen.position.add(this.mars.position);
+          powergen.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction);
+          powergens.push(powergen);
+        }
+        return powergens;
       },
     };
   }
