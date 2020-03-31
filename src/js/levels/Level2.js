@@ -88,6 +88,12 @@ class Level2 extends Level {
 
   clear() {}
 
-  update() {}
+  update() {
+    this.sun.target.position.copy(this.playerShip.position);
+    this.sun.position.copy(this.playerShip.position);
+    this.sun.position.x += 500;
+    this.sun.position.y += 500;
+    this.sun.position.z -= 1000;
+  }
 }
 export default Level2;

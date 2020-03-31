@@ -17,7 +17,7 @@ class MenuLevel extends Level {
     this.assets = {
       sun: () => {
         let sun = new Sun();
-        sun.position.x = -6000;
+        sun.position.x = -5000;
         sun.position.y = 4000;
         sun.position.z = -6000;
         return sun;
