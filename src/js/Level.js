@@ -2,6 +2,7 @@ class Level {
   constructor() {
     this.assets = {};
     this.assetsLoaded = 0;
+    this.isFinished = false;
   }
 
   assetLoaded(assetKey) {

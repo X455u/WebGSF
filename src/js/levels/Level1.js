@@ -71,6 +71,7 @@ class Level1 extends Level {
     this.sun.position.x += 500;
     this.sun.position.y += 500;
     this.sun.position.z -= 1000;
+    this.isFinished = this.enemyFighter.removed;
   }
 }
 export default Level1;

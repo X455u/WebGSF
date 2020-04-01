@@ -1,18 +1,18 @@
-import {Howl} from 'howler';
+import { Howl } from 'howler';
 import * as THREE from 'three';
 import mainTheme from '../assets/main_theme2.mp3';
 import '../hud/menu.css';
 import '../index.css';
-import {GAME, SCENE} from './Game';
-import {CAMERA} from './GSFCamera';
-import {LOADER} from './GSFLoader';
-import {HUD} from './HUD';
+import { GAME, SCENE } from './Game';
+import { CAMERA } from './GSFCamera';
+import { LOADER } from './GSFLoader';
+import { HUD } from './HUD';
 import Level1 from './levels/Level1';
 import Level2 from './levels/Level2';
 import Level3 from './levels/Level3';
 import MenuLevel from './levels/MenuLevel';
 import Missile from './Missile';
-import {PLAYER} from './Player';
+import { PLAYER } from './Player';
 
 const menu = require('../hud/menu.html');
 
@@ -21,8 +21,6 @@ if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./service-worker.js');
   });
 }
-
-const DEBUG = false;
 
 const MAX_DELTA = 0.1; // s
 
@@ -94,6 +92,35 @@ music.play();
 
 let loop = true;
 
+export const restartGame = (success)=> {
+  const text = document.body.getElementsByClassName('gameover')[0];
+  text.innerHTML = success ? 'Well done!' : 'You died';
+  const canvas = document.body.getElementsByTagName('canvas')[0];
+  canvas.style.opacity = 0;
+  canvas.addEventListener('transitionend', () => {
+    GAME.loadLevel(new MenuLevel());
+    document.body.getElementsByClassName('gameover')[0].innerHTML = '';
+    setTimeout(() => {
+      canvas.style.opacity = 1;
+      const menuElement = document.getElementById('menu');
+      menuElement.removeAttribute('hidden');
+      menuElement.style.display = '';
+      buttons.forEach(b => {
+        b.removeAttribute('disabled');
+        b.removeAttribute('selected');
+      });
+      HUD.updateHP(1);
+      HUD.updateShield(1);
+      loop = true;
+      // eslint-disable-next-line no-use-before-define
+      render();
+      menuElement.addEventListener('transitionend', (e) => {
+        e.srcElement.style.display = 'none';
+      }, {once: true});
+    }, 500);
+  }, {once: true});
+};
+
 // Game Loop
 let previousTime;
 function render() {
@@ -102,8 +129,6 @@ function render() {
   previousTime = time;
 
   PLAYER.update();
-  // PLAYER.addPoints(delta);
-  // if (!playerShip.removed) points.innerHTML = 'Points: ' + Math.floor(PLAYER.points);
 
   GAME.update(delta);
 
@@ -111,46 +136,16 @@ function render() {
 
   RENDERER.render(SCENE, CAMERA);
 
-  // Update debugging text
-  // if (DEBUG) {
-  //   text.innerHTML = ['x', 'y', 'z'].map(x => x + ': ' + playerShip.position[x]).join('<br/>');
-  //   fps = fps * 9.0 / 10.0;
-  //   fps += (1.0 / (Math.max(delta, 0.01) * 10));
-  //   text.innerHTML += '<br/>fps: ' + fps;
-  // }
+  if (GAME.level && GAME.level.isFinished) {
+    GAME.level.isFinished = false;
+    loop = false;
+    restartGame(true);
+  }
 
   if (loop) requestAnimationFrame(render);
 }
 
 function initGame(levelId) {
-  // let points = document.createElement('div');
-  // points.className = 'debug';
-  // points.innerHTML = 'Points: ' + PLAYER.points;
-  // document.body.appendChild(points);
-
-  // Format debugging text
-  let text;
-  // let fps = 60.0;
-  if (DEBUG) {
-    text = document.createElement('div');
-    text.className = 'debug';
-    text.innerHTML = 'Loading...';
-    document.body.appendChild(text);
-  }
-
-  // let testLevel = new TestLevel();
-  // testLevel.assetLoadedCallback = (assetsLoaded, assetKey) => {
-  //   buttons.innerHTML = `Loaded: ${assetKey} ${assetsLoaded}/${Object.keys(testLevel.assets).length}`;
-  // };
-  // testLevel.enemySpawnedCallback = enemy => {
-  //   enemy.addEventListener('onDamage', () => {
-  //     if (enemy.hp === 0) {
-  //       PLAYER.addPoints(100);
-  //       // points.innerHTML = 'Points: ' + Math.floor(PLAYER.points);
-  //     }
-  //   });
-  // };
-
   const level = {
     level1: new Level1(),
     level2: new Level2(),
@@ -202,26 +197,3 @@ LOADER.manager.onLoad = () => {
   });
 };
 LOADER.load();
-
-export const restartGame = ()=> {
-  document.body.style.opacity = 0;
-  document.body.addEventListener('transitionend', () => {
-    GAME.loadLevel(new MenuLevel());
-    setTimeout(() => {
-      document.body.style.opacity = 1;
-      const menuElement = document.getElementById('menu');
-      menuElement.removeAttribute('hidden');
-      menuElement.style.display = '';
-      buttons.forEach(b => {
-        b.removeAttribute('disabled');
-        b.removeAttribute('selected');
-      });
-      HUD.updateHP(1);
-      HUD.updateShield(1);
-      menuElement.addEventListener('transitionend', (e) => {
-        e.srcElement.style.display = 'none';
-      }, {once: true});
-    }, 500);
-  }, {once: true});
-}
-;
