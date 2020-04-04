@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import {COLLIDABLES} from './Game'
+import { COLLIDABLES } from './Game'
 
 // Object pool
 const MATRIX = new THREE.Matrix4()
@@ -56,13 +56,12 @@ class GameObject extends THREE.Mesh {
     let targetDirection = VECTOR3_C.subVectors(target, this.position)
     targetDirection.normalize()
 
-    let angle
-    if (!direction.length() || !targetDirection.length()) {
-      angle = Number.EPSILON
-    } else {
-      angle = direction.angleTo(targetDirection) || Number.EPSILON
-    }
-    this.quaternion.slerp(quaternion, this.turnSpeed * delta * 2 * Math.PI / angle)
+    const angle =
+      !direction.length() || !targetDirection.length()
+        ? Number.EPSILON
+        : direction.angleTo(targetDirection) || Number.EPSILON
+
+    this.quaternion.slerp(quaternion, (this.turnSpeed * delta * 2 * Math.PI) / angle)
   }
 
   checkCollision(quaternion, distance, extraHitRadius = 0) {
@@ -80,7 +79,12 @@ class GameObject extends THREE.Mesh {
     for (let collidable of COLLIDABLES) {
       if (collidable === this || collidable === this.owner) continue
       let collidableCenter = collidable.position
-      if (this.position.distanceTo(collidableCenter) > distance + collidable.hitRadius + this.hitRadius + extraHitRadius) continue
+      if (
+        this.position.distanceTo(collidableCenter) >
+        distance + collidable.hitRadius + this.hitRadius + extraHitRadius
+      ) {
+        continue
+      }
       if (direction.dot(VECTOR3_F.subVectors(collidableCenter, start)) < 0) continue
       a1.subVectors(collidableCenter, start)
       a2.subVectors(collidableCenter, end)
@@ -100,6 +104,5 @@ class GameObject extends THREE.Mesh {
     velocityVec.set(0, 0, -1).applyQuaternion(this.quaternion)
     return velocityVec.multiplyScalar(this.velocity)
   }
-
 }
 export default GameObject

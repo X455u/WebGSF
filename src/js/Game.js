@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 
-import {CAMERA} from './GSFCamera'
+import { CAMERA } from './GSFCamera'
 import gjk from './GJK'
 
 export const SCENE = new THREE.Scene()
@@ -18,7 +18,6 @@ const VECTOR3_A = new THREE.Vector3()
 const VECTOR3_B = new THREE.Vector3()
 
 class Game {
-
   constructor() {
     this.objects = []
     this.level = null
@@ -31,7 +30,7 @@ class Game {
 
     this.level.update(delta)
 
-    let hitBoxes = {x: [], y: [], z: []}
+    let hitBoxes = { x: [], y: [], z: [] }
 
     for (const object of this.objects) {
       object.update(delta)
@@ -41,25 +40,25 @@ class Game {
       if (object.isHighSpeed) {
         const [min, max] = object.getHighSpeedBroadPoints(delta)
 
-        hitBoxes.x.push({object: object, coord: min.x})
-        hitBoxes.y.push({object: object, coord: min.y})
-        hitBoxes.z.push({object: object, coord: min.z})
+        hitBoxes.x.push({ object: object, coord: min.x })
+        hitBoxes.y.push({ object: object, coord: min.y })
+        hitBoxes.z.push({ object: object, coord: min.z })
 
-        hitBoxes.x.push({object: object, coord: max.x})
-        hitBoxes.y.push({object: object, coord: max.y})
-        hitBoxes.z.push({object: object, coord: max.z})
+        hitBoxes.x.push({ object: object, coord: max.x })
+        hitBoxes.y.push({ object: object, coord: max.y })
+        hitBoxes.z.push({ object: object, coord: max.z })
       } else {
         let rotatedCenter = VECTOR3_A.copy(object.geometry.boundingSphere.center).applyQuaternion(object.quaternion)
         let boundingSpherePosition = VECTOR3_B.addVectors(object.position, rotatedCenter)
         let boundingSphereRadius = object.geometry.boundingSphere.radius
 
-        hitBoxes.x.push({object: object, coord: boundingSpherePosition.x - boundingSphereRadius})
-        hitBoxes.y.push({object: object, coord: boundingSpherePosition.y - boundingSphereRadius})
-        hitBoxes.z.push({object: object, coord: boundingSpherePosition.z - boundingSphereRadius})
+        hitBoxes.x.push({ object: object, coord: boundingSpherePosition.x - boundingSphereRadius })
+        hitBoxes.y.push({ object: object, coord: boundingSpherePosition.y - boundingSphereRadius })
+        hitBoxes.z.push({ object: object, coord: boundingSpherePosition.z - boundingSphereRadius })
 
-        hitBoxes.x.push({object: object, coord: boundingSpherePosition.x + boundingSphereRadius})
-        hitBoxes.y.push({object: object, coord: boundingSpherePosition.y + boundingSphereRadius})
-        hitBoxes.z.push({object: object, coord: boundingSpherePosition.z + boundingSphereRadius})
+        hitBoxes.x.push({ object: object, coord: boundingSpherePosition.x + boundingSphereRadius })
+        hitBoxes.y.push({ object: object, coord: boundingSpherePosition.y + boundingSphereRadius })
+        hitBoxes.z.push({ object: object, coord: boundingSpherePosition.z + boundingSphereRadius })
       }
     }
 
@@ -76,7 +75,7 @@ class Game {
       if (!within.delete(current)) {
         for (let object of within) {
           if (current.isStatic && object.isStatic) continue
-          possibleCollisions.push({a: current, b: object})
+          possibleCollisions.push({ a: current, b: object })
         }
         within.add(current)
       }
@@ -96,21 +95,17 @@ class Game {
     while (possibleCollisions.length > 0) {
       let collision = possibleCollisions.pop()
       if (collisionCounter[collision.a.uuid]) {
-
         if (collisionCounter[collision.a.uuid][collision.b.uuid]) {
           collisionCounter[collision.a.uuid][collision.b.uuid]++
         } else {
           collisionCounter[collision.a.uuid][collision.b.uuid] = 1
         }
-
       } else if (collisionCounter[collision.b.uuid]) {
-
         if (collisionCounter[collision.b.uuid][collision.a.uuid]) {
           collisionCounter[collision.b.uuid][collision.a.uuid]++
         } else {
           collisionCounter[collision.b.uuid][collision.a.uuid] = 1
         }
-
       } else {
         collisionCounter[collision.a.uuid] = {}
         collisionCounter[collision.a.uuid][collision.b.uuid] = 1
@@ -120,18 +115,22 @@ class Game {
     let collisions = []
     for (let uuidA in collisionCounter) {
       for (let uuidB in collisionCounter[uuidA]) {
-        if (collisionCounter[uuidA][uuidB] === 3) collisions.push({a: uuidA, b: uuidB})
+        if (collisionCounter[uuidA][uuidB] === 3) collisions.push({ a: uuidA, b: uuidB })
       }
     }
 
     for (let collision of collisions) {
-      let a = this.objects.find(obj => obj.uuid === collision.a)
-      let b = this.objects.find(obj => obj.uuid === collision.b)
+      let a = this.objects.find((obj) => obj.uuid === collision.a)
+      let b = this.objects.find((obj) => obj.uuid === collision.b)
       let exit = false
       for (let hullA of a.collisionHulls) {
         for (let hullB of b.collisionHulls) {
-          let hullAclone = a.isHighSpeed ? a.getHighSpeedNarrowPoints(delta) : hullA.map(vec => vec.clone().applyMatrix4(a.matrix))
-          let hullBclone = b.isHighSpeed ? b.getHighSpeedNarrowPoints(delta) : hullB.map(vec => vec.clone().applyMatrix4(b.matrix))
+          let hullAclone = a.isHighSpeed
+            ? a.getHighSpeedNarrowPoints(delta)
+            : hullA.map((vec) => vec.clone().applyMatrix4(a.matrix))
+          let hullBclone = b.isHighSpeed
+            ? b.getHighSpeedNarrowPoints(delta)
+            : hullB.map((vec) => vec.clone().applyMatrix4(b.matrix))
           if (gjk(hullAclone, hullBclone)) {
             a.dealDamage(b.collisionDamage)
             b.dealDamage(a.collisionDamage)
@@ -191,6 +190,5 @@ class Game {
       this.level = null
     }
   }
-
 }
 export const GAME = new Game()

@@ -1,7 +1,7 @@
 import * as THREE from 'three'
 import GameObject from './GameObject'
-import {SOUND_LISTENER, GAME} from './Game'
-import {LOADER} from './GSFLoader'
+import { SOUND_LISTENER, GAME } from './Game'
+import { LOADER } from './GSFLoader'
 
 const HULL_HEAD = [
   new THREE.Vector3(3.4, 23.2, -9.6),
@@ -126,21 +126,12 @@ class LandingPad extends GameObject {
     this.hitRadius = 5
     this.isStatic = true
 
-    this.collisionHulls = [
-      HULL_HEAD,
-      HULL_LEG,
-      HULL_FOOT,
-      HULL_BEACON_1,
-      HULL_BEACON_2,
-      HULL_BEACON_3,
-      HULL_BEACON_4,
-    ]
+    this.collisionHulls = [HULL_HEAD, HULL_LEG, HULL_FOOT, HULL_BEACON_1, HULL_BEACON_2, HULL_BEACON_3, HULL_BEACON_4]
   }
 
   destroy() {
     super.destroy()
     this.sound.stop()
   }
-
 }
 export default LandingPad

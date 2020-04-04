@@ -16,10 +16,6 @@ import { PLAYER } from './Player'
 
 const menu = require('../hud/menu.html')
 
-let asd = 1
-
-if (asd === 1) console.log('asd')
-
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('./service-worker.js')

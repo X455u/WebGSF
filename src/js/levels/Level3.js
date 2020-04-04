@@ -1,17 +1,16 @@
 import * as THREE from 'three'
 import Crosshair from '../Crosshair'
 import Fighter from '../Fighter'
-import {FIGHTER_AI} from '../FighterAI'
-import {SCENE} from '../Game'
-import {CAMERA} from '../GSFCamera'
-import {LOADER} from '../GSFLoader'
+import { FIGHTER_AI } from '../FighterAI'
+import { SCENE } from '../Game'
+import { CAMERA } from '../GSFCamera'
+import { LOADER } from '../GSFLoader'
 import Level from '../Level'
 import Mothership from '../Mothership'
-import {PLAYER} from '../Player'
+import { PLAYER } from '../Player'
 import SimpleEarth from '../SimpleEarth'
 import Sun from '../Sun'
-import {TURRET_AI} from '../TurretAI'
-
+import { TURRET_AI } from '../TurretAI'
 
 class Level3 extends Level {
   constructor() {

@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import keymaster from 'keymaster'
-import {HUD} from './HUD'
-import {restartGame} from './app'
+import { HUD } from './HUD'
+import { restartGame } from './app'
 
 const ACCELEROMETER_SMOOTHING = 0.01
 
@@ -55,12 +55,8 @@ class Player {
     if (!this.motionControlled) {
       // Ship steering
       this.turnParameters = {
-        x:
-          Number(keymaster.isPressed('down')) -
-          Number(keymaster.isPressed('up')),
-        z:
-          Number(keymaster.isPressed('left')) -
-          Number(keymaster.isPressed('right')),
+        x: Number(keymaster.isPressed('down')) - Number(keymaster.isPressed('up')),
+        z: Number(keymaster.isPressed('left')) - Number(keymaster.isPressed('right')),
       }
       // Ship acceleration
       if (keymaster.isPressed('space')) this.ship.thrust()
@@ -81,9 +77,9 @@ class Player {
     if (!this.smoothOrientation.x || !this.smoothOrientation.z) {
       this.smoothOrientation = this.deviceOrientation
     }
-    this.smoothOrientation.x *= (1 - ACCELEROMETER_SMOOTHING)
+    this.smoothOrientation.x *= 1 - ACCELEROMETER_SMOOTHING
     this.smoothOrientation.x += ACCELEROMETER_SMOOTHING * this.deviceOrientation.x
-    this.smoothOrientation.z *= (1 - ACCELEROMETER_SMOOTHING)
+    this.smoothOrientation.z *= 1 - ACCELEROMETER_SMOOTHING
     this.smoothOrientation.z += ACCELEROMETER_SMOOTHING * this.deviceOrientation.z
     this.turnParameters.x = this.deviceOrientation.x - this.smoothOrientation.x
     this.turnParameters.z = this.deviceOrientation.z
@@ -98,20 +94,20 @@ class Player {
     // Accelerometer
     window.ondevicemotion = (event) => {
       this.deviceOrientation = {
-        x: invertCoefficient * event.accelerationIncludingGravity.z / 6,
-        z: invertCoefficient * event.accelerationIncludingGravity.y / 6,
+        x: (invertCoefficient * event.accelerationIncludingGravity.z) / 6,
+        z: (invertCoefficient * event.accelerationIncludingGravity.y) / 6,
       }
     }
     // Touch events
-    let updateMobileState = event => {
+    let updateMobileState = (event) => {
       let halfWidth = window.innerWidth / 2
       let touches = event.touches
-      this.isThrusting = _.range(touches.length).some(i => touches.item(i).pageX > halfWidth)
-      this.isShooting = _.range(touches.length).some(i => touches.item(i).pageX < halfWidth)
+      this.isThrusting = _.range(touches.length).some((i) => touches.item(i).pageX > halfWidth)
+      this.isShooting = _.range(touches.length).some((i) => touches.item(i).pageX < halfWidth)
     }
     document.body.addEventListener('touchstart', updateMobileState, false)
     document.body.addEventListener('touchend', updateMobileState, false)
-    document.body.addEventListener('touchmove', event => event.preventDefault(), false)
+    document.body.addEventListener('touchmove', (event) => event.preventDefault(), false)
   }
 }
 export const PLAYER = new Player()

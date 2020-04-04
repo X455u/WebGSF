@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import {GAME} from './Game'
+import { GAME } from './Game'
 
 const SHOOT_ANGLE = 0.05
 const FAR_DISTANCE = 1800
@@ -15,10 +15,7 @@ const QUATERNION_A = new THREE.Quaternion()
 const QUATERNION_B = new THREE.Quaternion()
 
 class TurretAI {
-
-  constructor() {
-
-  }
+  constructor() {}
 
   update(turretParent, delta, turretChild) {
     let turret
@@ -32,12 +29,23 @@ class TurretAI {
     let worldPos = VECTOR3_D
     turret.gun.getWorldPosition(worldPos)
 
-    if (!turretParent.AItarget || turretParent.AItarget.removed === true || worldPos.distanceTo(turretParent.AItarget.getWorldPosition()) > FAR_DISTANCE) turretParent.AItarget = this.getNewAITarget(turretParent, turretChild)
+    if (
+      !turretParent.AItarget ||
+      turretParent.AItarget.removed === true ||
+      worldPos.distanceTo(turretParent.AItarget.getWorldPosition()) > FAR_DISTANCE
+    ) {
+      turretParent.AItarget = this.getNewAITarget(turretParent, turretChild)
+    }
 
     if (!turretParent.AItarget) return // Idle if no target found
 
     // let aimTarget = this.getAimTarget(worldPos, targetObject.position, targetObject.getVelocityVec(), turret.gun.muzzleVelocity);
-    let aimTarget = this.getAimTarget(worldPos, turretParent.AItarget.position, turretParent.AItarget.getVelocityVec(), 200)
+    let aimTarget = this.getAimTarget(
+      worldPos,
+      turretParent.AItarget.position,
+      turretParent.AItarget.getVelocityVec(),
+      200
+    )
     turret.turnTowards(aimTarget, delta)
 
     let worldQuat = QUATERNION_A
@@ -51,7 +59,7 @@ class TurretAI {
     let thisToTarget = VECTOR3_A.copy(targetPosition).sub(gunPosition)
     if (thisToTarget.length() === 0 || targetVelocity.length() === 0) return targetPosition
     let targetMoveAngle = thisToTarget.angleTo(targetVelocity) // 0 or PI when paralell to vector from this to target.
-    let aimAdvanceAngle = Math.asin(Math.sin(targetMoveAngle) * targetVelocity.length() / shotSpeed)
+    let aimAdvanceAngle = Math.asin((Math.sin(targetMoveAngle) * targetVelocity.length()) / shotSpeed)
     let aimAdvanceAxis = VECTOR3_B.crossVectors(thisToTarget, targetVelocity).normalize()
     let aimAdvanceVector = thisToTarget.applyAxisAngle(aimAdvanceAxis, aimAdvanceAngle)
     let aimTarget = VECTOR3_C.addVectors(gunPosition, aimAdvanceVector)
@@ -74,7 +82,12 @@ class TurretAI {
     const gunPosition = VECTOR3_D
     turret.gun.getWorldPosition(gunPosition)
 
-    const enemies = GAME.objects.filter(object => object.team && object.team !== turretParent.team && gunPosition.distanceTo(object.getWorldPosition()) < FAR_DISTANCE)
+    const enemies = GAME.objects.filter(
+      (object) =>
+        object.team &&
+        object.team !== turretParent.team &&
+        gunPosition.distanceTo(object.getWorldPosition()) < FAR_DISTANCE
+    )
     let target = enemies[0]
 
     if (!target) return null
@@ -93,7 +106,6 @@ class TurretAI {
 
       target = enemy
       currentAngle = newAngle
-
     }
     return target
   }

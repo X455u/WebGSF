@@ -2,7 +2,7 @@ import * as THREE from 'three'
 import Shot from './Shot'
 import SimpleParticleSystem from './SimpleParticleSystem'
 import Explosion from './Explosion'
-import {GAME} from './Game'
+import { GAME } from './Game'
 import Ship from './Ship'
 
 let missileTop = new THREE.ConeGeometry(0.2, 0.5, 8, 1, true)
@@ -21,7 +21,7 @@ missileGeometry.merge(missileWing2)
 missileGeometry.rotateX(Math.PI / 2)
 
 let missileMaterial = new THREE.MeshPhongMaterial({
-  color: 0xAAAAAA,
+  color: 0xaaaaaa,
   side: THREE.DoubleSide,
 })
 
@@ -39,7 +39,7 @@ class Missile extends Shot {
       destination: new THREE.Vector3(0, 0, -2),
       positionRandomness: 0.2,
       destinationRandomness: 0.5,
-      color: new THREE.Color(0xFF0000),
+      color: new THREE.Color(0xff0000),
       size: 100,
       lifetime: 0.2,
     })

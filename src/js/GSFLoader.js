@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import {OBJLoader} from 'three/examples/jsm/loaders/OBJLoader.js'
+import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js'
 import background from '../assets/background.jpg'
 import crosshair from '../assets/crosshair.png'
 import earthClouds from '../assets/earthClouds.jpg'
@@ -60,7 +60,7 @@ class GSFLoader {
 
   load() {
     /* eslint-disable dot-notation */
-    this.OBJ_LOADER.load(powergenObj, obj => {
+    this.OBJ_LOADER.load(powergenObj, (obj) => {
       this.assets['powergenGeometry'] = obj.children[0].geometry
     })
     this.TEX_LOADER.load(powergenDiff, (diff) => {

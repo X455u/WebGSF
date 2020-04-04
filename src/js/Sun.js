@@ -1,10 +1,9 @@
 import * as THREE from 'three'
-import {SCENE} from './Game'
-import {LOADER} from './GSFLoader'
-import {Lensflare, LensflareElement} from 'three-full'
+import { SCENE } from './Game'
+import { LOADER } from './GSFLoader'
+import { Lensflare, LensflareElement } from 'three-full'
 
 class Sun extends THREE.DirectionalLight {
-
   constructor() {
     super(0xfffacd, 1.2)
     SCENE.add(this)
@@ -30,6 +29,5 @@ class Sun extends THREE.DirectionalLight {
     lensflare.addElement(new LensflareElement(texFlare3, 70, 1.0))
     this.add(lensflare)
   }
-
 }
 export default Sun

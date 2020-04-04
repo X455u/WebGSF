@@ -2,7 +2,6 @@ import * as THREE from 'three'
 import PlasmaShot from './PlasmaShot'
 
 class LargePlasmaCannon extends THREE.Object3D {
-
   constructor() {
     super()
     this.reloadTime = 4
@@ -27,6 +26,5 @@ class LargePlasmaCannon extends THREE.Object3D {
   update(delta) {
     this.reload = Math.max(0.0, this.reload - delta)
   }
-
 }
 export default LargePlasmaCannon

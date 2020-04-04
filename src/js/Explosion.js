@@ -1,12 +1,12 @@
 import * as THREE from 'three'
-import {LOADER} from './GSFLoader'
-import {SOUND_LISTENER} from './Game'
+import { LOADER } from './GSFLoader'
+import { SOUND_LISTENER } from './Game'
 
 class Explosion extends THREE.Sprite {
   constructor() {
     let texture = LOADER.get('explosionTexture').clone()
     texture.needsUpdate = true
-    let material = new THREE.SpriteMaterial({map: texture, color: 0xffffff})
+    let material = new THREE.SpriteMaterial({ map: texture, color: 0xffffff })
     super(material)
     this.scale.set(10, 10, 1)
     this.now = 0

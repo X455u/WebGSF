@@ -5,7 +5,8 @@ import * as THREE from 'three'
 ///////////////////////////////////
 let MAX_ITERATIONS = 256
 
-function getFarthestPoint(shape, d) { // vertices of shape and direction (normalized)
+function getFarthestPoint(shape, d) {
+  // vertices of shape and direction (normalized)
 
   // Project all vertices onto shape and get the longest
   let p = shape[0].clone()
@@ -24,7 +25,8 @@ function getFarthestPoint(shape, d) { // vertices of shape and direction (normal
   return p
 }
 
-function support(shape1, shape2, d) { // vertices of shape 1 and 2 and direction
+function support(shape1, shape2, d) {
+  // vertices of shape 1 and 2 and direction
 
   // Get some point on the minkowski sum (difference really)
   // Do this by getting the farthest point in d
@@ -133,7 +135,7 @@ export default function gjk(shape1, shape2) {
 
     // Here come some generalized functions that are called by all cases
     // Each case simply rotates the order of the vertices accordingly
-    let face = function() {
+    let face = function () {
       if (ab.clone().cross(abc).dot(aO) > 0) {
         // In the region of AB
         simplex[1] = simplex[0]
@@ -149,7 +151,7 @@ export default function gjk(shape1, shape2) {
       }
     }
 
-    let oneFace = function() {
+    let oneFace = function () {
       if (abc.clone().cross(ac).dot(aO) > 0) {
         // In the region of AC
         simplex[0] = a.clone()
@@ -158,7 +160,7 @@ export default function gjk(shape1, shape2) {
       } else face()
     }
 
-    let twoFaces = function() {
+    let twoFaces = function () {
       if (abc.clone().cross(ac).dot(aO) > 0) {
         // Origin is beyond AC from ABCs view
         // Only need to test ACD
@@ -204,8 +206,9 @@ export default function gjk(shape1, shape2) {
       abc = adb.clone()
 
       oneFace()
-    } else if (tests === ABC | ACD) twoFaces() // Behind two faces
-    else if (tests === ACD | ADB) {
+    } else if ((tests === ABC) | ACD) twoFaces()
+    // Behind two faces
+    else if ((tests === ACD) | ADB) {
       // Rotate ACD, ADB into ABC, ACD
       tmp = simplex[0]
       simplex[0] = simplex[1]
@@ -221,7 +224,7 @@ export default function gjk(shape1, shape2) {
       acd = adb.clone()
 
       twoFaces()
-    } else if (tests === ADB | ABC) {
+    } else if ((tests === ADB) | ABC) {
       // Rotate ADB, ABC into ABC, ACD
       tmp = simplex[1]
       simplex[1] = simplex[0]

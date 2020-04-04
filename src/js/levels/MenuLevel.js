@@ -1,12 +1,12 @@
 import * as THREE from 'three'
 
 import Level from '../Level'
-import {SCENE} from '../Game'
-import {LOADER} from '../GSFLoader'
+import { SCENE } from '../Game'
+import { LOADER } from '../GSFLoader'
 import Sun from '../Sun'
 import SimpleEarth from '../SimpleEarth'
 import Fighter from '../Fighter'
-import {FIGHTER_AI} from '../FighterAI'
+import { FIGHTER_AI } from '../FighterAI'
 import Mothership from '../Mothership'
 
 class MenuLevel extends Level {
@@ -58,11 +58,19 @@ class MenuLevel extends Level {
         let fighters = []
         for (let i = 0; i < 10; i++) {
           let ship1 = new Fighter()
-          ship1.position.set(-75 + 20 * (Math.random() - 0.5), 0 + 20 * (Math.random() - 0.5), -20 + 20 * (Math.random() - 0.5))
+          ship1.position.set(
+            -75 + 20 * (Math.random() - 0.5),
+            0 + 20 * (Math.random() - 0.5),
+            -20 + 20 * (Math.random() - 0.5)
+          )
           ship1.ai = FIGHTER_AI
           ship1.team = 1
           let ship2 = new Fighter()
-          ship2.position.set(75 + 20 * (Math.random() - 0.5), 0 + 20 * (Math.random() - 0.5), -20 + 20 * (Math.random() - 0.5))
+          ship2.position.set(
+            75 + 20 * (Math.random() - 0.5),
+            0 + 20 * (Math.random() - 0.5),
+            -20 + 20 * (Math.random() - 0.5)
+          )
           ship2.ai = FIGHTER_AI
           ship2.team = 2
         }
@@ -75,8 +83,6 @@ class MenuLevel extends Level {
     this.earth.rotateY(0.02 * delta)
   }
 
-  clear() {
-
-  }
+  clear() {}
 }
 export default MenuLevel

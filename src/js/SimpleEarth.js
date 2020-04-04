@@ -1,7 +1,7 @@
 import * as THREE from 'three'
 import GameObject from './GameObject'
-import {LOADER} from './GSFLoader'
-import {GAME} from './Game'
+import { LOADER } from './GSFLoader'
+import { GAME } from './Game'
 
 const CLOUD_ROTATION_SPEED = 0.02
 
@@ -21,7 +21,7 @@ class SimpleEarth extends GameObject {
     // Clouds
     let cloudGeometry = new THREE.IcosahedronGeometry(radius * 1.05, detail)
     let cloudMaterial = new THREE.MeshPhongMaterial({
-      color: 0xFFFFFF,
+      color: 0xffffff,
       shininess: 0,
       map: LOADER.get('earthClouds'),
       side: THREE.DoubleSide,

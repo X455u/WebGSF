@@ -1,8 +1,8 @@
 import * as THREE from 'three'
 import SubdivisionModifier from './SubdivisionModifier'
 import Shot from './Shot'
-import {LOADER} from './GSFLoader'
-import {SOUND_LISTENER} from './Game'
+import { LOADER } from './GSFLoader'
+import { SOUND_LISTENER } from './Game'
 import SimpleParticleSystem from './SimpleParticleSystem'
 
 let shotGeometry = new THREE.CylinderGeometry(0.5, 0.5, 6, 8, 3)
@@ -22,7 +22,6 @@ let shotMaterial = new THREE.MeshPhongMaterial({
 })
 
 class PlasmaShot extends Shot {
-
   constructor() {
     super(shotGeometry, shotMaterial)
     this.lifetimeLeft = 10
@@ -40,7 +39,7 @@ class PlasmaShot extends Shot {
       destination: new THREE.Vector3(0, 0, 20),
       positionRandomness: 0.5,
       destinationRandomness: 0.5,
-      color: new THREE.Color(0x00FF00),
+      color: new THREE.Color(0x00ff00),
       size: 200,
       lifetime: 0.2,
     })
@@ -51,6 +50,5 @@ class PlasmaShot extends Shot {
     super.destroy()
     this.remove(this.sound)
   }
-
 }
 export default PlasmaShot

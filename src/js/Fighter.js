@@ -16,16 +16,16 @@ const THRUSTER_POSITIONS = [
 ]
 
 const COLLISION_HULL = [
-  new THREE.Vector3(2.50, 1.50, 2.00),
-  new THREE.Vector3(2.50, -1.50, 2.00),
-  new THREE.Vector3(-2.50, 1.50, 2.00),
-  new THREE.Vector3(-2.50, -1.50, 2.00),
-  new THREE.Vector3(-2.50, -1.50, -1.75),
-  new THREE.Vector3(2.50, -1.50, -1.75),
-  new THREE.Vector3(2.50, 1.50, -1.75),
-  new THREE.Vector3(-2.50, 1.50, -1.75),
-  new THREE.Vector3(1.50, -0.25, -6.75),
-  new THREE.Vector3(-1.50, -0.25, -6.75),
+  new THREE.Vector3(2.5, 1.5, 2.0),
+  new THREE.Vector3(2.5, -1.5, 2.0),
+  new THREE.Vector3(-2.5, 1.5, 2.0),
+  new THREE.Vector3(-2.5, -1.5, 2.0),
+  new THREE.Vector3(-2.5, -1.5, -1.75),
+  new THREE.Vector3(2.5, -1.5, -1.75),
+  new THREE.Vector3(2.5, 1.5, -1.75),
+  new THREE.Vector3(-2.5, 1.5, -1.75),
+  new THREE.Vector3(1.5, -0.25, -6.75),
+  new THREE.Vector3(-1.5, -0.25, -6.75),
 ]
 for (let vec of COLLISION_HULL) {
   vec.multiplyScalar(0.5)
@@ -57,7 +57,7 @@ class Fighter extends Ship {
         destination: new THREE.Vector3(0, 0, 2),
         positionRandomness: 0.2,
         destinationRandomness: 0.5,
-        color: new THREE.Color(0xFFFFAA),
+        color: new THREE.Color(0xffffaa),
         size: 100,
         lifetime: 0.2,
       })
@@ -83,10 +83,10 @@ class Fighter extends Ship {
 
   update(delta) {
     super.update(delta)
-    for (let thruster of this.thrusters) {
-      thruster.update(delta)
+    for (let thruster of this.thrusters) thruster.update(delta)
+    if (this.spotlight) {
+      this.spotlight.target.position.copy(VECTOR3_A.set(0, 0, -1).applyQuaternion(this.quaternion).add(this.position))
     }
-    if (this.spotlight) this.spotlight.target.position.copy(VECTOR3_A.set(0, 0, -1).applyQuaternion(this.quaternion).add(this.position))
   }
 
   destroy() {

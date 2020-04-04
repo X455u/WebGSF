@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 
-import {GAME} from './Game'
+import { GAME } from './Game'
 
 const CLOSE_DISTANCE = 50
 const FAR_DISTANCE = 200
@@ -14,11 +14,7 @@ const VECTOR3_B = new THREE.Vector3()
 const VECTOR3_C = new THREE.Vector3()
 
 class FighterAI {
-
-  constructor() {
-
-  }
-
+  constructor() {}
 
   update(ship, delta) {
     if (!ship.AItarget || ship.AItarget.removed === true) ship.AItarget = this.getNewAITarget(ship)
@@ -32,7 +28,12 @@ class FighterAI {
       ship.turnTowards(away, delta)
     } else {
       if (ship.AIattacking) {
-        let aimTarget = this.getAimTarget(ship.position, ship.AItarget.position, ship.AItarget.getVelocityVec(), ship.gun.muzzleVelocity)
+        let aimTarget = this.getAimTarget(
+          ship.position,
+          ship.AItarget.position,
+          ship.AItarget.getVelocityVec(),
+          ship.gun.muzzleVelocity
+        )
         ship.turnTowards(aimTarget, delta)
 
         let facing = VECTOR3_A.set(0, 0, -1).applyQuaternion(ship.quaternion)
@@ -57,7 +58,7 @@ class FighterAI {
     let thisToTarget = VECTOR3_A.copy(targetPosition).sub(shipPosition)
     if (thisToTarget.length() === 0 || targetVelocity.length() === 0) return targetPosition
     let targetMoveAngle = thisToTarget.angleTo(targetVelocity) // 0 or PI when paralell to vector from this to target.
-    let aimAdvanceAngle = Math.asin(Math.sin(targetMoveAngle) * targetVelocity.length() / shotSpeed)
+    let aimAdvanceAngle = Math.asin((Math.sin(targetMoveAngle) * targetVelocity.length()) / shotSpeed)
     let aimAdvanceAxis = VECTOR3_B.crossVectors(thisToTarget, targetVelocity).normalize()
     let aimAdvanceVector = thisToTarget.applyAxisAngle(aimAdvanceAxis, aimAdvanceAngle)
     let aimTarget = VECTOR3_C.addVectors(shipPosition, aimAdvanceVector)
@@ -69,7 +70,7 @@ class FighterAI {
   }
 
   getNewAITarget(ship) {
-    let enemies = GAME.objects.filter(object => object.team && object.team !== ship.team)
+    let enemies = GAME.objects.filter((object) => object.team && object.team !== ship.team)
     let target = enemies[0]
 
     if (!target) return null
@@ -79,7 +80,6 @@ class FighterAI {
     }
     return target
   }
-
 }
 
 export const FIGHTER_AI = new FighterAI()

@@ -1,7 +1,7 @@
 import * as THREE from 'three'
 import GameObject from './GameObject'
-import {LOADER} from './GSFLoader'
-import {GAME} from './Game'
+import { LOADER } from './GSFLoader'
+import { GAME } from './Game'
 
 class SimpleMars extends GameObject {
   constructor(radius, detail) {

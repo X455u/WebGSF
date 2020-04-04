@@ -1,7 +1,7 @@
 import * as THREE from 'three'
-import {GAME, SOUND_LISTENER} from './Game'
+import { GAME, SOUND_LISTENER } from './Game'
 import GameObject from './GameObject'
-import {LOADER} from './GSFLoader'
+import { LOADER } from './GSFLoader'
 
 class Powergen extends GameObject {
   constructor() {
@@ -22,13 +22,11 @@ class Powergen extends GameObject {
     this.isStatic = true
 
     this.collisionHulls = [new THREE.Geometry().fromBufferGeometry(this.geometry).vertices]
-
   }
 
   destroy() {
     super.destroy()
     this.sound.stop()
   }
-
 }
 export default Powergen

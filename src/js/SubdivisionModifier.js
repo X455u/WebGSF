@@ -14,7 +14,6 @@ import * as THREE from 'three'
 const WARNINGS = !true // Set to true for development
 const ABC = ['a', 'b', 'c']
 
-
 function getEdge(a, b, map) {
   let vertexIndexA = Math.min(a, b)
   let vertexIndexB = Math.max(a, b)
@@ -51,11 +50,10 @@ function processEdge(a, b, vertices, map, face, metaVertices) {
 }
 
 function generateLookups(vertices, faces, metaVertices, edges) {
-
   let i, il, face
 
   for (i = 0, il = vertices.length; i < il; i++) {
-    metaVertices[i] = {edges: []}
+    metaVertices[i] = { edges: [] }
   }
 
   for (i = 0, il = faces.length; i < il; i++) {
@@ -70,10 +68,9 @@ function newFace(newFaces, a, b, c) {
   newFaces.push(new THREE.Face3(a, b, c))
 }
 
-
 class SubdivisionModifier {
   constructor(subdivisions) {
-    this.subdivisions = (subdivisions === undefined) ? 1 : subdivisions
+    this.subdivisions = subdivisions === undefined ? 1 : subdivisions
   }
 
   modify(geometry) {
@@ -134,7 +131,7 @@ class SubdivisionModifier {
       tmp.set(0, 0, 0)
 
       for (j = 0; j < connectedFaces; j++) {
-        face = currentEdge.faces[ j ]
+        face = currentEdge.faces[j]
         for (k = 0; k < 3; k++) {
           other = oldVertices[face[ABC[k]]]
           if (other !== currentEdge.a && other !== currentEdge.b) {
@@ -151,7 +148,6 @@ class SubdivisionModifier {
       newEdgeVertices.push(newEdge)
 
       // console.log(currentEdge, newEdge);
-
     }
 
     // Step 2: Reposition each source vertices.
@@ -161,9 +157,9 @@ class SubdivisionModifier {
     newSourceVertices = []
 
     for (i = 0, il = oldVertices.length; i < il; i++) {
-      oldVertex = oldVertices[ i ]
+      oldVertex = oldVertices[i]
       // find all connecting edges (using lookupTable)
-      connectingEdges = metaVertices[ i ].edges
+      connectingEdges = metaVertices[i].edges
       n = connectingEdges.length
 
       if (n === 3) {
@@ -200,7 +196,7 @@ class SubdivisionModifier {
       newSourceVertex = oldVertex.clone().multiplyScalar(sourceVertexWeight)
       tmp.set(0, 0, 0)
       for (j = 0; j < n; j++) {
-        connectingEdge = connectingEdges[ j ]
+        connectingEdge = connectingEdges[j]
         other = connectingEdge.a !== oldVertex ? connectingEdge.a : connectingEdge.b
         tmp.add(other)
       }
@@ -213,11 +209,14 @@ class SubdivisionModifier {
     // Step 3: Generate Faces between source vertecies and edge vertices.
 
     newVertices = newSourceVertices.concat(newEdgeVertices)
-    let sl = newSourceVertices.length, edge1, edge2, edge3
+    let sl = newSourceVertices.length,
+      edge1,
+      edge2,
+      edge3
     newFaces = []
 
     for (i = 0, il = oldFaces.length; i < il; i++) {
-      face = oldFaces[ i ]
+      face = oldFaces[i]
       // find the 3 new edges vertex of each old face
       edge1 = getEdge(face.a, face.b, sourceEdges).newEdge + sl
       edge2 = getEdge(face.b, face.c, sourceEdges).newEdge + sl

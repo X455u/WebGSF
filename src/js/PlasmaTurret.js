@@ -2,9 +2,9 @@ import * as THREE from 'three'
 
 import GameObject from './GameObject'
 import LargePlasmaCannon from './LargePlasmaCannon'
-import {LOADER} from './GSFLoader'
+import { LOADER } from './GSFLoader'
 import Turret from './Turret'
-import {GAME} from './Game'
+import { GAME } from './Game'
 
 class PlasmaTurret extends GameObject {
   constructor() {
@@ -12,7 +12,12 @@ class PlasmaTurret extends GameObject {
     super(LOADER.get('railgunBaseGeometry'), material)
     GAME.addObject(this)
 
-    this.turret = new Turret(LOADER.get('plasmaTurretHeadGeometry'), material, LOADER.get('plasmaTurretGunGeometry'), material)
+    this.turret = new Turret(
+      LOADER.get('plasmaTurretHeadGeometry'),
+      material,
+      LOADER.get('plasmaTurretGunGeometry'),
+      material
+    )
     this.turret.gun.translateOnAxis(new THREE.Vector3(0, 1, 0), 3.2)
     this.turret.gun.translateOnAxis(new THREE.Vector3(0, 0, 1), 1.6)
     this.add(this.turret)

@@ -1,9 +1,8 @@
 import GameObject from './GameObject'
 import Explosion from './Explosion'
-import {GAME} from './Game'
+import { GAME } from './Game'
 
 class Ship extends GameObject {
-
   constructor(geometry, material, stats) {
     super(geometry, material)
 

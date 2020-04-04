@@ -1,6 +1,6 @@
 import GameObject from './GameObject'
-import {GAME} from './Game'
-import {Vector3} from 'three'
+import { GAME } from './Game'
+import { Vector3 } from 'three'
 
 const VECTOR3_A = new Vector3()
 const VECTOR3_B = new Vector3()

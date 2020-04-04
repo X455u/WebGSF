@@ -1,7 +1,7 @@
 import * as THREE from 'three'
 import GameObject from './GameObject'
-import {SOUND_LISTENER, GAME} from './Game'
-import {LOADER} from './GSFLoader'
+import { SOUND_LISTENER, GAME } from './Game'
+import { LOADER } from './GSFLoader'
 import Turret from './Turret'
 import LargePlasmaCannon from './LargePlasmaCannon'
 
@@ -31,7 +31,12 @@ class TwinTurret extends GameObject {
 
     let material = LOADER.get('railgunMaterial')
 
-    this.turret1 = new Turret(LOADER.get('plasmaTurretHeadGeometry'), material, LOADER.get('plasmaTurretGunGeometry'), material)
+    this.turret1 = new Turret(
+      LOADER.get('plasmaTurretHeadGeometry'),
+      material,
+      LOADER.get('plasmaTurretGunGeometry'),
+      material
+    )
     this.turret1.gun.translateOnAxis(new THREE.Vector3(0, 1, 0), 3.2)
     this.turret1.gun.translateOnAxis(new THREE.Vector3(0, 0, 1), 1.6)
     this.add(this.turret1)
@@ -46,7 +51,12 @@ class TwinTurret extends GameObject {
       this.turret1.weaponType.shoot()
     }
 
-    this.turret2 = new Turret(LOADER.get('plasmaTurretHeadGeometry'), material, LOADER.get('plasmaTurretGunGeometry'), material)
+    this.turret2 = new Turret(
+      LOADER.get('plasmaTurretHeadGeometry'),
+      material,
+      LOADER.get('plasmaTurretGunGeometry'),
+      material
+    )
     this.turret2.gun.translateOnAxis(new THREE.Vector3(0, 1, 0), 3.2)
     this.turret2.gun.translateOnAxis(new THREE.Vector3(0, 0, 1), 1.6)
     this.add(this.turret2)

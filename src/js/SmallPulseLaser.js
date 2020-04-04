@@ -2,7 +2,6 @@ import * as THREE from 'three'
 import LaserShot from './LaserShot'
 
 class SmallPulseLaser extends THREE.Object3D {
-
   constructor() {
     super()
     this.reload = 1.0
@@ -27,6 +26,5 @@ class SmallPulseLaser extends THREE.Object3D {
   update(delta) {
     this.reload = Math.max(0.0, this.reload - delta)
   }
-
 }
 export default SmallPulseLaser

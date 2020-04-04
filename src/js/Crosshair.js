@@ -1,12 +1,11 @@
 import * as THREE from 'three'
 
-import {LOADER} from './GSFLoader'
-import {SCENE} from './Game'
+import { LOADER } from './GSFLoader'
+import { SCENE } from './Game'
 
 const FAR = 500
 
 class Crosshair extends THREE.Sprite {
-
   constructor() {
     let crosshairMaterial = new THREE.SpriteMaterial({
       color: 0x00ff00,
@@ -34,7 +33,6 @@ class Crosshair extends THREE.Sprite {
     if (!this.source) return
     this.position.set(0, 0, -1).applyQuaternion(this.source.quaternion).multiplyScalar(FAR).add(this.source.position)
   }
-
 }
 
 export default Crosshair
