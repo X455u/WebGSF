@@ -29,27 +29,27 @@ class HeadsUpDisplay {
       .stat.shield {
         background-color: blue;
       }
-    </style>`;
-    this.hpBar = document.createElement('div');
-    this.hpBar.className = 'bar hp';
-    document.body.appendChild(this.hpBar);
-    this.hpStat = document.createElement('div');
-    this.hpStat.className = 'stat hp';
-    this.hpBar.appendChild(this.hpStat);
-    this.shieldBar = document.createElement('div');
-    this.shieldBar.className = 'bar shield';
-    document.body.appendChild(this.shieldBar);
-    this.shieldStat = document.createElement('div');
-    this.shieldStat.className = 'stat shield';
-    this.shieldBar.appendChild(this.shieldStat);
+    </style>`
+    this.hpBar = document.createElement('div')
+    this.hpBar.className = 'bar hp'
+    document.body.appendChild(this.hpBar)
+    this.hpStat = document.createElement('div')
+    this.hpStat.className = 'stat hp'
+    this.hpBar.appendChild(this.hpStat)
+    this.shieldBar = document.createElement('div')
+    this.shieldBar.className = 'bar shield'
+    document.body.appendChild(this.shieldBar)
+    this.shieldStat = document.createElement('div')
+    this.shieldStat.className = 'stat shield'
+    this.shieldBar.appendChild(this.shieldStat)
   }
 
   updateHP(hpPercent) {
-    this.hpStat.style.width = `${hpPercent * 100}%`;
+    this.hpStat.style.width = `${hpPercent * 100}%`
   }
 
   updateShield(shieldPercent) {
-    this.shieldStat.style.width = `${shieldPercent * 100}%`;
+    this.shieldStat.style.width = `${shieldPercent * 100}%`
   }
 }
-export const HUD = new HeadsUpDisplay();
+export const HUD = new HeadsUpDisplay()

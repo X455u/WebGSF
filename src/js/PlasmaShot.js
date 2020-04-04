@@ -1,16 +1,16 @@
-import * as THREE from 'three';
-import SubdivisionModifier from './SubdivisionModifier';
-import Shot from './Shot';
-import {LOADER} from './GSFLoader';
-import {SOUND_LISTENER} from './Game';
-import SimpleParticleSystem from './SimpleParticleSystem';
+import * as THREE from 'three'
+import SubdivisionModifier from './SubdivisionModifier'
+import Shot from './Shot'
+import {LOADER} from './GSFLoader'
+import {SOUND_LISTENER} from './Game'
+import SimpleParticleSystem from './SimpleParticleSystem'
 
-let shotGeometry = new THREE.CylinderGeometry(0.5, 0.5, 6, 8, 3);
-shotGeometry.rotateX(Math.PI / 2);
-let modifier = new SubdivisionModifier(2);
-modifier.modify(shotGeometry);
-shotGeometry.faceVertexUvs = [];
-shotGeometry.uvsNeedUpdate = true;
+let shotGeometry = new THREE.CylinderGeometry(0.5, 0.5, 6, 8, 3)
+shotGeometry.rotateX(Math.PI / 2)
+let modifier = new SubdivisionModifier(2)
+modifier.modify(shotGeometry)
+shotGeometry.faceVertexUvs = []
+shotGeometry.uvsNeedUpdate = true
 let shotMaterial = new THREE.MeshPhongMaterial({
   color: 0x000000,
   specular: 0x666666,
@@ -18,22 +18,22 @@ let shotMaterial = new THREE.MeshPhongMaterial({
   shininess: 0,
   flatShading: false,
   opacity: 0.75,
-  transparent: true
-});
+  transparent: true,
+})
 
 class PlasmaShot extends Shot {
 
   constructor() {
-    super(shotGeometry, shotMaterial);
-    this.lifetimeLeft = 10;
-    this.velocity = 200;
-    this.collisionDamage = 50;
+    super(shotGeometry, shotMaterial)
+    this.lifetimeLeft = 10
+    this.velocity = 200
+    this.collisionDamage = 50
 
-    this.sound = new THREE.PositionalAudio(SOUND_LISTENER);
-    this.sound.setBuffer(LOADER.get('plasmaSoundBuffer'));
-    this.sound.setRefDistance(10);
-    this.add(this.sound);
-    this.sound.play();
+    this.sound = new THREE.PositionalAudio(SOUND_LISTENER)
+    this.sound.setBuffer(LOADER.get('plasmaSoundBuffer'))
+    this.sound.setRefDistance(10)
+    this.add(this.sound)
+    this.sound.play()
 
     let trail = new SimpleParticleSystem({
       particles: 200,
@@ -42,15 +42,15 @@ class PlasmaShot extends Shot {
       destinationRandomness: 0.5,
       color: new THREE.Color(0x00FF00),
       size: 200,
-      lifetime: 0.2
-    });
-    this.add(trail);
+      lifetime: 0.2,
+    })
+    this.add(trail)
   }
 
   destroy() {
-    super.destroy();
-    this.remove(this.sound);
+    super.destroy()
+    this.remove(this.sound)
   }
 
 }
-export default PlasmaShot;
+export default PlasmaShot
