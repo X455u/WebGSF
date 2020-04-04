@@ -31,6 +31,7 @@ import plasmaTurretGunGeometry from '../assets/plasmaTurretGunGeometry.json'
 import plasmaTurretHeadGeometry from '../assets/plasmaTurretHeadGeometry.json'
 import powergenObj from '../assets/powergen/powergen.obj'
 import powergenDiff from '../assets/powergen/powergen_diff.png'
+import powergenEmit from '../assets/powergen/powergen_emit.png'
 import powergenNor from '../assets/powergen/powergen_nor.png'
 import railgunBase from '../assets/railgun_base_buf.json'
 import railgunComp from '../assets/railgun_comp.png'
@@ -65,9 +66,13 @@ class GSFLoader {
     })
     this.TEX_LOADER.load(powergenDiff, (diff) => {
       this.TEX_LOADER.load(powergenNor, (nor) => {
-        this.assets['powergenMaterial'] = new THREE.MeshPhongMaterial({
-          map: diff,
-          normalMap: nor,
+        this.TEX_LOADER.load(powergenEmit, (emit) => {
+          this.assets['powergenMaterial'] = new THREE.MeshPhongMaterial({
+            map: diff,
+            normalMap: nor,
+            emissiveMap: emit,
+            emissive: new THREE.Color(0xffffff),
+          })
         })
       })
     })
