@@ -24,12 +24,3 @@ body {
 canvas {
   transition: opacity linear 2s;
 }
-.gameover {
-  position: fixed;
-  top: 50vh;
-  left: 50vw;
-  transform: translateX(-50%) translateY(-50%);
-  color: #fff;
-  font-size: 100px;
-  font-family: Arial, Helvetica, sans-serif;
-}

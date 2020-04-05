@@ -60,10 +60,21 @@ class Level1 extends Level {
         enemyFighter.team = 2
         return enemyFighter
       },
+      objective: () => {
+        const objective = document.getElementsByClassName('objective')[0]
+        objective.innerHTML = 'Objective: Destroy the enemy fighter &#9744;'
+        this.enemyFighter.addEventListener('onDeath', () => {
+          objective.innerHTML = 'Objective: Destroy the enemy fighter &#9745;'
+          this.isFinished = true
+        })
+        return objective
+      },
     }
   }
 
-  clear() {}
+  clear() {
+    this.objective.innerHTML = ''
+  }
 
   update() {
     this.sun.target.position.copy(this.playerShip.position)
@@ -71,7 +82,6 @@ class Level1 extends Level {
     this.sun.position.x += 500
     this.sun.position.y += 500
     this.sun.position.z -= 1000
-    this.isFinished = this.enemyFighter.removed
   }
 }
 export default Level1
