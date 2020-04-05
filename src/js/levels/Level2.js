@@ -83,10 +83,24 @@ class Level2 extends Level {
         }
         return powergens
       },
+      objective: () => {
+        let destroyed = 0
+        const objective = document.getElementsByClassName('objective')[0]
+        objective.innerHTML = 'Objective: Destroy power generators 0/10'
+        this.powergens.forEach((pg) =>
+          pg.addEventListener('onDeath', () => {
+            objective.innerHTML = `Objective: Destroy power generators ${++destroyed}/10`
+            if (destroyed >= 10) this.isFinished = true
+          })
+        )
+        return objective
+      },
     }
   }
 
-  clear() {}
+  clear() {
+    this.objective.innerHTML = ''
+  }
 
   update() {
     this.sun.target.position.copy(this.playerShip.position)
