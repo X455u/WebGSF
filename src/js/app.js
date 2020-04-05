@@ -11,7 +11,6 @@ import Level1 from './levels/Level1'
 import Level2 from './levels/Level2'
 import Level3 from './levels/Level3'
 import MenuLevel from './levels/MenuLevel'
-import Missile from './Missile'
 import { PLAYER } from './Player'
 
 const menu = require('../hud/menu.html')
@@ -170,13 +169,13 @@ function initGame(levelId) {
     })
 
     // Missiles
-    playerShip.shootMissile = () => {
-      let missile = new Missile()
-      missile.position.copy(playerShip.position)
-      missile.quaternion.copy(playerShip.quaternion)
-      missile.translateY(-1)
-      missile.owner = playerShip
-    }
+    // playerShip.shootMissile = () => {
+    //   let missile = new Missile()
+    //   missile.position.copy(playerShip.position)
+    //   missile.quaternion.copy(playerShip.quaternion)
+    //   missile.translateY(-1)
+    //   missile.owner = playerShip
+    // }
     document.getElementById('menu').setAttribute('hidden', '')
 
     loop = true
